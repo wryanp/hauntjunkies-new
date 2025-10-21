@@ -17,6 +17,9 @@
 	// Story expand/collapse state
 	let storyExpanded = $state(false);
 
+	// FAQ expand/collapse state
+	let faqExpanded = $state(false);
+
 	// Default story text if not in database
 	const defaultStory = `The year was 1665. Dr. William McCloud, a successful black hematologist, was on the cutting edge of blood transfusion research and managed his own medical facility in the small town of Madeline Cove.
 
@@ -282,110 +285,6 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 	</div>
 </section>
 
-<!-- About Section -->
-<section id="about" class="py-20 bg-black">
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-		<div class="text-center mb-12">
-			<h2 class="text-5xl md:text-6xl font-creepster text-haunt-red mb-4">
-				The Experience
-			</h2>
-			<p class="text-xl text-gray-400 max-w-3xl mx-auto">
-				Prepare yourself for a journey into darkness
-			</p>
-		</div>
-
-		<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-			<!-- Haunted Mansion Card -->
-			<div class="flip-card border border-haunt-red/30 rounded-lg" style="aspect-ratio: 3/4;">
-				<div class="flip-card-inner">
-					<!-- Front -->
-					<div class="flip-card-front">
-						<img src="/mansion-bg.jpg" alt="Haunted Mansion" class="absolute inset-0 w-full h-full object-cover" />
-						<div class="absolute inset-0 bg-black/40"></div>
-						<div class="relative z-10 h-full flex items-center justify-center p-8">
-							<h3 class="text-2xl font-creepster text-white drop-shadow-lg">Haunted Mansion</h3>
-						</div>
-					</div>
-					<!-- Back -->
-					<div class="flip-card-back">
-						<div class="absolute inset-0 bg-gray-900"></div>
-						<div class="relative z-10 h-full flex flex-col items-center justify-center p-8 text-center">
-							<h3 class="text-2xl font-creepster text-white mb-3">Haunted Mansion</h3>
-							<p class="text-gray-400">
-								Explore the cursed halls of McCloud Manor, where every room holds a new terror
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<!-- Live Actors Card -->
-			<div class="flip-card border border-haunt-red/30 rounded-lg" style="aspect-ratio: 3/4;">
-				<div class="flip-card-inner">
-					<!-- Front -->
-					<div class="flip-card-front">
-						<img src="/live-actors-bg.jpg" alt="Live Actors" class="absolute inset-0 w-full h-full object-cover" />
-						<div class="absolute inset-0 bg-black/40"></div>
-						<div class="relative z-10 h-full flex items-center justify-center p-8">
-							<h3 class="text-2xl font-creepster text-white drop-shadow-lg">Live Actors</h3>
-						</div>
-					</div>
-					<!-- Back -->
-					<div class="flip-card-back">
-						<div class="absolute inset-0 bg-gray-900"></div>
-						<div class="relative z-10 h-full flex flex-col items-center justify-center p-8 text-center">
-							<h3 class="text-2xl font-creepster text-white mb-3">Live Actors</h3>
-							<p class="text-gray-400">
-								Face your fears with our talented cast of creatures and spirits
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<!-- Special Effects Card -->
-			<div class="flip-card border border-haunt-red/30 rounded-lg" style="aspect-ratio: 3/4;">
-				<div class="flip-card-inner">
-					<!-- Front -->
-					<div class="flip-card-front">
-						<img src="/special-effects.jpg" alt="Special Effects" class="absolute inset-0 w-full h-full object-cover" />
-						<div class="absolute inset-0 bg-black/40"></div>
-						<div class="relative z-10 h-full flex items-center justify-center p-8">
-							<h3 class="text-2xl font-creepster text-white drop-shadow-lg">Special Effects</h3>
-						</div>
-					</div>
-					<!-- Back -->
-					<div class="flip-card-back">
-						<div class="absolute inset-0 bg-gray-900"></div>
-						<div class="relative z-10 h-full flex flex-col items-center justify-center p-8 text-center">
-							<h3 class="text-2xl font-creepster text-white mb-3">Special Effects</h3>
-							<p class="text-gray-400">
-								State-of-the-art lighting, sound, and animatronics create an immersive nightmare
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</section>
-
-<!-- McCloud Manor Video Section -->
-<section class="relative h-screen overflow-hidden">
-	<!-- Background Video -->
-	<div class="absolute inset-0 overflow-hidden">
-		<video
-			autoplay
-			muted
-			loop
-			playsinline
-			class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full w-auto h-auto object-cover"
-		>
-			<source src="/videos/mccloud-manor.mp4" type="video/mp4" />
-		</video>
-	</div>
-</section>
-
 <!-- The Story Section -->
 <section class="py-20 bg-black relative overflow-hidden">
 	<!-- Atmospheric background with blood drips effect -->
@@ -403,8 +302,8 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 				<!-- Decorative line -->
 				<div class="absolute -top-8 left-1/2 transform -translate-x-1/2 w-32 h-px bg-gradient-to-r from-transparent via-haunt-red to-transparent"></div>
 
-				<h2 class="text-6xl md:text-7xl lg:text-8xl font-bold text-haunt-red mb-6 tracking-wide drop-shadow-[0_0_30px_rgba(164,18,20,0.8)]">
-					The Legend of McCloud Manor
+				<h2 class="text-6xl md:text-7xl lg:text-8xl font-bold text-haunt-red mb-6 tracking-wide drop-shadow-[0_0_40px_rgba(164,18,20,0.8)]">
+					The Legend of <span class="whitespace-nowrap">McCloud Manor</span>
 				</h2>
 
 				<!-- Decorative line -->
@@ -454,10 +353,10 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 						<!-- Dramatic closing -->
 						<div class="mt-12 pt-8 border-t-2 border-haunt-red/30">
 							<blockquote class="text-center">
-								<p class="text-haunt-red text-2xl md:text-3xl font-creepster mb-4 tracking-wide">
+								<p class="text-haunt-red text-2xl md:text-3xl font-bold mb-4 italic">
 									"The blood remembers what the mind forgets..."
 								</p>
-								<footer class="text-gray-500 italic font-fell">
+								<footer class="text-gray-500 italic">
 									— Dr. William McCloud's final journal entry, 1665
 								</footer>
 							</blockquote>
@@ -509,282 +408,512 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 	</div>
 </section>
 
-<!-- Image Slider Section -->
-<section class="py-20 bg-gradient-to-b from-black to-gray-900">
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-		<h2 class="text-5xl md:text-6xl font-creepster text-haunt-red mb-12 text-center">
-			Gallery
-		</h2>
+<!-- McCloud Manor Video Section -->
+<section class="relative h-screen overflow-hidden">
+	<!-- Background Video -->
+	<div class="absolute inset-0 overflow-hidden">
+		<video
+			autoplay
+			muted
+			loop
+			playsinline
+			class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full w-auto h-auto object-cover"
+		>
+			<source src="/videos/mccloud-manor.mp4" type="video/mp4" />
+		</video>
+	</div>
+</section>
 
-		<div class="relative max-w-5xl mx-auto">
-			<!-- Slider Container -->
-			<div class="relative h-96 md:h-[600px] overflow-hidden rounded-lg bg-gray-800">
-				{#each placeholderImages as image, index}
-					<div
-						class="absolute inset-0 transition-opacity duration-500 {index === currentSlide ? 'opacity-100' : 'opacity-0'}"
-					>
-						<div class="w-full h-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
-							<div class="text-center">
-								<div class="text-8xl mb-4">🖼️</div>
-								<p class="text-gray-400 text-xl">{image.caption}</p>
-							</div>
-						</div>
+<!-- About Section -->
+<section id="about" class="py-20 bg-black relative overflow-hidden">
+	<!-- Smoky animated background -->
+	<div class="absolute inset-0">
+		<!-- Multiple smoke layers for depth -->
+		<div class="absolute inset-0 opacity-20" style="background: radial-gradient(ellipse at 20% 30%, rgba(100,100,100,0.3) 0%, transparent 50%), radial-gradient(ellipse at 80% 70%, rgba(100,100,100,0.3) 0%, transparent 50%), radial-gradient(ellipse at 50% 50%, rgba(80,80,80,0.2) 0%, transparent 60%);"></div>
+		<div class="absolute inset-0 opacity-15" style="background: radial-gradient(ellipse at 60% 40%, rgba(120,120,120,0.4) 0%, transparent 55%), radial-gradient(ellipse at 30% 80%, rgba(90,90,90,0.3) 0%, transparent 50%);"></div>
+
+		<!-- Animated smoke wisps -->
+		<div class="absolute inset-0 animate-pulse" style="animation-duration: 8s; background: radial-gradient(ellipse at 40% 60%, rgba(100,100,100,0.15) 0%, transparent 40%);"></div>
+	</div>
+
+	<!-- Red glow accents -->
+	<div class="absolute inset-0 opacity-10" style="background: radial-gradient(ellipse at 50% 0%, rgba(164,18,20,0.4) 0%, transparent 50%), radial-gradient(ellipse at 50% 100%, rgba(164,18,20,0.4) 0%, transparent 50%);"></div>
+
+	<!-- Texture overlay -->
+	<div class="absolute inset-0 opacity-5" style="background-image: url('/calendar-bg.png'); background-size: cover;"></div>
+
+	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+		<!-- Striking Header -->
+		<div class="text-center mb-16">
+			<h2 class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-haunt-red via-red-600 to-haunt-red mb-4 tracking-tight" style="text-shadow: 0 0 40px rgba(164,18,20,0.6);">
+				THE EXPERIENCE
+			</h2>
+			<div class="w-32 h-1 bg-gradient-to-r from-transparent via-haunt-red to-transparent mx-auto mb-6"></div>
+			<p class="text-2xl md:text-3xl text-white font-bold max-w-3xl mx-auto">
+				Prepare yourself for a journey into darkness
+			</p>
+		</div>
+
+		<div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+			<!-- Haunted Mansion Card -->
+			<div class="group relative">
+				<div class="relative overflow-hidden rounded-2xl border-4 border-haunt-red/50 hover:border-haunt-red transition-all duration-500 transform hover:scale-105" style="aspect-ratio: 3/4; box-shadow: 0 0 30px rgba(164,18,20,0.4);">
+					<img src="/mansion-bg.jpg" alt="Haunted Mansion" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+					<div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+
+					<!-- Red glow effect -->
+					<div class="absolute inset-0 bg-haunt-red/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+					<div class="absolute inset-0 flex flex-col items-center justify-end p-8 text-center">
+						<h3 class="text-3xl md:text-4xl font-extrabold text-white mb-4 drop-shadow-2xl tracking-wide">
+							HAUNTED MANSION
+						</h3>
+						<p class="text-gray-200 text-lg font-medium opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
+							Explore the cursed halls of McCloud Manor, where every room holds a new terror
+						</p>
 					</div>
-				{/each}
+				</div>
 			</div>
 
-			<!-- Previous Button -->
-			<button
-				onclick={prevSlide}
-				class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/75 text-white p-3 rounded-full transition-all"
-				aria-label="Previous slide"
-			>
-				<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-				</svg>
-			</button>
+			<!-- Live Actors Card -->
+			<div class="group relative">
+				<div class="relative overflow-hidden rounded-2xl border-4 border-haunt-red/50 hover:border-haunt-red transition-all duration-500 transform hover:scale-105" style="aspect-ratio: 3/4; box-shadow: 0 0 30px rgba(164,18,20,0.4);">
+					<img src="/live-actors-bg.jpg" alt="Live Actors" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+					<div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
 
-			<!-- Next Button -->
-			<button
-				onclick={nextSlide}
-				class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/75 text-white p-3 rounded-full transition-all"
-				aria-label="Next slide"
-			>
-				<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-				</svg>
-			</button>
+					<!-- Red glow effect -->
+					<div class="absolute inset-0 bg-haunt-red/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
-			<!-- Dots Indicator -->
-			<div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
-				{#each placeholderImages as _, index}
-					<button
-						onclick={() => goToSlide(index)}
-						class="w-3 h-3 rounded-full transition-all {index === currentSlide ? 'bg-haunt-red w-8' : 'bg-white/50 hover:bg-white/75'}"
-						aria-label="Go to slide {index + 1}"
-					></button>
-				{/each}
+					<div class="absolute inset-0 flex flex-col items-center justify-end p-8 text-center">
+						<h3 class="text-3xl md:text-4xl font-extrabold text-white mb-4 drop-shadow-2xl tracking-wide">
+							LIVE ACTORS
+						</h3>
+						<p class="text-gray-200 text-lg font-medium opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
+							Face your fears with our talented cast of creatures and spirits
+						</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Special Effects Card -->
+			<div class="group relative">
+				<div class="relative overflow-hidden rounded-2xl border-4 border-haunt-red/50 hover:border-haunt-red transition-all duration-500 transform hover:scale-105" style="aspect-ratio: 3/4; box-shadow: 0 0 30px rgba(164,18,20,0.4);">
+					<img src="/special-effects.jpg" alt="Special Effects" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+					<div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+
+					<!-- Red glow effect -->
+					<div class="absolute inset-0 bg-haunt-red/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+					<div class="absolute inset-0 flex flex-col items-center justify-end p-8 text-center">
+						<h3 class="text-3xl md:text-4xl font-extrabold text-white mb-4 drop-shadow-2xl tracking-wide">
+							SPECIAL EFFECTS
+						</h3>
+						<p class="text-gray-200 text-lg font-medium opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
+							State-of-the-art lighting, sound, and animatronics create an immersive nightmare
+						</p>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
 </section>
+
+<!-- McCloud Manor Video Section -->
+<section class="relative h-screen overflow-hidden">
+	<!-- Background Video -->
+	<div class="absolute inset-0 overflow-hidden">
+		<video
+			autoplay
+			muted
+			loop
+			playsinline
+			class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full w-auto h-auto object-cover"
+		>
+			<source src="/videos/mccloud-manor.mp4" type="video/mp4" />
+		</video>
+	</div>
+</section>
+
+<!-- The Story Section -->
+<section class="py-20 bg-black relative overflow-hidden">
+	<!-- Atmospheric background with blood drips effect -->
+	<div class="absolute inset-0 opacity-10">
+		<div class="absolute inset-0" style="background: radial-gradient(circle at 20% 50%, rgba(164,18,20,0.3) 0%, transparent 50%), radial-gradient(circle at 80% 50%, rgba(164,18,20,0.3) 0%, transparent 50%);"></div>
+	</div>
+
+	<!-- Vignette effect -->
+	<div class="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black opacity-50"></div>
+
+	<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+		<!-- Story Header -->
+		<div class="text-center mb-16">
+			<div class="relative inline-block">
+				<!-- Decorative line -->
+				<div class="absolute -top-8 left-1/2 transform -translate-x-1/2 w-32 h-px bg-gradient-to-r from-transparent via-haunt-red to-transparent"></div>
+
+				<h2 class="text-6xl md:text-7xl lg:text-8xl font-bold text-haunt-red mb-6 tracking-wide drop-shadow-[0_0_40px_rgba(164,18,20,0.8)]">
+					The Legend of <span class="whitespace-nowrap">McCloud Manor</span>
+				</h2>
+
+				<!-- Decorative line -->
+				<div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-48 h-px bg-gradient-to-r from-transparent via-haunt-red to-transparent"></div>
+			</div>
+
+			<p class="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto mt-8 italic font-fell">
+				Madeline Cove, 1665 — A tale of forbidden love, cursed blood, and eternal vengeance
+			</p>
+		</div>
+
+		<!-- Story Content -->
+		<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+			<!-- Left accent -->
+			<div class="hidden lg:block lg:col-span-1">
+				<div class="sticky top-8 h-full border-l-2 border-haunt-red/30"></div>
+			</div>
+
+			<!-- Main content -->
+			<div class="lg:col-span-10">
+				<!-- Opening paragraph with dramatic styling -->
+				<div class="mb-10 relative">
+					<div class="absolute -left-8 top-0 text-8xl text-haunt-red/20 font-fell leading-none select-none">"</div>
+					<p class="text-white text-2xl md:text-3xl leading-relaxed font-fell italic bg-gradient-to-r from-haunt-red/10 to-transparent p-8 rounded-r-2xl border-l-4 border-haunt-red">
+						{storyTeaser}
+					</p>
+				</div>
+
+				<!-- Expandable story content -->
+				<div class="overflow-hidden transition-all duration-700 ease-in-out {storyExpanded ? 'max-h-[3000px] opacity-100' : 'max-h-0 opacity-0'}">
+					<div class="space-y-8">
+						{#each storyBody as paragraph, index}
+							<div class="group relative">
+								<!-- Chapter markers for key paragraphs -->
+								{#if index === 0 || index === 10 || index === 20}
+									<div class="absolute -left-12 top-0 w-8 h-8 rounded-full bg-haunt-red/20 border-2 border-haunt-red flex items-center justify-center hidden lg:flex">
+										<div class="w-2 h-2 rounded-full bg-haunt-red"></div>
+									</div>
+								{/if}
+
+								<p class="text-gray-300 text-lg md:text-xl leading-relaxed font-fell {paragraph.startsWith('Some say') ? 'text-haunt-red font-bold italic text-2xl mt-8 text-center' : ''}">
+									{paragraph}
+								</p>
+							</div>
+						{/each}
+
+						<!-- Dramatic closing -->
+						<div class="mt-12 pt-8 border-t-2 border-haunt-red/30">
+							<blockquote class="text-center">
+								<p class="text-haunt-red text-2xl md:text-3xl font-bold mb-4 italic">
+									"The blood remembers what the mind forgets..."
+								</p>
+								<footer class="text-gray-500 italic">
+									— Dr. William McCloud's final journal entry, 1665
+								</footer>
+							</blockquote>
+						</div>
+					</div>
+				</div>
+
+				<!-- Read More/Less Button -->
+				<div class="mt-12 text-center">
+					<button
+						onclick={toggleStory}
+						class="group relative inline-flex items-center gap-4 bg-gradient-to-r from-haunt-red/80 to-red-900/80 hover:from-haunt-red hover:to-red-900 text-white font-bold py-5 px-10 rounded-xl transition-all transform hover:scale-105 shadow-2xl overflow-hidden"
+					>
+						<!-- Animated background -->
+						<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+
+						<span class="text-xl relative z-10">
+							{storyExpanded ? 'Close the Chapter' : 'Uncover the Dark History'}
+						</span>
+						<svg
+							class="w-6 h-6 transition-transform duration-300 relative z-10 {storyExpanded ? 'rotate-180' : ''}"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+						>
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</button>
+				</div>
+			</div>
+
+			<!-- Right accent -->
+			<div class="hidden lg:block lg:col-span-1">
+				<div class="sticky top-8 h-full border-r-2 border-haunt-red/30"></div>
+			</div>
+		</div>
+
+		<!-- Warning banner when story is expanded -->
+		{#if storyExpanded}
+			<div class="mt-12 animate-fade-in">
+				<div class="bg-gradient-to-r from-transparent via-haunt-red/20 to-transparent p-8 rounded-xl border-y-2 border-haunt-red/50">
+					<p class="text-center text-gray-400 text-lg italic">
+						The McClouds relocated to Lawrenceville, GA in 2012...<br/>
+						<span class="text-haunt-red font-bold text-xl">Their thirst for blood still remains.</span>
+					</p>
+				</div>
+			</div>
+		{/if}
+	</div>
+</section>
+
 
 <!-- Video + Text Section -->
 <section class="py-20 bg-black">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-		<div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-			<!-- Text Content (Left on Desktop) -->
-			<div class="order-2 lg:order-1">
-				<h2 class="text-4xl md:text-5xl font-creepster text-haunt-red mb-6">
-					Behind the Screams
-				</h2>
-				<p class="text-gray-300 text-lg mb-6 leading-relaxed">
-					McCloud Manor has been terrifying visitors for over a decade. What started as a small home haunt
-					has evolved into one of the region's most talked-about haunted attractions.
-				</p>
-				<p class="text-gray-300 text-lg mb-6 leading-relaxed">
-					Our team of dedicated horror enthusiasts work year-round to create new scares,
-					build detailed sets, and perfect every spine-chilling moment of your visit.
-				</p>
-				<p class="text-gray-300 text-lg mb-8 leading-relaxed">
-					With over 5,000 square feet of terror, featuring 15+ rooms of horror,
-					professional actors, and cutting-edge special effects, we guarantee an experience
-					you'll never forget... no matter how hard you try.
-				</p>
-				<a
-					href="#tickets"
-					class="inline-block bg-haunt-red hover:bg-red-800 text-white font-bold py-3 px-8 rounded-lg transition-colors text-lg"
+		<!-- Striking Header -->
+		<div class="text-center mb-12">
+			<h2 class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-haunt-red via-red-600 to-haunt-red mb-4 tracking-tight" style="text-shadow: 0 0 40px rgba(164,18,20,0.6);">
+				BEHIND THE SCREAMS
+			</h2>
+			<div class="w-32 h-1 bg-gradient-to-r from-transparent via-haunt-red to-transparent mx-auto"></div>
+		</div>
+
+		<!-- Video Container -->
+		<div class="mx-auto max-w-4xl w-full">
+			<!-- Video -->
+			<div class="aspect-video rounded-lg overflow-hidden shadow-2xl border-2 border-haunt-red/30">
+				<video
+					controls
+					preload="metadata"
+					class="w-full h-full object-cover bg-black"
 				>
-					Reserve Your Spot
-				</a>
+					<source src="/videos/fox5-news.mp4" type="video/mp4" />
+					Your browser does not support the video tag.
+				</video>
 			</div>
 
-			<!-- YouTube Video (Right on Desktop) -->
-			<div class="order-1 lg:order-2">
-				<div class="aspect-video rounded-lg overflow-hidden shadow-2xl border-2 border-haunt-red/30">
-					<div class="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
-						<div class="text-center">
-							<svg class="w-24 h-24 text-haunt-red mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20">
-								<path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" />
-							</svg>
-							<p class="text-gray-400 text-xl">YouTube Video Placeholder</p>
-							<p class="text-gray-500 text-sm mt-2">Add your YouTube embed URL</p>
+			<!-- Featured On Badge -->
+			<div class="text-center mt-8">
+				<h3 class="text-2xl md:text-3xl font-extrabold text-white mb-6 tracking-widest" style="text-shadow: 0 0 20px rgba(164,18,20,0.8);">
+					FEATURED ON
+				</h3>
+				<div class="flex justify-center items-center">
+					<div class="relative">
+						<!-- Glow effect behind -->
+						<div class="absolute inset-0 bg-haunt-red rounded-xl blur-2xl opacity-60" style="transform: scale(1.1);"></div>
+						<!-- Logo container -->
+						<div class="relative bg-white px-8 py-4 rounded-xl shadow-2xl transform hover:scale-105 transition-transform" style="box-shadow: 0 0 30px rgba(164,18,20,0.5), 0 10px 40px rgba(0,0,0,0.5);">
+							<img
+								src="/fox5-logo.png"
+								alt="FOX 5 Atlanta"
+								class="h-12 md:h-16 w-auto"
+							/>
 						</div>
 					</div>
-					<!-- Replace the placeholder above with actual YouTube embed: -->
-					<!-- <iframe
-						src="https://www.youtube.com/embed/YOUR_VIDEO_ID"
-						title="McCloud Manor Video"
-						frameborder="0"
-						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-						allowfullscreen
-						class="w-full h-full"
-					></iframe> -->
 				</div>
+				<div class="w-24 h-1 bg-gradient-to-r from-transparent via-haunt-red to-transparent mx-auto mt-6"></div>
 			</div>
 		</div>
 	</div>
 </section>
 
-<!-- Reviews Section -->
-<section class="relative py-20 bg-black overflow-hidden">
-	<!-- Atmospheric background -->
-	<div class="absolute inset-0 opacity-10">
-		<div class="absolute inset-0" style="background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(164,18,20,0.5) 2px, rgba(164,18,20,0.5) 4px);"></div>
-	</div>
+<!-- Schedule Section -->
+<section class="py-16 bg-black relative overflow-hidden" style="background-image: url('/calendar-bg.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+	<!-- Red glow overlay -->
+	<div class="absolute inset-0 bg-gradient-radial from-haunt-red/30 via-haunt-red/10 to-transparent" style="background: radial-gradient(circle at center, rgba(164,18,20,0.4) 0%, rgba(164,18,20,0.2) 40%, transparent 70%);"></div>
+	<!-- Overlay for better text readability -->
+	<div class="absolute inset-0 bg-black/30"></div>
 
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-		<!-- Section Header -->
-		<div class="text-center mb-16">
-			<div class="inline-block relative">
-				<h2 class="text-5xl md:text-7xl font-creepster text-haunt-red mb-4 drop-shadow-lg">
-					What Our Victims Say
-				</h2>
-				<div class="absolute -left-16 top-1/2 transform -translate-y-1/2 text-5xl opacity-60">💀</div>
-				<div class="absolute -right-16 top-1/2 transform -translate-y-1/2 text-5xl opacity-60">💀</div>
-			</div>
-			<p class="text-xl md:text-2xl text-gray-300 mt-6 font-bold">
-				Rated one of Georgia's Best Haunts
-			</p>
+	<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+		<div class="text-center mb-10">
+			<h2 class="glitch-text text-4xl md:text-5xl font-bold text-white mb-3 tracking-wider">
+				2026 SCHEDULE
+			</h2>
 		</div>
 
-		<!-- Featured Quote -->
-		<div class="mb-12">
-			<div class="relative max-w-4xl mx-auto">
-				<div class="absolute -top-8 -left-4 text-9xl text-haunt-red opacity-30 font-serif">"</div>
-				<div class="bg-gradient-to-br from-haunt-red/20 via-black to-haunt-red/20 border-4 border-haunt-red rounded-2xl p-12 shadow-2xl">
-					<blockquote class="text-center">
-						<p class="text-2xl md:text-3xl text-white font-bold mb-6 italic">
-							Honestly, the best haunt we have been to. Even better than some of the big commercialized haunted houses!
-						</p>
-						<footer class="text-lg text-gray-400">
-							— Verified Visitor
-						</footer>
-					</blockquote>
-				</div>
-				<div class="absolute -bottom-8 -right-4 text-9xl text-haunt-red opacity-30 font-serif">"</div>
-			</div>
-		</div>
+		<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+			<!-- Calendar (Left - 2 columns) -->
+			<div class="lg:col-span-2">
+				<div class="bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-lg overflow-hidden shadow-2xl border-4 border-haunt-red/50 relative" style="box-shadow: 0 0 30px rgba(164,18,20,0.5), inset 0 0 20px rgba(0,0,0,0.8);">
+					<!-- Blood drips effect -->
+					<div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-b from-haunt-red/80 to-transparent"></div>
 
-		<!-- Reviews Grid -->
-		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-			<!-- Review Card 1 -->
-			<div class="bg-gradient-to-b from-gray-900 to-black border-2 border-haunt-red/40 rounded-xl p-8 shadow-xl hover:border-haunt-red transition-all duration-300 transform hover:scale-105">
-				<div class="flex items-center gap-2 mb-4">
-					{#each Array(5) as _}
-						<svg class="w-6 h-6 text-haunt-red" fill="currentColor" viewBox="0 0 20 20">
-							<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-						</svg>
-					{/each}
-				</div>
-				<p class="text-gray-300 text-lg mb-4 leading-relaxed">
-					"The actors are very interactive and no other groups are around to ruin your experience! You will definitely get the scare you are looking for!"
-				</p>
-				<p class="text-haunt-red font-bold">— Happy Haunter</p>
-			</div>
+					<!-- Calendar Header -->
+					<div class="bg-gradient-to-b from-haunt-red to-red-900 text-white text-center py-2 border-b-4 border-black relative">
+						<h3 class="text-lg md:text-xl font-bold tracking-widest drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">OCTOBER 2026</h3>
+						<div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-black to-transparent"></div>
+					</div>
 
-			<!-- Review Card 2 -->
-			<div class="bg-gradient-to-b from-gray-900 to-black border-2 border-haunt-red/40 rounded-xl p-8 shadow-xl hover:border-haunt-red transition-all duration-300 transform hover:scale-105">
-				<div class="flex items-center gap-2 mb-4">
-					{#each Array(5) as _}
-						<svg class="w-6 h-6 text-haunt-red" fill="currentColor" viewBox="0 0 20 20">
-							<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-						</svg>
-					{/each}
-				</div>
-				<p class="text-gray-300 text-lg mb-4 leading-relaxed">
-					"Every year we look forward to visiting their haunt. While it's a little bit shorter due to being a home haunt, the quality of it is awesome!"
-				</p>
-				<p class="text-haunt-red font-bold">— Annual Visitor</p>
-			</div>
+					<!-- Days of Week -->
+					<div class="grid grid-cols-7 bg-black text-white border-b-2 border-haunt-red/30">
+						<div class="text-center py-2 text-xs font-bold border-r border-gray-800 text-gray-400">SUN</div>
+						<div class="text-center py-2 text-xs font-bold border-r border-gray-800 text-gray-400">MON</div>
+						<div class="text-center py-2 text-xs font-bold border-r border-gray-800 text-gray-400">TUE</div>
+						<div class="text-center py-2 text-xs font-bold border-r border-gray-800 text-gray-400">WED</div>
+						<div class="text-center py-2 text-xs font-bold border-r border-gray-800 text-gray-400">THU</div>
+						<div class="text-center py-2 text-xs font-bold border-r border-gray-800 text-gray-400">FRI</div>
+						<div class="text-center py-2 text-xs font-bold text-gray-400">SAT</div>
+					</div>
 
-			<!-- Review Card 3 -->
-			<div class="bg-gradient-to-b from-gray-900 to-black border-2 border-haunt-red/40 rounded-xl p-8 shadow-xl hover:border-haunt-red transition-all duration-300 transform hover:scale-105">
-				<div class="flex items-center gap-2 mb-4">
-					{#each Array(5) as _}
-						<svg class="w-6 h-6 text-haunt-red" fill="currentColor" viewBox="0 0 20 20">
-							<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-						</svg>
-					{/each}
-				</div>
-				<p class="text-gray-300 text-lg mb-4 leading-relaxed">
-					"Cannot recommend this haunt enough! People don't expect it because they think it's a regular old house in a cul-de-sac, but you're in for a terrifying surprise!"
-				</p>
-				<p class="text-haunt-red font-bold">— Scream Enthusiast</p>
-			</div>
-		</div>
+					<!-- Calendar Days -->
+					<div class="grid grid-cols-7">
+						<!-- Week 1 -->
+						<div class="bg-gray-900/30 border border-gray-800/50 p-3 h-16"></div>
+						<div class="bg-gray-900/30 border border-gray-800/50 p-3 h-16"></div>
+						<div class="bg-gray-900/30 border border-gray-800/50 p-3 h-16"></div>
+						<div class="bg-gray-900/30 border border-gray-800/50 p-3 h-16"></div>
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">1</span></div>
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">2</span></div>
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">3</span></div>
 
-		<!-- Bottom CTA -->
-		<div class="text-center">
-			<div class="inline-block bg-gradient-to-r from-haunt-red via-red-700 to-haunt-red p-1 rounded-xl">
-				<div class="bg-black rounded-lg px-8 py-4">
-					<p class="text-white text-xl font-bold">
-						Think you can handle it?
-						<a href="#tickets" class="text-haunt-red hover:text-red-500 transition-colors ml-2 underline">
-							Get Your Tickets →
+						<!-- Week 2 -->
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">4</span></div>
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">5</span></div>
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">6</span></div>
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">7</span></div>
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">8</span></div>
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">9</span></div>
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">10</span></div>
+
+						<!-- Week 3 -->
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">11</span></div>
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">12</span></div>
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">13</span></div>
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">14</span></div>
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">15</span></div>
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">16</span></div>
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">17</span></div>
+
+						<!-- Week 4 -->
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">18</span></div>
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">19</span></div>
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">20</span></div>
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">21</span></div>
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">22</span></div>
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">23</span></div>
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">24</span></div>
+
+						<!-- Week 5 -->
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">25</span></div>
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">26</span></div>
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">27</span></div>
+						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">28</span></div>
+						<!-- Oct 29 - HIGHLIGHTED -->
+						<a href="#tickets" class="block bg-gradient-to-br from-haunt-red via-red-900 to-black border-4 border-haunt-red p-3 h-16 relative transform hover:scale-110 transition-all cursor-pointer" style="box-shadow: 0 0 20px rgba(164,18,20,1), inset 0 0 10px rgba(164,18,20,0.5);">
+							<span class="font-extrabold text-white text-xl md:text-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,1)]">29</span>
+							<div class="absolute bottom-1 right-1 text-white text-xs font-extrabold bg-black/70 px-2 py-0.5 rounded">OPEN</div>
 						</a>
+						<!-- Oct 30 - HIGHLIGHTED -->
+						<a href="#tickets" class="block bg-gradient-to-br from-haunt-red via-red-900 to-black border-4 border-haunt-red p-3 h-16 relative transform hover:scale-110 transition-all cursor-pointer" style="box-shadow: 0 0 20px rgba(164,18,20,1), inset 0 0 10px rgba(164,18,20,0.5);">
+							<span class="font-extrabold text-white text-xl md:text-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,1)]">30</span>
+							<div class="absolute bottom-1 right-1 text-white text-xs font-extrabold bg-black/70 px-2 py-0.5 rounded">OPEN</div>
+						</a>
+						<!-- Oct 31 - HIGHLIGHTED -->
+						<a href="#tickets" class="block bg-gradient-to-br from-haunt-red via-red-900 to-black border-4 border-haunt-red p-3 h-16 relative transform hover:scale-110 transition-all cursor-pointer" style="box-shadow: 0 0 20px rgba(164,18,20,1), inset 0 0 10px rgba(164,18,20,0.5);">
+							<span class="font-extrabold text-white text-xl md:text-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,1)]">31</span>
+							<div class="absolute bottom-1 right-1 text-white text-xs font-extrabold bg-black/70 px-2 py-0.5 rounded">OPEN</div>
+						</a>
+					</div>
+
+					<!-- November Row -->
+					<div class="grid grid-cols-7 border-t-4 border-haunt-red/80" style="box-shadow: inset 0 4px 8px rgba(164,18,20,0.3);">
+						<!-- Nov 1 - HIGHLIGHTED -->
+						<a href="#tickets" class="block bg-gradient-to-br from-haunt-red via-red-900 to-black border-4 border-haunt-red p-3 h-16 relative transform hover:scale-110 transition-all cursor-pointer" style="box-shadow: 0 0 20px rgba(164,18,20,1), inset 0 0 10px rgba(164,18,20,0.5);">
+							<span class="font-extrabold text-white text-xl md:text-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,1)]">1</span>
+							<div class="absolute bottom-1 right-1 text-white text-xs font-extrabold bg-black/70 px-2 py-0.5 rounded">OPEN</div>
+						</a>
+						<div class="bg-gray-900/30 border border-gray-800/50 p-3 h-16"></div>
+						<div class="bg-gray-900/30 border border-gray-800/50 p-3 h-16"></div>
+						<div class="bg-gray-900/30 border border-gray-800/50 p-3 h-16"></div>
+						<div class="bg-gray-900/30 border border-gray-800/50 p-3 h-16"></div>
+						<div class="bg-gray-900/30 border border-gray-800/50 p-3 h-16"></div>
+						<div class="bg-gray-900/30 border border-gray-800/50 p-3 h-16"></div>
+					</div>
+				</div>
+
+				<!-- Disclaimer Text -->
+				<div class="mt-6">
+					<p class="text-gray-400 text-sm text-center leading-relaxed">
+						Times are subject to change based on weather. Follow us on social media for real-time updates.
 					</p>
 				</div>
 			</div>
-		</div>
-	</div>
-</section>
 
-<!-- Info Cards Section -->
-<section class="py-20 bg-gradient-to-b from-gray-900 to-black">
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-		<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-			<div class="bg-black/50 rounded-lg p-8 border border-haunt-red/30">
-				<div class="flex items-center gap-3 mb-4">
-					<svg class="w-8 h-8 text-haunt-red" fill="currentColor" viewBox="0 0 20 20">
-						<path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
-					</svg>
-					<h3 class="text-2xl font-creepster text-white">Dates</h3>
-				</div>
-				<p class="text-gray-300 text-lg">{data.info?.dates || 'October 2025'}</p>
-			</div>
+			<!-- Schedule Info (Right - 1 column) -->
+			<div class="lg:col-span-1">
+				<div class="bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-lg overflow-hidden shadow-2xl border-4 border-haunt-red/50 relative flex flex-col" style="box-shadow: 0 0 30px rgba(164,18,20,0.5), inset 0 0 20px rgba(0,0,0,0.8);">
+					<!-- Blood drips effect -->
+					<div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-b from-haunt-red/80 to-transparent"></div>
 
-			<div class="bg-black/50 rounded-lg p-8 border border-haunt-red/30">
-				<div class="flex items-center gap-3 mb-4">
-					<svg class="w-8 h-8 text-haunt-red" fill="currentColor" viewBox="0 0 20 20">
-						<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
-					</svg>
-					<h3 class="text-2xl font-creepster text-white">Hours</h3>
-				</div>
-				<p class="text-gray-300 text-lg">{data.info?.hours || '7:00 PM - 11:00 PM'}</p>
-			</div>
+					<!-- Header -->
+					<div class="bg-gradient-to-b from-haunt-red to-red-900 text-white text-center py-4 border-b-4 border-black relative">
+						<h3 class="text-2xl md:text-3xl font-bold tracking-widest drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">HOURS</h3>
+						<div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-black to-transparent"></div>
+					</div>
 
-			<div class="bg-black/50 rounded-lg p-8 border border-haunt-red/30">
-				<div class="flex items-center gap-3 mb-4">
-					<svg class="w-8 h-8 text-haunt-red" fill="currentColor" viewBox="0 0 20 20">
-						<path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
-						<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd" />
-					</svg>
-					<h3 class="text-2xl font-creepster text-white">Pricing</h3>
+					<!-- Hours Content -->
+					<div class="flex-1 flex flex-col justify-center p-8 space-y-8">
+						<!-- Thursday -->
+						<div class="border-b-2 border-haunt-red/30 pb-6">
+							<div class="text-xl md:text-2xl font-bold text-haunt-red mb-3 tracking-wider drop-shadow-lg">THURSDAY</div>
+							<div class="text-3xl md:text-4xl font-bold text-white drop-shadow-xl">8PM - 11PM</div>
+						</div>
+
+						<!-- Friday -->
+						<div class="border-b-2 border-haunt-red/30 pb-6">
+							<div class="text-xl md:text-2xl font-bold text-haunt-red mb-3 tracking-wider drop-shadow-lg">FRIDAY</div>
+							<div class="text-3xl md:text-4xl font-bold text-white drop-shadow-xl">8PM - 12AM</div>
+						</div>
+
+						<!-- Saturday -->
+						<div class="border-b-2 border-haunt-red/30 pb-6">
+							<div class="text-xl md:text-2xl font-bold text-haunt-red mb-3 tracking-wider drop-shadow-lg">SATURDAY</div>
+							<div class="text-3xl md:text-4xl font-bold text-white drop-shadow-xl">8PM - 12AM</div>
+						</div>
+
+						<!-- Sunday -->
+						<div class="pb-6">
+							<div class="text-xl md:text-2xl font-bold text-haunt-red mb-3 tracking-wider drop-shadow-lg">SUNDAY</div>
+							<div class="text-3xl md:text-4xl font-bold text-white drop-shadow-xl">8PM - 11PM</div>
+						</div>
+					</div>
 				</div>
-				<p class="text-gray-300 text-lg">{data.info?.pricing || 'TBD'}</p>
 			</div>
 		</div>
 	</div>
 </section>
 
 <!-- FAQs Section -->
-<section class="py-20 bg-gradient-to-b from-gray-900 to-black">
-	<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-		<div class="text-center mb-16">
-			<div class="inline-block relative mb-6">
-				<h2 class="text-5xl md:text-6xl font-creepster text-haunt-red">
-					Frequently Asked Questions
-				</h2>
-				<div class="absolute -left-16 top-1/2 transform -translate-y-1/2 text-4xl opacity-50">❓</div>
-				<div class="absolute -right-16 top-1/2 transform -translate-y-1/2 text-4xl opacity-50">❓</div>
-			</div>
-			<p class="text-xl text-gray-400">
-				Everything you need to know before your visit
-			</p>
+<section class="py-20 bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
+	<!-- Background texture overlay -->
+	<div class="absolute inset-0 opacity-5" style="background-image: url('/calendar-bg.png'); background-size: cover;"></div>
+
+	<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+		<!-- Striking Header -->
+		<div class="text-center mb-12">
+			<h2 class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-haunt-red via-red-600 to-haunt-red mb-4 tracking-tight" style="text-shadow: 0 0 40px rgba(164,18,20,0.6);">
+				FREQUENTLY ASKED QUESTIONS
+			</h2>
+			<div class="w-32 h-1 bg-gradient-to-r from-transparent via-haunt-red to-transparent mx-auto"></div>
 		</div>
 
-		<div class="space-y-4">
+		<!-- Expand/Collapse Button -->
+		<div class="text-center mb-12">
+			<button
+				onclick={() => faqExpanded = !faqExpanded}
+				class="group relative inline-flex items-center gap-4 bg-gradient-to-r from-haunt-red to-red-900 hover:from-red-900 hover:to-haunt-red text-white font-extrabold py-5 px-12 rounded-xl transition-all transform hover:scale-110 shadow-2xl overflow-hidden border-2 border-haunt-red/50"
+				style="box-shadow: 0 0 30px rgba(164,18,20,0.6), 0 10px 40px rgba(0,0,0,0.5);"
+			>
+				<!-- Animated background -->
+				<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+
+				<span class="text-xl md:text-2xl relative z-10 tracking-wide">
+					{faqExpanded ? 'HIDE FAQs' : 'SHOW FAQs'}
+				</span>
+				<svg
+					class="w-6 h-6 transition-transform duration-300 relative z-10 {faqExpanded ? 'rotate-180' : ''}"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke="currentColor"
+					stroke-width="3"
+				>
+					<path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+				</svg>
+			</button>
+		</div>
+
+		<div class="space-y-4 overflow-hidden transition-all duration-700 ease-in-out {faqExpanded ? 'max-h-[5000px] opacity-100' : 'max-h-0 opacity-0'}">
 			{#each [
 				{ q: 'Does it cost?', a: 'This is a free event but we do accept donations and canned goods which we donate to local Gwinnett county charities.' },
 				{ q: 'Where do I park? Do you charge for parking?', a: 'Parking is free but extremely limited being this is a home haunt! We suggest carpooling if possible or even an Uber/Lyft.' },
@@ -800,29 +929,25 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 				{ q: 'Can we take pictures?', a: 'Pictures are not allowed when walking through the haunt but we do allow pictures in the queue line and have a few photo ops available as well.' },
 				{ q: 'Is there a bathroom on-site?', a: 'Unfortunately no, but there are several gas stations nearby.' }
 			] as faq, index}
-				<details class="group bg-gradient-to-br from-black via-gray-900 to-black rounded-xl border-2 border-haunt-red/20 hover:border-haunt-red/50 transition-all duration-300 overflow-hidden">
-					<summary class="cursor-pointer list-none p-6 flex items-center justify-between gap-4">
-						<div class="flex items-center gap-4 flex-1">
-							<div class="flex-shrink-0 w-10 h-10 bg-haunt-red rounded-full flex items-center justify-center font-bold text-white shadow-lg">
-								{index + 1}
-							</div>
-							<h3 class="text-lg md:text-xl font-bold text-white group-hover:text-haunt-red transition-colors">
-								{faq.q}
-							</h3>
-						</div>
+				<details class="group bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-xl border-4 border-haunt-red/30 hover:border-haunt-red transition-all duration-300 overflow-hidden shadow-xl" style="box-shadow: 0 0 20px rgba(164,18,20,0.3);">
+					<summary class="cursor-pointer list-none p-6 md:p-8 flex items-center justify-between gap-4 hover:bg-haunt-red/10 transition-colors">
+						<h3 class="text-xl md:text-2xl font-extrabold text-white group-hover:text-haunt-red transition-colors tracking-wide flex-1">
+							{faq.q}
+						</h3>
 						<svg
-							class="w-6 h-6 text-haunt-red transform transition-transform duration-300 group-open:rotate-180 flex-shrink-0"
+							class="w-7 h-7 md:w-8 md:h-8 text-haunt-red transform transition-transform duration-300 group-open:rotate-180 flex-shrink-0"
 							fill="none"
 							viewBox="0 0 24 24"
 							stroke="currentColor"
+							stroke-width="3"
 						>
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+							<path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
 						</svg>
 					</summary>
-					<div class="px-6 pb-6 pt-2">
-						<div class="pl-14 pr-10">
-							<div class="h-px bg-gradient-to-r from-haunt-red/50 via-haunt-red to-haunt-red/50 mb-4"></div>
-							<p class="text-gray-300 text-lg leading-relaxed">
+					<div class="px-6 md:px-8 pb-6 md:pb-8 pt-2">
+						<div class="pr-4 md:pr-10">
+							<div class="h-1 bg-gradient-to-r from-haunt-red/50 via-haunt-red to-haunt-red/50 mb-6 rounded-full"></div>
+							<p class="text-gray-300 text-lg md:text-xl leading-relaxed font-medium">
 								{faq.a}
 							</p>
 						</div>
@@ -834,8 +959,6 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 		<!-- Decorative divider -->
 		<div class="mt-16 flex items-center justify-center gap-4">
 			<div class="h-px flex-1 bg-gradient-to-r from-transparent via-haunt-red/50 to-transparent"></div>
-			<div class="text-haunt-red text-3xl">🎃</div>
-			<div class="h-px flex-1 bg-gradient-to-r from-transparent via-haunt-red/50 to-transparent"></div>
 		</div>
 	</div>
 </section>
@@ -844,104 +967,21 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 <section id="tickets" class="py-20 bg-black">
 	<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
 		<div class="text-center mb-12">
-			<h2 class="text-5xl md:text-6xl font-creepster text-haunt-red mb-4">
-				Get Your Tickets
+			<h2 class="glitch-text text-5xl md:text-6xl font-bold text-white mb-4 tracking-wider">
+				GET YOUR TICKETS
 			</h2>
 			<p class="text-xl text-gray-400">
-				Request tickets and we'll contact you with availability
+				Tickets are LIMITED!
 			</p>
 		</div>
 
-		<div class="bg-gradient-to-b from-gray-900 to-black rounded-2xl p-8 md:p-12 border border-haunt-red/30">
-			{#if form?.success}
-				<div class="mb-6 p-6 bg-green-900/30 border border-green-700 rounded-lg">
-					<h3 class="text-green-300 font-bold text-xl mb-2">Request Received!</h3>
-					<p class="text-green-200">
-						Thank you for your interest. We'll contact you soon with ticket information.
-					</p>
-				</div>
-			{/if}
-
-			{#if form?.error}
-				<div class="mb-6 p-4 bg-red-900/30 border border-red-700 rounded-lg text-red-300">
-					{form.error}
-				</div>
-			{/if}
-
-			<form method="POST" action="?/requestTickets" use:enhance>
-				<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-					<div>
-						<label for="name" class="block text-sm font-medium text-gray-400 mb-2">Name *</label>
-						<input
-							type="text"
-							id="name"
-							name="name"
-							required
-							class="w-full px-4 py-3 rounded-lg bg-black border border-gray-700 text-white focus:outline-none focus:border-haunt-red transition-colors"
-						/>
-					</div>
-					<div>
-						<label for="email" class="block text-sm font-medium text-gray-400 mb-2">Email *</label>
-						<input
-							type="email"
-							id="email"
-							name="email"
-							required
-							class="w-full px-4 py-3 rounded-lg bg-black border border-gray-700 text-white focus:outline-none focus:border-haunt-red transition-colors"
-						/>
-					</div>
-				</div>
-
-				<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-					<div>
-						<label for="phone" class="block text-sm font-medium text-gray-400 mb-2">Phone</label>
-						<input
-							type="tel"
-							id="phone"
-							name="phone"
-							class="w-full px-4 py-3 rounded-lg bg-black border border-gray-700 text-white focus:outline-none focus:border-haunt-red transition-colors"
-						/>
-					</div>
-					<div>
-						<label for="quantity" class="block text-sm font-medium text-gray-400 mb-2">Number of Tickets *</label>
-						<input
-							type="number"
-							id="quantity"
-							name="quantity"
-							min="1"
-							required
-							class="w-full px-4 py-3 rounded-lg bg-black border border-gray-700 text-white focus:outline-none focus:border-haunt-red transition-colors"
-						/>
-					</div>
-				</div>
-
-				<div class="mb-6">
-					<label for="preferred_date" class="block text-sm font-medium text-gray-400 mb-2">Preferred Date</label>
-					<input
-						type="date"
-						id="preferred_date"
-						name="preferred_date"
-						class="w-full px-4 py-3 rounded-lg bg-black border border-gray-700 text-white focus:outline-none focus:border-haunt-red transition-colors"
-					/>
-				</div>
-
-				<div class="mb-8">
-					<label for="message" class="block text-sm font-medium text-gray-400 mb-2">Message</label>
-					<textarea
-						id="message"
-						name="message"
-						rows="4"
-						class="w-full px-4 py-3 rounded-lg bg-black border border-gray-700 text-white focus:outline-none focus:border-haunt-red transition-colors"
-					></textarea>
-				</div>
-
-				<button
-					type="submit"
-					class="w-full bg-haunt-red hover:bg-red-900 text-white font-bold py-4 px-6 rounded-lg transition-all transform hover:scale-105 text-lg shadow-xl"
-				>
-					Request Tickets
-				</button>
-			</form>
+		<div class="text-center">
+			<a
+				href="#"
+				class="inline-block bg-haunt-red hover:bg-red-900 text-white font-bold py-4 px-12 rounded-lg transition-all transform hover:scale-105 text-lg shadow-xl"
+			>
+				Get Tickets
+			</a>
 		</div>
 	</div>
 </section>

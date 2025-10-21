@@ -5,6 +5,13 @@ import type { PageServerLoad, Actions } from './$types';
 import type { Review, ReviewImage, ReviewComment } from '$lib/types';
 
 export const load: PageServerLoad = async ({ params }) => {
+	// Handle missing Supabase credentials gracefully
+	if (!PUBLIC_SUPABASE_URL || !PUBLIC_SUPABASE_ANON_KEY ||
+	    PUBLIC_SUPABASE_URL === 'your_supabase_url' ||
+	    PUBLIC_SUPABASE_ANON_KEY === 'your_supabase_anon_key') {
+		throw error(503, 'Database not configured');
+	}
+
 	const supabase = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
 
 	// Fetch review by slug
