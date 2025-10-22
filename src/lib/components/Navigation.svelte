@@ -48,7 +48,7 @@
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 		<div class="flex items-center justify-between transition-all duration-300 {scrolled ? 'h-20' : 'h-24'}">
 			<!-- Logo -->
-			<a href={logoHref} class="flex-shrink-0">
+			<a href={logoHref} class="flex-shrink-0 transform hover:scale-110 transition-transform duration-300">
 				<img src={logoSrc} alt={logoAlt} class="transition-all duration-300 w-auto drop-shadow-xl {scrolled ? 'h-14 sm:h-16 md:h-18' : 'h-20 sm:h-24 md:h-28'}" />
 			</a>
 
@@ -57,7 +57,7 @@
 				{#each navLinks as link}
 					<a
 						href={link.href}
-						class="hover:text-haunt-orange transition-colors
+						class="hover:text-haunt-orange transition-all transform hover:scale-110
 						       {link.isLogo ? 'flex items-center' : 'text-white text-lg font-medium drop-shadow-lg'}
 						       {$page.url.pathname === link.href && !link.isLogo ? 'text-haunt-orange' : ''}"
 					>
@@ -65,7 +65,7 @@
 							<img
 								src={link.logoSrc}
 								alt={link.label}
-								class="h-12 w-auto {$page.url.pathname === link.href ? 'opacity-100' : 'opacity-80 hover:opacity-100'} transition-opacity drop-shadow-xl"
+								class="h-12 w-auto {$page.url.pathname === link.href ? 'opacity-100' : 'opacity-80 hover:opacity-100'} transition-all hover:scale-110 drop-shadow-xl"
 							/>
 						{:else}
 							{link.label}

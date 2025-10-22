@@ -3,9 +3,14 @@
 	import Navigation from '$lib/components/Navigation.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
 
 	let { children } = $props();
 	let showScrollTop = $state(false);
+
+	// Determine button color based on current page
+	const isHauntPage = $derived($page.url.pathname === '/haunt');
+	const buttonColorClass = $derived(isHauntPage ? 'bg-haunt-red/40 hover:bg-haunt-red' : 'bg-haunt-orange/40 hover:bg-haunt-orange');
 
 	onMount(() => {
 		const handleScroll = () => {
@@ -42,7 +47,7 @@
 	{#if showScrollTop}
 		<button
 			onclick={scrollToTop}
-			class="fixed bottom-8 right-8 bg-haunt-red/40 hover:bg-haunt-red text-white p-4 rounded-full shadow-2xl transition-all transform hover:scale-110 z-50 group"
+			class="fixed bottom-8 right-8 {buttonColorClass} text-white p-4 rounded-full shadow-2xl transition-all transform hover:scale-110 z-50 group"
 			aria-label="Scroll to top"
 		>
 			<svg

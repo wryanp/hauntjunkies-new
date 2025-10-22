@@ -139,6 +139,24 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 				scale: 1.05,
 			},
 		});
+
+		// Scroll-based video playback for McCloud Manor video
+		const mccloudVideo = document.querySelector('#mccloud-manor-video') as HTMLVideoElement;
+		if (mccloudVideo) {
+			const observer = new IntersectionObserver(
+				(entries) => {
+					entries.forEach((entry) => {
+						if (entry.isIntersecting) {
+							mccloudVideo.play();
+						} else {
+							mccloudVideo.pause();
+						}
+					});
+				},
+				{ threshold: 0.5 }
+			);
+			observer.observe(mccloudVideo);
+		}
 	});
 
 	// Flip card toggle for mobile
@@ -285,145 +303,6 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 	</div>
 </section>
 
-<!-- The Story Section -->
-<section class="py-20 bg-black relative overflow-hidden">
-	<!-- Atmospheric background with blood drips effect -->
-	<div class="absolute inset-0 opacity-10">
-		<div class="absolute inset-0" style="background: radial-gradient(circle at 20% 50%, rgba(164,18,20,0.3) 0%, transparent 50%), radial-gradient(circle at 80% 50%, rgba(164,18,20,0.3) 0%, transparent 50%);"></div>
-	</div>
-
-	<!-- Vignette effect -->
-	<div class="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black opacity-50"></div>
-
-	<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-		<!-- Story Header -->
-		<div class="text-center mb-16">
-			<div class="relative inline-block">
-				<!-- Decorative line -->
-				<div class="absolute -top-8 left-1/2 transform -translate-x-1/2 w-32 h-px bg-gradient-to-r from-transparent via-haunt-red to-transparent"></div>
-
-				<h2 class="text-6xl md:text-7xl lg:text-8xl font-bold text-haunt-red mb-6 tracking-wide drop-shadow-[0_0_40px_rgba(164,18,20,0.8)]">
-					The Legend of <span class="whitespace-nowrap">McCloud Manor</span>
-				</h2>
-
-				<!-- Decorative line -->
-				<div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-48 h-px bg-gradient-to-r from-transparent via-haunt-red to-transparent"></div>
-			</div>
-
-			<p class="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto mt-8 italic font-fell">
-				Madeline Cove, 1665 — A tale of forbidden love, cursed blood, and eternal vengeance
-			</p>
-		</div>
-
-		<!-- Story Content -->
-		<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
-			<!-- Left accent -->
-			<div class="hidden lg:block lg:col-span-1">
-				<div class="sticky top-8 h-full border-l-2 border-haunt-red/30"></div>
-			</div>
-
-			<!-- Main content -->
-			<div class="lg:col-span-10">
-				<!-- Opening paragraph with dramatic styling -->
-				<div class="mb-10 relative">
-					<div class="absolute -left-8 top-0 text-8xl text-haunt-red/20 font-fell leading-none select-none">"</div>
-					<p class="text-white text-2xl md:text-3xl leading-relaxed font-fell italic bg-gradient-to-r from-haunt-red/10 to-transparent p-8 rounded-r-2xl border-l-4 border-haunt-red">
-						{storyTeaser}
-					</p>
-				</div>
-
-				<!-- Expandable story content -->
-				<div class="overflow-hidden transition-all duration-700 ease-in-out {storyExpanded ? 'max-h-[3000px] opacity-100' : 'max-h-0 opacity-0'}">
-					<div class="space-y-8">
-						{#each storyBody as paragraph, index}
-							<div class="group relative">
-								<!-- Chapter markers for key paragraphs -->
-								{#if index === 0 || index === 10 || index === 20}
-									<div class="absolute -left-12 top-0 w-8 h-8 rounded-full bg-haunt-red/20 border-2 border-haunt-red flex items-center justify-center hidden lg:flex">
-										<div class="w-2 h-2 rounded-full bg-haunt-red"></div>
-									</div>
-								{/if}
-
-								<p class="text-gray-300 text-lg md:text-xl leading-relaxed font-fell {paragraph.startsWith('Some say') ? 'text-haunt-red font-bold italic text-2xl mt-8 text-center' : ''}">
-									{paragraph}
-								</p>
-							</div>
-						{/each}
-
-						<!-- Dramatic closing -->
-						<div class="mt-12 pt-8 border-t-2 border-haunt-red/30">
-							<blockquote class="text-center">
-								<p class="text-haunt-red text-2xl md:text-3xl font-bold mb-4 italic">
-									"The blood remembers what the mind forgets..."
-								</p>
-								<footer class="text-gray-500 italic">
-									— Dr. William McCloud's final journal entry, 1665
-								</footer>
-							</blockquote>
-						</div>
-					</div>
-				</div>
-
-				<!-- Read More/Less Button -->
-				<div class="mt-12 text-center">
-					<button
-						onclick={toggleStory}
-						class="group relative inline-flex items-center gap-4 bg-gradient-to-r from-haunt-red/80 to-red-900/80 hover:from-haunt-red hover:to-red-900 text-white font-bold py-5 px-10 rounded-xl transition-all transform hover:scale-105 shadow-2xl overflow-hidden"
-					>
-						<!-- Animated background -->
-						<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-
-						<span class="text-xl relative z-10">
-							{storyExpanded ? 'Close the Chapter' : 'Uncover the Dark History'}
-						</span>
-						<svg
-							class="w-6 h-6 transition-transform duration-300 relative z-10 {storyExpanded ? 'rotate-180' : ''}"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke="currentColor"
-						>
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-						</svg>
-					</button>
-				</div>
-			</div>
-
-			<!-- Right accent -->
-			<div class="hidden lg:block lg:col-span-1">
-				<div class="sticky top-8 h-full border-r-2 border-haunt-red/30"></div>
-			</div>
-		</div>
-
-		<!-- Warning banner when story is expanded -->
-		{#if storyExpanded}
-			<div class="mt-12 animate-fade-in">
-				<div class="bg-gradient-to-r from-transparent via-haunt-red/20 to-transparent p-8 rounded-xl border-y-2 border-haunt-red/50">
-					<p class="text-center text-gray-400 text-lg italic">
-						The McClouds relocated to Lawrenceville, GA in 2012...<br/>
-						<span class="text-haunt-red font-bold text-xl">Their thirst for blood still remains.</span>
-					</p>
-				</div>
-			</div>
-		{/if}
-	</div>
-</section>
-
-<!-- McCloud Manor Video Section -->
-<section class="relative h-screen overflow-hidden">
-	<!-- Background Video -->
-	<div class="absolute inset-0 overflow-hidden">
-		<video
-			autoplay
-			muted
-			loop
-			playsinline
-			class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full w-auto h-auto object-cover"
-		>
-			<source src="/videos/mccloud-manor.mp4" type="video/mp4" />
-		</video>
-	</div>
-</section>
-
 <!-- About Section -->
 <section id="about" class="py-20 bg-black relative overflow-hidden">
 	<!-- Smoky animated background -->
@@ -444,7 +323,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 		<!-- Striking Header -->
-		<div class="text-center mb-16">
+		<div class="text-center">
 			<h2 class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-haunt-red via-red-600 to-haunt-red mb-4 tracking-tight" style="text-shadow: 0 0 40px rgba(164,18,20,0.6);">
 				THE EXPERIENCE
 			</h2>
@@ -452,68 +331,6 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 			<p class="text-2xl md:text-3xl text-white font-bold max-w-3xl mx-auto">
 				Prepare yourself for a journey into darkness
 			</p>
-		</div>
-
-		<div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
-			<!-- Haunted Mansion Card -->
-			<div class="group relative">
-				<div class="relative overflow-hidden rounded-2xl border-4 border-haunt-red/50 hover:border-haunt-red transition-all duration-500 transform hover:scale-105" style="aspect-ratio: 3/4; box-shadow: 0 0 30px rgba(164,18,20,0.4);">
-					<img src="/mansion-bg.jpg" alt="Haunted Mansion" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-					<div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
-
-					<!-- Red glow effect -->
-					<div class="absolute inset-0 bg-haunt-red/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-					<div class="absolute inset-0 flex flex-col items-center justify-end p-8 text-center">
-						<h3 class="text-3xl md:text-4xl font-extrabold text-white mb-4 drop-shadow-2xl tracking-wide">
-							HAUNTED MANSION
-						</h3>
-						<p class="text-gray-200 text-lg font-medium opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
-							Explore the cursed halls of McCloud Manor, where every room holds a new terror
-						</p>
-					</div>
-				</div>
-			</div>
-
-			<!-- Live Actors Card -->
-			<div class="group relative">
-				<div class="relative overflow-hidden rounded-2xl border-4 border-haunt-red/50 hover:border-haunt-red transition-all duration-500 transform hover:scale-105" style="aspect-ratio: 3/4; box-shadow: 0 0 30px rgba(164,18,20,0.4);">
-					<img src="/live-actors-bg.jpg" alt="Live Actors" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-					<div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
-
-					<!-- Red glow effect -->
-					<div class="absolute inset-0 bg-haunt-red/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-					<div class="absolute inset-0 flex flex-col items-center justify-end p-8 text-center">
-						<h3 class="text-3xl md:text-4xl font-extrabold text-white mb-4 drop-shadow-2xl tracking-wide">
-							LIVE ACTORS
-						</h3>
-						<p class="text-gray-200 text-lg font-medium opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
-							Face your fears with our talented cast of creatures and spirits
-						</p>
-					</div>
-				</div>
-			</div>
-
-			<!-- Special Effects Card -->
-			<div class="group relative">
-				<div class="relative overflow-hidden rounded-2xl border-4 border-haunt-red/50 hover:border-haunt-red transition-all duration-500 transform hover:scale-105" style="aspect-ratio: 3/4; box-shadow: 0 0 30px rgba(164,18,20,0.4);">
-					<img src="/special-effects.jpg" alt="Special Effects" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-					<div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
-
-					<!-- Red glow effect -->
-					<div class="absolute inset-0 bg-haunt-red/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-					<div class="absolute inset-0 flex flex-col items-center justify-end p-8 text-center">
-						<h3 class="text-3xl md:text-4xl font-extrabold text-white mb-4 drop-shadow-2xl tracking-wide">
-							SPECIAL EFFECTS
-						</h3>
-						<p class="text-gray-200 text-lg font-medium opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-4 group-hover:translate-y-0">
-							State-of-the-art lighting, sound, and animatronics create an immersive nightmare
-						</p>
-					</div>
-				</div>
-			</div>
 		</div>
 	</div>
 </section>
@@ -523,8 +340,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 	<!-- Background Video -->
 	<div class="absolute inset-0 overflow-hidden">
 		<video
-			autoplay
-			muted
+			id="mccloud-manor-video"
 			loop
 			playsinline
 			class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full w-auto h-auto object-cover"
@@ -558,10 +374,6 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 				<!-- Decorative line -->
 				<div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-48 h-px bg-gradient-to-r from-transparent via-haunt-red to-transparent"></div>
 			</div>
-
-			<p class="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto mt-8 italic font-fell">
-				Madeline Cove, 1665 — A tale of forbidden love, cursed blood, and eternal vengeance
-			</p>
 		</div>
 
 		<!-- Story Content -->
@@ -642,18 +454,6 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 				<div class="sticky top-8 h-full border-r-2 border-haunt-red/30"></div>
 			</div>
 		</div>
-
-		<!-- Warning banner when story is expanded -->
-		{#if storyExpanded}
-			<div class="mt-12 animate-fade-in">
-				<div class="bg-gradient-to-r from-transparent via-haunt-red/20 to-transparent p-8 rounded-xl border-y-2 border-haunt-red/50">
-					<p class="text-center text-gray-400 text-lg italic">
-						The McClouds relocated to Lawrenceville, GA in 2012...<br/>
-						<span class="text-haunt-red font-bold text-xl">Their thirst for blood still remains.</span>
-					</p>
-				</div>
-			</div>
-		{/if}
 	</div>
 </section>
 
@@ -670,40 +470,50 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 		</div>
 
 		<!-- Video Container -->
-		<div class="mx-auto max-w-4xl w-full">
-			<!-- Video -->
-			<div class="aspect-video rounded-lg overflow-hidden shadow-2xl border-2 border-haunt-red/30">
-				<video
-					controls
-					preload="metadata"
-					class="w-full h-full object-cover bg-black"
-				>
-					<source src="/videos/fox5-news.mp4" type="video/mp4" />
-					Your browser does not support the video tag.
-				</video>
-			</div>
+		<div class="relative mx-auto max-w-4xl w-full">
+			<!-- Subtle red glow behind video -->
+			<div class="absolute -inset-4 bg-gradient-to-r from-haunt-red/20 via-red-600/25 to-haunt-red/20 blur-2xl opacity-50"></div>
 
-			<!-- Featured On Badge -->
-			<div class="text-center mt-8">
-				<h3 class="text-2xl md:text-3xl font-extrabold text-white mb-6 tracking-widest" style="text-shadow: 0 0 20px rgba(164,18,20,0.8);">
-					FEATURED ON
-				</h3>
-				<div class="flex justify-center items-center">
-					<div class="relative">
-						<!-- Glow effect behind -->
-						<div class="absolute inset-0 bg-haunt-red rounded-xl blur-2xl opacity-60" style="transform: scale(1.1);"></div>
-						<!-- Logo container -->
-						<div class="relative bg-white px-8 py-4 rounded-xl shadow-2xl transform hover:scale-105 transition-transform" style="box-shadow: 0 0 30px rgba(164,18,20,0.5), 0 10px 40px rgba(0,0,0,0.5);">
-							<img
-								src="/fox5-logo.png"
-								alt="FOX 5 Atlanta"
-								class="h-12 md:h-16 w-auto"
-							/>
-						</div>
+			<!-- Clean video frame -->
+			<div class="relative bg-gradient-to-br from-red-900/20 via-black/40 to-red-900/20 rounded-2xl border-2 border-haunt-red/40 p-4 md:p-6" style="box-shadow: 0 0 30px rgba(164,18,20,0.3), inset 0 0 20px rgba(0,0,0,0.5);">
+				<!-- Video -->
+				<div class="aspect-video rounded-2xl overflow-hidden" style="box-shadow: 0 10px 40px rgba(0,0,0,0.8);">
+					<video
+						autoplay
+						muted
+						controls
+						preload="metadata"
+						class="w-full h-full object-cover bg-black"
+						onmouseenter={(e) => { e.currentTarget.muted = false; }}
+						onmouseleave={(e) => { e.currentTarget.muted = true; }}
+					>
+						<source src="/videos/fox5-news.mp4" type="video/mp4" />
+						Your browser does not support the video tag.
+					</video>
+				</div>
+			</div>
+		</div>
+
+		<!-- Featured On Badge -->
+		<div class="text-center mt-8">
+			<h3 class="text-2xl md:text-3xl font-extrabold text-white mb-6 tracking-widest" style="text-shadow: 0 0 20px rgba(164,18,20,0.8);">
+				FEATURED ON
+			</h3>
+			<div class="flex justify-center items-center">
+				<div class="relative">
+					<!-- Glow effect behind -->
+					<div class="absolute inset-0 bg-haunt-red rounded-xl blur-2xl opacity-60" style="transform: scale(1.1);"></div>
+					<!-- Logo container -->
+					<div class="relative bg-white px-8 py-4 rounded-xl shadow-2xl transform hover:scale-105 transition-transform" style="box-shadow: 0 0 30px rgba(164,18,20,0.5), 0 10px 40px rgba(0,0,0,0.5);">
+						<img
+							src="/fox5-logo.png"
+							alt="FOX 5 Atlanta"
+							class="h-12 md:h-16 w-auto"
+						/>
 					</div>
 				</div>
-				<div class="w-24 h-1 bg-gradient-to-r from-transparent via-haunt-red to-transparent mx-auto mt-6"></div>
 			</div>
+			<div class="w-24 h-1 bg-gradient-to-r from-transparent via-haunt-red to-transparent mx-auto mt-6"></div>
 		</div>
 	</div>
 </section>
@@ -716,10 +526,11 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 	<div class="absolute inset-0 bg-black/30"></div>
 
 	<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-		<div class="text-center mb-10">
-			<h2 class="glitch-text text-4xl md:text-5xl font-bold text-white mb-3 tracking-wider">
+		<div class="text-center mb-12">
+			<h2 class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-haunt-red via-red-600 to-haunt-red mb-4 tracking-tight" style="text-shadow: 0 0 40px rgba(164,18,20,0.6);">
 				2026 SCHEDULE
 			</h2>
+			<div class="w-32 h-1 bg-gradient-to-r from-transparent via-haunt-red to-transparent mx-auto"></div>
 		</div>
 
 		<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -832,40 +643,40 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 
 			<!-- Schedule Info (Right - 1 column) -->
 			<div class="lg:col-span-1">
-				<div class="bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-lg overflow-hidden shadow-2xl border-4 border-haunt-red/50 relative flex flex-col" style="box-shadow: 0 0 30px rgba(164,18,20,0.5), inset 0 0 20px rgba(0,0,0,0.8);">
+				<div class="bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-lg overflow-hidden shadow-2xl border-4 border-haunt-red/50 relative" style="box-shadow: 0 0 30px rgba(164,18,20,0.5), inset 0 0 20px rgba(0,0,0,0.8); height: 100%;">
 					<!-- Blood drips effect -->
 					<div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-b from-haunt-red/80 to-transparent"></div>
 
 					<!-- Header -->
-					<div class="bg-gradient-to-b from-haunt-red to-red-900 text-white text-center py-4 border-b-4 border-black relative">
-						<h3 class="text-2xl md:text-3xl font-bold tracking-widest drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">HOURS</h3>
+					<div class="bg-gradient-to-b from-haunt-red to-red-900 text-white text-center py-2 border-b-4 border-black relative">
+						<h3 class="text-lg md:text-xl font-bold tracking-widest drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">HOURS</h3>
 						<div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-black to-transparent"></div>
 					</div>
 
 					<!-- Hours Content -->
-					<div class="flex-1 flex flex-col justify-center p-8 space-y-8">
+					<div class="flex flex-col justify-center p-6 space-y-6">
 						<!-- Thursday -->
-						<div class="border-b-2 border-haunt-red/30 pb-6">
-							<div class="text-xl md:text-2xl font-bold text-haunt-red mb-3 tracking-wider drop-shadow-lg">THURSDAY</div>
-							<div class="text-3xl md:text-4xl font-bold text-white drop-shadow-xl">8PM - 11PM</div>
+						<div class="border-b-2 border-haunt-red/30 pb-4">
+							<div class="text-base md:text-lg font-bold text-haunt-red mb-2 tracking-wider drop-shadow-lg">THURSDAY</div>
+							<div class="text-xl md:text-2xl font-extrabold text-white drop-shadow-xl">8PM - 11PM</div>
 						</div>
 
 						<!-- Friday -->
-						<div class="border-b-2 border-haunt-red/30 pb-6">
-							<div class="text-xl md:text-2xl font-bold text-haunt-red mb-3 tracking-wider drop-shadow-lg">FRIDAY</div>
-							<div class="text-3xl md:text-4xl font-bold text-white drop-shadow-xl">8PM - 12AM</div>
+						<div class="border-b-2 border-haunt-red/30 pb-4">
+							<div class="text-base md:text-lg font-bold text-haunt-red mb-2 tracking-wider drop-shadow-lg">FRIDAY</div>
+							<div class="text-xl md:text-2xl font-extrabold text-white drop-shadow-xl">8PM - 12AM</div>
 						</div>
 
 						<!-- Saturday -->
-						<div class="border-b-2 border-haunt-red/30 pb-6">
-							<div class="text-xl md:text-2xl font-bold text-haunt-red mb-3 tracking-wider drop-shadow-lg">SATURDAY</div>
-							<div class="text-3xl md:text-4xl font-bold text-white drop-shadow-xl">8PM - 12AM</div>
+						<div class="border-b-2 border-haunt-red/30 pb-4">
+							<div class="text-base md:text-lg font-bold text-haunt-red mb-2 tracking-wider drop-shadow-lg">SATURDAY</div>
+							<div class="text-xl md:text-2xl font-extrabold text-white drop-shadow-xl">8PM - 12AM</div>
 						</div>
 
 						<!-- Sunday -->
-						<div class="pb-6">
-							<div class="text-xl md:text-2xl font-bold text-haunt-red mb-3 tracking-wider drop-shadow-lg">SUNDAY</div>
-							<div class="text-3xl md:text-4xl font-bold text-white drop-shadow-xl">8PM - 11PM</div>
+						<div class="pb-4">
+							<div class="text-base md:text-lg font-bold text-haunt-red mb-2 tracking-wider drop-shadow-lg">SUNDAY</div>
+							<div class="text-xl md:text-2xl font-extrabold text-white drop-shadow-xl">8PM - 11PM</div>
 						</div>
 					</div>
 				</div>
@@ -964,13 +775,22 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 </section>
 
 <!-- Ticket Request Form -->
-<section id="tickets" class="py-20 bg-black">
-	<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+<section id="tickets" class="py-20 relative overflow-hidden">
+	<!-- Ticket background image -->
+	<div class="absolute inset-0" style="background-image: url('/ticketbg.png'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
+
+	<!-- Dark overlay for better text readability -->
+	<div class="absolute inset-0 bg-black/40"></div>
+
+	<!-- Vignette effect -->
+	<div class="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/30"></div>
+
+	<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 		<div class="text-center mb-12">
-			<h2 class="glitch-text text-5xl md:text-6xl font-bold text-white mb-4 tracking-wider">
+			<h2 class="glitch-text text-5xl md:text-6xl font-bold text-white mb-4 tracking-wider drop-shadow-2xl">
 				GET YOUR TICKETS
 			</h2>
-			<p class="text-xl text-gray-400">
+			<p class="text-xl text-gray-400 drop-shadow-lg">
 				Tickets are LIMITED!
 			</p>
 		</div>
@@ -978,10 +798,117 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 		<div class="text-center">
 			<a
 				href="#"
-				class="inline-block bg-haunt-red hover:bg-red-900 text-white font-bold py-4 px-12 rounded-lg transition-all transform hover:scale-105 text-lg shadow-xl"
+				class="group inline-flex items-center gap-3 bg-gradient-to-r from-haunt-red to-red-900 hover:from-red-900 hover:to-haunt-red text-white font-extrabold py-5 px-12 rounded-xl transition-all transform hover:scale-105 shadow-2xl overflow-hidden relative text-xl"
+				style="box-shadow: 0 0 40px rgba(164,18,20,0.6);"
 			>
-				Get Tickets
+				<!-- Animated shimmer -->
+				<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+
+				<span class="relative z-10 tracking-wide">GET TICKETS</span>
+				<svg class="w-6 h-6 relative z-10 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+				</svg>
 			</a>
+		</div>
+	</div>
+</section>
+
+<!-- Directions Section -->
+<section class="py-20 bg-black relative overflow-hidden">
+	<!-- Texture overlay -->
+	<div class="absolute inset-0 opacity-5" style="background-image: url('/calendar-bg.png'); background-size: cover;"></div>
+
+	<!-- Animated background effects -->
+	<div class="absolute inset-0 opacity-10">
+		<div class="absolute inset-0" style="background: radial-gradient(circle at 30% 50%, rgba(164,18,20,0.4) 0%, transparent 50%), radial-gradient(circle at 70% 50%, rgba(164,18,20,0.4) 0%, transparent 50%);"></div>
+	</div>
+
+	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+		<!-- Header -->
+		<div class="text-center mb-12">
+			<h2 class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-haunt-red via-red-600 to-haunt-red mb-4 tracking-tight" style="text-shadow: 0 0 40px rgba(164,18,20,0.6);">
+				FIND US
+			</h2>
+			<div class="w-32 h-1 bg-gradient-to-r from-transparent via-haunt-red to-transparent mx-auto mb-6"></div>
+			<p class="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto">
+				McCloud Manor awaits your arrival
+			</p>
+		</div>
+
+		<!-- Content Grid -->
+		<div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+			<!-- Left: Address & Info -->
+			<div class="space-y-8">
+				<!-- Address Card -->
+				<div class="bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-2xl border-2 border-haunt-red/40 p-8" style="box-shadow: 0 0 30px rgba(164,18,20,0.3), inset 0 0 20px rgba(0,0,0,0.5);">
+					<div class="flex items-start gap-4 mb-6">
+						<svg class="w-8 h-8 text-haunt-red flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 20 20">
+							<path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+						</svg>
+						<div>
+							<h3 class="text-2xl font-bold text-white mb-2">Address</h3>
+							<p class="text-lg text-gray-300">2100 Carlysle Park Lane</p>
+							<p class="text-lg text-gray-300">Lawrenceville, GA 30044</p>
+						</div>
+					</div>
+
+					<!-- Get Directions Button -->
+					<a
+						href="https://www.google.com/maps/dir/?api=1&destination=2100+Carlysle+Park+Lane+Lawrenceville+GA+30044"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="group inline-flex items-center gap-3 bg-gradient-to-r from-haunt-red to-red-900 hover:from-red-900 hover:to-haunt-red text-white font-extrabold py-4 px-8 rounded-xl transition-all transform hover:scale-105 shadow-2xl overflow-hidden relative text-lg w-full justify-center"
+						style="box-shadow: 0 0 40px rgba(164,18,20,0.6);"
+					>
+						<!-- Animated shimmer -->
+						<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+
+						<svg class="w-6 h-6 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+						</svg>
+						<span class="relative z-10 tracking-wide">GET DIRECTIONS</span>
+						<svg class="w-5 h-5 relative z-10 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+						</svg>
+					</a>
+				</div>
+
+				<!-- Parking Info -->
+				<div class="bg-gradient-to-br from-gray-900/50 via-black/50 to-gray-900/50 rounded-xl border border-haunt-red/30 p-6">
+					<div class="flex items-start gap-3">
+						<svg class="w-8 h-8 text-haunt-red flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 512 512">
+							<path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm192 96c44.2 0 80 35.8 80 80c0 44.2-35.8 80-80 80H224v64c0 8.8-7.2 16-16 16s-16-7.2-16-16V368 240 144c0-8.8 7.2-16 16-16h64zm0 128c26.5 0 48-21.5 48-48s-21.5-48-48-48H224v96h32z"/>
+						</svg>
+						<div>
+							<h4 class="text-lg font-bold text-white mb-2">Parking Information</h4>
+							<p class="text-gray-400">Parking is free but EXTREMELY limited! Please carpool or even Uber/Lyft if possible. Do not park in or block our neighbors' driveways.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Right: Google Maps Embed -->
+			<div class="relative">
+				<!-- Glow effect behind map -->
+				<div class="absolute -inset-4 bg-gradient-to-r from-haunt-red/20 via-red-600/25 to-haunt-red/20 blur-2xl opacity-50"></div>
+
+				<!-- Map Container -->
+				<div class="relative bg-gradient-to-br from-gray-900/80 via-black/80 to-gray-900/80 rounded-2xl border-2 border-haunt-red/40 p-4" style="box-shadow: 0 0 30px rgba(164,18,20,0.3), inset 0 0 20px rgba(0,0,0,0.5);">
+					<div class="relative rounded-xl overflow-hidden" style="aspect-ratio: 4/3;">
+						<iframe
+							src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3307.8447259384676!2d-84.0007!3d33.9734!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88f5a3e4c8d8a8e7%3A0x1234567890abcdef!2s2100%20Carlysle%20Park%20Ln%2C%20Lawrenceville%2C%20GA%2030044!5e0!3m2!1sen!2sus!4v1234567890123!5m2!1sen!2sus"
+							width="100%"
+							height="100%"
+							style="border:0;"
+							allowfullscreen=""
+							loading="lazy"
+							referrerpolicy="no-referrer-when-downgrade"
+							class="absolute inset-0"
+							title="McCloud Manor Location"
+						></iframe>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </section>
