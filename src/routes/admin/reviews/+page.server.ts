@@ -283,6 +283,39 @@ export const actions: Actions = {
 			return fail(500, { error: 'Failed to update review: ' + updateError.message });
 		}
 
+		// Handle gallery images if provided
+		const galleryImages = formData.get('gallery_images')?.toString();
+		if (galleryImages && review) {
+			try {
+				const imageUrls = JSON.parse(galleryImages);
+
+				// First, delete existing gallery images for this review
+				await supabase
+					.from('review_images')
+					.delete()
+					.eq('review_id', id);
+
+				// Then insert new ones
+				if (Array.isArray(imageUrls) && imageUrls.length > 0) {
+					const imagesToInsert = imageUrls
+						.filter((url: string) => url.trim())
+						.map((url: string, index: number) => ({
+							review_id: id,
+							image_url: url.trim(),
+							display_order: index,
+							caption: ''
+						}));
+
+					if (imagesToInsert.length > 0) {
+						await supabase.from('review_images').insert(imagesToInsert);
+					}
+				}
+			} catch (e) {
+				console.error('Error updating gallery images:', e);
+				// Don't fail the whole operation if gallery images fail
+			}
+		}
+
 		return {
 			success: true,
 			review,
@@ -330,6 +363,50 @@ export const actions: Actions = {
 		return {
 			success: true,
 			message: 'Review deleted successfully!'
+		};
+	},
+
+	toggleFeatured: async ({ request, cookies }) => {
+		// Verify admin authentication
+		const adminSession = cookies.get('admin_session');
+		if (!adminSession) {
+			return fail(401, { error: 'Unauthorized' });
+		}
+
+		const formData = await request.formData();
+		const id = formData.get('id')?.toString();
+		const currentFeatured = formData.get('featured') === 'true';
+
+		if (!id) {
+			return fail(400, { error: 'Review ID is required' });
+		}
+
+		const supabase = createServerClient(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+			cookies: {
+				get: (key) => cookies.get(key),
+				set: (key, value, options) => {
+					cookies.set(key, value, { ...options, path: '/' });
+				},
+				remove: (key, options) => {
+					cookies.delete(key, { ...options, path: '/' });
+				}
+			}
+		});
+
+		// Toggle featured status
+		const { error: updateError } = await supabase
+			.from('reviews')
+			.update({ featured: !currentFeatured })
+			.eq('id', id);
+
+		if (updateError) {
+			console.error('Error toggling featured status:', updateError);
+			return fail(500, { error: 'Failed to update featured status: ' + updateError.message });
+		}
+
+		return {
+			success: true,
+			message: `Review ${!currentFeatured ? 'featured' : 'unfeatured'} successfully!`
 		};
 	}
 };

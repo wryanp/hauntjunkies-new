@@ -10,7 +10,10 @@ import { validateEmail, validateText } from '$lib/validation';
 import { verifyTurnstile } from '$lib/captcha';
 import { dev } from '$app/environment';
 
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params, parent }) => {
+	// Get authentication from parent layout
+	const { isAuthenticated } = await parent();
+
 	// Handle missing Supabase credentials gracefully
 	if (!PUBLIC_SUPABASE_URL || !PUBLIC_SUPABASE_ANON_KEY ||
 	    PUBLIC_SUPABASE_URL === 'your_supabase_url' ||
@@ -60,7 +63,8 @@ export const load: PageServerLoad = async ({ params }) => {
 		review: review as Review,
 		images: (images as ReviewImage[]) || [],
 		reviewerPhotos: (reviewerPhotos as ReviewerPhoto[]) || [],
-		comments: (comments as ReviewComment[]) || []
+		comments: (comments as ReviewComment[]) || [],
+		isAuthenticated
 	};
 };
 

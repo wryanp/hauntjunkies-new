@@ -1,8 +1,16 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
+	import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+	import { createClient } from '@supabase/supabase-js';
 	import type { PageData, ActionData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
+
+	// Create Supabase client for fetching gallery images
+	const supabase = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
 
 	let editingReview = $state<string | null>(null); // Track ID of review being edited
 	let reviewData = $state({
@@ -48,11 +56,20 @@
 	}
 
 	// Load review data into form for editing
-	function editReview(review: any) {
+	async function editReview(review: any) {
 		editingReview = review.id;
 
 		// Parse location back into "City, State" format
 		const location = review.city && review.state ? `${review.city}, ${review.state}` : review.city || '';
+
+		// Fetch gallery images for this review
+		const { data: galleryImagesData } = await supabase
+			.from('review_images')
+			.select('image_url')
+			.eq('review_id', review.id)
+			.order('display_order', { ascending: true });
+
+		const galleryUrls = galleryImagesData ? galleryImagesData.map((img: any) => img.image_url) : [];
 
 		reviewData = {
 			title: review.name || '',
@@ -74,7 +91,7 @@
 				youtube: review.youtube_url || ''
 			},
 			address: review.address || '',
-			galleryImages: [] // Gallery images would need to be loaded separately
+			galleryImages: galleryUrls
 		};
 
 		// Scroll to top of form
@@ -142,6 +159,17 @@
 			}, 5000);
 		}
 	});
+
+	// Check for edit parameter in URL and auto-load review
+	onMount(async () => {
+		const editId = $page.url.searchParams.get('edit');
+		if (editId) {
+			const reviewToEdit = data.reviews.find(r => r.id === editId);
+			if (reviewToEdit) {
+				await editReview(reviewToEdit);
+			}
+		}
+	});
 </script>
 
 <svelte:head>
@@ -190,9 +218,19 @@
 	<!-- Form -->
 	<form method="POST" action={editingReview ? '?/update' : '?/create'} use:enhance={() => {
 		submitting = true;
-		return async ({ update }) => {
+		const isEditing = !!editingReview;
+		const slug = reviewData.slug;
+
+		return async ({ result, update }) => {
 			await update();
 			submitting = false;
+
+			// If update was successful and we're editing, redirect to the review page
+			if (result.type === 'success' && isEditing && slug) {
+				setTimeout(() => {
+					goto(`/reviews/${slug}`);
+				}, 1000); // Small delay to show success message
+			}
 		};
 	}} class="space-y-8">
 
@@ -319,7 +357,39 @@
 					class="w-full px-4 py-3 bg-black/50 border-2 border-haunt-orange/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors"
 					placeholder="https://example.com/image.jpg"
 				/>
-				<p class="text-gray-500 text-sm mt-1">Main image for the review (upload to Supabase Storage first)</p>
+				<div class="flex items-start gap-2 mt-1">
+					<svg class="w-4 h-4 text-haunt-orange mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+						<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+					</svg>
+					<p class="text-gray-500 text-sm">
+						<strong class="text-haunt-orange">Recommended: 16:9 ratio (e.g., 1920x1080)</strong> - Images will be cropped to 16:9 on homepage to ensure uniform display.
+					</p>
+				</div>
+
+				<!-- Cover Image Preview - Shows how it will look on homepage -->
+				{#if reviewData.coverImage?.trim()}
+					<div class="mt-4 space-y-2">
+						<p class="text-xs text-gray-400 uppercase tracking-wide font-semibold">Preview (Homepage Display):</p>
+						<div class="w-full max-w-2xl mx-auto overflow-hidden rounded-lg border-2 border-haunt-orange/50 bg-black">
+							<div class="aspect-video overflow-hidden relative">
+								<img
+									src={reviewData.coverImage}
+									alt="Cover preview"
+									class="w-full h-full object-cover"
+									onerror={(e) => {
+										const target = e.target as HTMLImageElement;
+										target.style.display = 'none';
+										const errorDiv = target.parentElement?.querySelector('.error-message') as HTMLElement;
+										if (errorDiv) errorDiv.style.display = 'flex';
+									}}
+								/>
+								<div class="error-message hidden absolute inset-0 bg-gray-800 items-center justify-center text-gray-400">
+									Failed to load cover image
+								</div>
+							</div>
+						</div>
+					</div>
+				{/if}
 			</div>
 
 			<!-- Gallery Images -->
@@ -337,27 +407,48 @@
 					</button>
 				</div>
 
-				<div class="space-y-3">
+				<div class="space-y-4">
 					{#each reviewData.galleryImages as image, index}
-						<div class="flex gap-3">
-							<input
-								type="url"
-								bind:value={reviewData.galleryImages[index]}
-								class="flex-1 px-4 py-3 bg-black/50 border-2 border-haunt-orange/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors"
-								placeholder="https://example.com/gallery-image.jpg"
-							/>
-							<button
-								type="button"
-								onclick={() => removeGalleryImage(index)}
-								class="bg-red-900/20 hover:bg-red-900/30 text-red-400 px-4 py-2 rounded-lg border border-red-500/50 transition-all"
-							>
-								Remove
-							</button>
+						<div class="bg-black/30 rounded-lg p-4 border border-gray-700">
+							<div class="flex gap-3 mb-3">
+								<input
+									type="url"
+									bind:value={reviewData.galleryImages[index]}
+									class="flex-1 px-4 py-3 bg-black/50 border-2 border-haunt-orange/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors"
+									placeholder="https://example.com/gallery-image.jpg"
+								/>
+								<button
+									type="button"
+									onclick={() => removeGalleryImage(index)}
+									class="bg-red-900/20 hover:bg-red-900/30 text-red-400 px-4 py-2 rounded-lg border border-red-500/50 transition-all whitespace-nowrap"
+								>
+									Remove
+								</button>
+							</div>
+							<!-- Image Preview -->
+							{#if reviewData.galleryImages[index]?.trim()}
+								<div class="w-full max-w-md mx-auto overflow-hidden rounded-lg border border-haunt-orange/30 bg-black">
+									<img
+										src={reviewData.galleryImages[index]}
+										alt="Gallery preview {index + 1}"
+										class="w-full h-auto max-h-64 object-contain"
+										onerror={(e) => {
+											const target = e.target as HTMLImageElement;
+											target.style.display = 'none';
+											const errorDiv = target.nextElementSibling as HTMLElement;
+											if (errorDiv) errorDiv.style.display = 'flex';
+										}}
+									/>
+									<div class="hidden w-full h-48 bg-gray-800 items-center justify-center text-gray-400 text-sm">
+										Failed to load image
+									</div>
+								</div>
+							{/if}
 						</div>
 					{/each}
 
 					{#if reviewData.galleryImages.length === 0}
-						<p class="text-gray-500 text-sm">No gallery images added yet</p>
+						<p class="text-gray-500 text-sm">No gallery images added yet. Click "+ Add Image" to add image URLs.</p>
 					{/if}
 				</div>
 			</div>
@@ -566,7 +657,17 @@
 			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 				{#each data.reviews as review}
 					<div class="bg-gray-800/50 rounded-lg border border-gray-700 p-4">
-						<h3 class="text-lg font-bold text-white mb-2">{review.name}</h3>
+						<div class="flex items-start justify-between mb-2">
+							<h3 class="text-lg font-bold text-white">{review.name}</h3>
+							{#if review.featured}
+								<span class="inline-flex items-center gap-1 bg-haunt-orange/20 text-haunt-orange px-2 py-1 rounded-md text-xs font-semibold">
+									<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+										<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+									</svg>
+									Featured
+								</span>
+							{/if}
+						</div>
 						<p class="text-gray-400 text-sm mb-2">{review.city}, {review.state}</p>
 						{#if review.rating_overall}
 							<p class="text-haunt-orange font-semibold">⭐ {review.rating_overall.toFixed(1)}/5</p>
@@ -584,8 +685,25 @@
 							{/if}
 						</div>
 
+						<!-- Featured Toggle -->
+						<div class="mt-4">
+							<form method="POST" action="?/toggleFeatured" use:enhance>
+								<input type="hidden" name="id" value={review.id} />
+								<input type="hidden" name="featured" value={review.featured} />
+								<button
+									type="submit"
+									class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg border transition-all text-sm font-semibold {review.featured ? 'bg-haunt-orange/20 hover:bg-haunt-orange/30 text-haunt-orange border-haunt-orange/50' : 'bg-gray-700/20 hover:bg-gray-700/30 text-gray-400 border-gray-600/50'}"
+								>
+									<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+										<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+									</svg>
+									{review.featured ? 'Unfeature' : 'Feature on Homepage'}
+								</button>
+							</form>
+						</div>
+
 						<!-- Action Buttons -->
-						<div class="flex gap-2 mt-4">
+						<div class="flex gap-2 mt-3">
 							<button
 								type="button"
 								onclick={() => editReview(review)}
