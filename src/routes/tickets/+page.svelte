@@ -233,7 +233,7 @@
 											required
 										/>
 										<div class="bg-black/50 border-2 border-haunt-red/30 rounded-lg p-4 transition-all peer-checked:border-haunt-red peer-checked:bg-haunt-red/10 hover:border-haunt-red/50">
-											<div class="flex justify-between items-start mb-2">
+											<div class="flex justify-between items-center mb-2">
 												<div>
 													<p class="text-white font-bold">{formatDate(dateOption.date)}</p>
 													{#if dateOption.start_time && dateOption.end_time}
@@ -242,9 +242,9 @@
 														</p>
 													{/if}
 												</div>
-												<div class="text-right">
+												<div class="flex items-center">
 													{#if isSoldOut}
-														<span class="px-2 py-1 bg-red-900/30 text-red-400 text-xs font-semibold rounded border border-red-500/50">
+														<span class="px-2 py-1 bg-red-900/30 text-red-500 text-xs font-semibold rounded border border-red-600/50">
 															Sold Out
 														</span>
 													{:else if isLowCapacity}

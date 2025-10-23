@@ -8,6 +8,7 @@
 
 	let { children, data }: { children: any; data: LayoutData } = $props();
 	let showScrollTop = $state(false);
+	let portalButton: HTMLDivElement | null = null;
 
 	// Check if we're on an admin page
 	const isAdminPage = $derived($page.url.pathname.startsWith('/admin'));
@@ -23,14 +24,68 @@
 			return;
 		}
 
+		// Create button using DOM APIs
+		const button = document.createElement('button');
+		button.setAttribute('aria-label', 'Scroll to top');
+		button.setAttribute('class', 'scroll-top-button');
+		button.style.cssText = `
+			position: fixed;
+			bottom: 2rem;
+			right: 2rem;
+			background: rgba(164, 18, 20, 0.4);
+			color: white;
+			padding: 1rem;
+			border-radius: 9999px;
+			border: none;
+			cursor: pointer;
+			box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+			transition: background 0.3s ease, transform 0.3s ease;
+			z-index: 99999;
+			display: none;
+		`;
+
+		button.innerHTML = `
+			<svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: block;">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+			</svg>
+		`;
+
+		button.addEventListener('click', () => {
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+		});
+
+		button.addEventListener('mouseenter', () => {
+			const isHaunt = $page.url.pathname === '/haunt';
+			button.style.background = isHaunt ? 'rgba(164, 18, 20, 1)' : 'rgba(252, 116, 3, 1)';
+			button.style.transform = 'scale(1.1)';
+		});
+
+		button.addEventListener('mouseleave', () => {
+			const isHaunt = $page.url.pathname === '/haunt';
+			button.style.background = isHaunt ? 'rgba(164, 18, 20, 0.4)' : 'rgba(252, 116, 3, 0.4)';
+			button.style.transform = 'scale(1)';
+		});
+
+		document.body.appendChild(button);
+
 		const handleScroll = () => {
-			showScrollTop = window.scrollY > 300;
+			const shouldShow = window.scrollY > 300;
+			const isAdmin = $page.url.pathname.startsWith('/admin');
+			button.style.display = shouldShow && !isAdmin ? 'block' : 'none';
+
+			// Update color based on page
+			const isHaunt = $page.url.pathname === '/haunt';
+			button.style.background = isHaunt ? 'rgba(164, 18, 20, 0.4)' : 'rgba(252, 116, 3, 0.4)';
 		};
 
-		window.addEventListener('scroll', handleScroll);
+		window.addEventListener('scroll', handleScroll, { passive: true });
+		handleScroll(); // Initial check
 
 		return () => {
 			window.removeEventListener('scroll', handleScroll);
+			if (button.parentNode) {
+				button.parentNode.removeChild(button);
+			}
 		};
 	});
 
@@ -47,11 +102,11 @@
 	<title>Haunt Junkies - Haunted Attraction Reviews</title>
 </svelte:head>
 
-<div class="flex flex-col min-h-screen w-full max-w-full overflow-x-hidden">
-	{#if !isAdminPage}
-		<Navigation />
-	{/if}
+{#if !isAdminPage}
+	<Navigation />
+{/if}
 
+<div class="flex flex-col min-h-screen w-full max-w-full md:overflow-x-hidden">
 	<main class="flex-grow w-full max-w-full">
 		{@render children?.()}
 	</main>
@@ -59,22 +114,6 @@
 	{#if !isAdminPage}
 		<Footer isAuthenticated={data.isAuthenticated} />
 	{/if}
-
-	<!-- Scroll to Top Button -->
-	{#if showScrollTop && !isAdminPage}
-		<button
-			onclick={scrollToTop}
-			class="fixed bottom-8 right-8 {buttonColorClass} text-white p-4 rounded-full shadow-2xl transition-all transform hover:scale-110 z-50 group"
-			aria-label="Scroll to top"
-		>
-			<svg
-				class="w-6 h-6 transition-transform group-hover:-translate-y-1"
-				fill="none"
-				viewBox="0 0 24 24"
-				stroke="currentColor"
-			>
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-			</svg>
-		</button>
-	{/if}
 </div>
+
+<!-- Scroll to Top Button is injected via JavaScript portal to document.body -->

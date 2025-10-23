@@ -4,6 +4,7 @@
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
+	let editingReview = $state<string | null>(null); // Track ID of review being edited
 	let reviewData = $state({
 		title: '',
 		slug: '',
@@ -20,7 +21,8 @@
 			facebook: '',
 			instagram: '',
 			tiktok: '',
-			website: ''
+			website: '',
+			youtube: ''
 		},
 		address: '',
 		galleryImages: [] as string[]
@@ -28,6 +30,7 @@
 
 	let submitting = $state(false);
 	let showSuccess = $state(false);
+	let showDeleteConfirm = $state<string | null>(null); // Track review ID for delete confirmation
 
 	function generateSlug() {
 		reviewData.slug = reviewData.title
@@ -44,11 +47,73 @@
 		reviewData.galleryImages = reviewData.galleryImages.filter((_, i) => i !== index);
 	}
 
+	// Load review data into form for editing
+	function editReview(review: any) {
+		editingReview = review.id;
+
+		// Parse location back into "City, State" format
+		const location = review.city && review.state ? `${review.city}, ${review.state}` : review.city || '';
+
+		reviewData = {
+			title: review.name || '',
+			slug: review.slug || '',
+			location,
+			description: review.description || review.review_text || '',
+			coverImage: review.cover_image_url || '',
+			featured: review.featured || false,
+			overallRating: review.rating_overall || 5,
+			scareRating: review.rating_scares || 5,
+			atmosphereRating: review.rating_atmosphere || 5,
+			actorRating: review.rating_actors || 5,
+			valueRating: review.rating_value || 5,
+			socialLinks: {
+				facebook: review.facebook_url || '',
+				instagram: review.instagram_url || '',
+				tiktok: review.twitter_url || '',
+				website: review.website_url || '',
+				youtube: review.youtube_url || ''
+			},
+			address: review.address || '',
+			galleryImages: [] // Gallery images would need to be loaded separately
+		};
+
+		// Scroll to top of form
+		window.scrollTo({ top: 0, behavior: 'smooth' });
+	}
+
+	// Cancel editing and reset form
+	function cancelEdit() {
+		editingReview = null;
+		reviewData = {
+			title: '',
+			slug: '',
+			location: '',
+			description: '',
+			coverImage: '',
+			featured: false,
+			overallRating: 5,
+			scareRating: 5,
+			atmosphereRating: 5,
+			actorRating: 5,
+			valueRating: 5,
+			socialLinks: {
+				facebook: '',
+				instagram: '',
+				tiktok: '',
+				website: '',
+				youtube: ''
+			},
+			address: '',
+			galleryImages: []
+		};
+	}
+
 	// Show success message when form succeeds
 	$effect(() => {
 		if (form?.success) {
 			showSuccess = true;
-			// Reset form after successful submission
+			// Reset form and editing state after successful submission
+			editingReview = null;
 			reviewData = {
 				title: '',
 				slug: '',
@@ -80,14 +145,18 @@
 </script>
 
 <svelte:head>
-	<title>Add New Review - Admin Dashboard</title>
+	<title>{editingReview ? 'Edit Review' : 'Add New Review'} - Admin Dashboard</title>
 </svelte:head>
 
 <div>
 	<!-- Header -->
 	<div class="mb-8">
-		<h1 class="text-3xl font-bold text-white mb-2">Add New Review</h1>
-		<p class="text-gray-400">Create a new haunted attraction review</p>
+		<h1 class="text-3xl font-bold text-white mb-2">
+			{editingReview ? 'Edit Review' : 'Add New Review'}
+		</h1>
+		<p class="text-gray-400">
+			{editingReview ? 'Update an existing haunted attraction review' : 'Create a new haunted attraction review'}
+		</p>
 	</div>
 
 	<!-- Success Message -->
@@ -97,7 +166,9 @@
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
 			</svg>
 			<div>
-				<h3 class="text-green-400 font-bold">Review Created Successfully!</h3>
+				<h3 class="text-green-400 font-bold">
+					{editingReview ? 'Review Updated Successfully!' : 'Review Created Successfully!'}
+				</h3>
 				<p class="text-green-300 text-sm">{form?.message || 'Your review has been published.'}</p>
 			</div>
 		</div>
@@ -117,7 +188,7 @@
 	{/if}
 
 	<!-- Form -->
-	<form method="POST" action="?/create" use:enhance={() => {
+	<form method="POST" action={editingReview ? '?/update' : '?/create'} use:enhance={() => {
 		submitting = true;
 		return async ({ update }) => {
 			await update();
@@ -126,6 +197,9 @@
 	}} class="space-y-8">
 
 		<!-- Hidden inputs for form data -->
+		{#if editingReview}
+			<input type="hidden" name="id" value={editingReview} />
+		{/if}
 		<input type="hidden" name="name" value={reviewData.title} />
 		<input type="hidden" name="slug" value={reviewData.slug} />
 		<input type="hidden" name="location" value={reviewData.location} />
@@ -142,6 +216,7 @@
 		<input type="hidden" name="facebook_url" value={reviewData.socialLinks.facebook} />
 		<input type="hidden" name="instagram_url" value={reviewData.socialLinks.instagram} />
 		<input type="hidden" name="twitter_url" value={reviewData.socialLinks.tiktok} />
+		<input type="hidden" name="youtube_url" value={reviewData.socialLinks.youtube} />
 		<input type="hidden" name="gallery_images" value={JSON.stringify(reviewData.galleryImages)} />
 
 		<!-- Basic Information -->
@@ -433,6 +508,21 @@
 						placeholder="https://tiktok.com/@..."
 					/>
 				</div>
+
+				<!-- YouTube -->
+				<div>
+					<label for="youtube" class="block text-white font-semibold mb-2">
+						YouTube
+					</label>
+					<input
+						type="url"
+						id="youtube"
+						bind:value={reviewData.socialLinks.youtube}
+						class="w-full px-4 py-3 bg-black/50 border-2 border-haunt-orange/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors"
+						placeholder="https://youtube.com/watch?v=..."
+					/>
+					<p class="text-gray-500 text-sm mt-1">Full YouTube URL (will be embedded in review)</p>
+				</div>
 			</div>
 		</div>
 
@@ -444,14 +534,28 @@
 				class="flex-1 bg-gradient-to-r from-haunt-orange to-orange-600 hover:from-orange-600 hover:to-haunt-orange text-white font-bold py-4 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
 				style="box-shadow: 0 0 30px rgba(252,116,3,0.4);"
 			>
-				{submitting ? 'Creating Review...' : 'Publish Review'}
+				{#if submitting}
+					{editingReview ? 'Updating Review...' : 'Creating Review...'}
+				{:else}
+					{editingReview ? 'Update Review' : 'Publish Review'}
+				{/if}
 			</button>
-			<a
-				href="/admin/dashboard"
-				class="px-6 py-4 bg-black/50 hover:bg-black/70 text-gray-400 hover:text-white font-bold rounded-xl transition-all border border-gray-700 text-center"
-			>
-				Cancel
-			</a>
+			{#if editingReview}
+				<button
+					type="button"
+					onclick={cancelEdit}
+					class="px-6 py-4 bg-black/50 hover:bg-black/70 text-gray-400 hover:text-white font-bold rounded-xl transition-all border border-gray-700"
+				>
+					Cancel Edit
+				</button>
+			{:else}
+				<a
+					href="/admin/dashboard"
+					class="px-6 py-4 bg-black/50 hover:bg-black/70 text-gray-400 hover:text-white font-bold rounded-xl transition-all border border-gray-700 text-center"
+				>
+					Cancel
+				</a>
+			{/if}
 		</div>
 	</form>
 
@@ -467,7 +571,7 @@
 						{#if review.rating_overall}
 							<p class="text-haunt-orange font-semibold">⭐ {review.rating_overall.toFixed(1)}/5</p>
 						{/if}
-						<div class="flex gap-2 mt-4">
+						<div class="flex gap-2 mt-4 flex-wrap">
 							<a
 								href="/reviews/{review.slug}"
 								target="_blank"
@@ -477,6 +581,44 @@
 							</a>
 							{#if review.view_count}
 								<span class="text-sm text-gray-500">• {review.view_count} views</span>
+							{/if}
+						</div>
+
+						<!-- Action Buttons -->
+						<div class="flex gap-2 mt-4">
+							<button
+								type="button"
+								onclick={() => editReview(review)}
+								class="flex-1 bg-haunt-orange/20 hover:bg-haunt-orange/30 text-haunt-orange px-3 py-2 rounded-lg border border-haunt-orange/50 transition-all text-sm font-semibold"
+							>
+								Edit
+							</button>
+
+							{#if showDeleteConfirm === review.id}
+								<form method="POST" action="?/delete" use:enhance class="flex-1 flex gap-2">
+									<input type="hidden" name="id" value={review.id} />
+									<button
+										type="submit"
+										class="flex-1 bg-red-900/50 hover:bg-red-900/70 text-red-400 px-3 py-2 rounded-lg border border-red-500/50 transition-all text-sm font-semibold"
+									>
+										Confirm?
+									</button>
+									<button
+										type="button"
+										onclick={() => showDeleteConfirm = null}
+										class="px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm"
+									>
+										✕
+									</button>
+								</form>
+							{:else}
+								<button
+									type="button"
+									onclick={() => showDeleteConfirm = review.id}
+									class="flex-1 bg-red-900/20 hover:bg-red-900/30 text-red-400 px-3 py-2 rounded-lg border border-red-500/50 transition-all text-sm font-semibold"
+								>
+									Delete
+								</button>
 							{/if}
 						</div>
 					</div>

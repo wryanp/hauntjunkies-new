@@ -20,6 +20,7 @@ export interface Review {
 	facebook_url?: string;
 	instagram_url?: string;
 	twitter_url?: string;
+	youtube_url?: string;
 	view_count?: number; // Total number of times this review has been viewed
 	last_viewed_at?: string; // Timestamp of the most recent view
 	created_at: string;

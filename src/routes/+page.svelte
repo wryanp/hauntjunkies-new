@@ -433,7 +433,7 @@
 
 	<div class="max-w-7xl mx-auto px-1 sm:px-6 lg:px-8 relative z-10">
 		<!-- Header -->
-		<div class="text-center mb-16 px-1 sm:px-2">
+		<div class="text-center mb-16 px-1 sm:px-0">
 			<div class="relative inline-block">
 				<h2 class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-haunt-orange via-orange-500 to-haunt-orange mb-4 tracking-tight" style="text-shadow: 0 0 40px rgba(255,107,0,0.6);">
 					FOLLOW THE TERROR
@@ -454,10 +454,10 @@
 			<div class="absolute -inset-2 md:-inset-4 bg-gradient-to-r from-haunt-orange/20 via-orange-600/25 to-haunt-orange/20 blur-2xl opacity-50"></div>
 
 		<!-- Feed container -->
-		<div class="relative bg-gradient-to-br from-gray-900/80 via-black/80 to-gray-900/80 rounded-2xl border-4 border-haunt-orange/50 p-0.5 sm:p-6" style="box-shadow: 0 0 30px rgba(255,107,0,0.3), inset 0 0 20px rgba(0,0,0,0.8);">
+		<div class="relative bg-gradient-to-br from-gray-900/80 via-black/80 to-gray-900/80 rounded-2xl border-4 border-haunt-orange/50 p-0.5 sm:p-2 md:p-4" style="box-shadow: 0 0 30px rgba(255,107,0,0.3), inset 0 0 20px rgba(0,0,0,0.8);">
 
 			<!-- Instagram Wrapper -->
-			<div class="relative rounded-2xl overflow-hidden h-[260px] md:h-[550px] flex items-center justify-center" style=" box-shadow: 0 10px 40px rgba(0,0,0,0.8);">
+			<div class="relative rounded-2xl overflow-hidden h-[260px] md:h-[650px] flex items-center justify-center" style=" box-shadow: 0 10px 40px rgba(0,0,0,0.8);">
 				<iframe src="https://snapwidget.com/embed/1110765" class="snapwidget-widget absolute inset-0 w-full h-full" allowtransparency="true" frameborder="0" scrolling="no" style="border:none; overflow:hidden;" title="Posts from Instagram"></iframe>
 			</div>
 		</div>
