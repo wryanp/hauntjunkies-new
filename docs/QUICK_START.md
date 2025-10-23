@@ -1,155 +1,437 @@
-# Haunt Junkies - Quick Start Guide
+# ⚡ Haunt Junkies - Quick Start Guide
 
-## 🚀 Get Up and Running in 5 Minutes
+> Get up and running in 5 minutes
 
-### Option 1: With mise (Easiest)
+<div align="center">
+
+| Step | Time | Difficulty |
+|:----:|:----:|:----------:|
+| **Setup** | 5 min | Easy |
+| **Deploy** | 10 min | Easy |
+| **Total** | 15 min | ⭐⭐ |
+
+**Prerequisites:** Node.js 22+
+
+</div>
+
+---
+
+## 🚀 Option 1: With mise (Recommended)
+
+### Setup
 
 ```bash
-# Install mise if you don't have it
+# 1️⃣ Install mise (if needed)
 curl https://mise.run | sh
 
-# Navigate to project
-cd /Users/williampoindexter/code/hauntjunkies-new
+# 2️⃣ Navigate to project
+cd /path/to/hauntjunkies-new
 
-# Install Node.js and dependencies
+# 3️⃣ Install Node.js and dependencies
 mise install
 mise run install
 
-# Start development server
+# 4️⃣ Start development server
 mise run dev
 ```
 
-Visit: http://localhost:5173
+### ✅ Done!
 
-### Option 2: Manual Setup
+Visit: [http://localhost:5173](http://localhost:5173)
+
+---
+
+## 🛠️ Option 2: Manual Setup
+
+### Setup
 
 ```bash
-# Make sure you have Node.js 22.12.0 or higher
-node --version  # Should show v22.12.0 or higher
+# 1️⃣ Check Node.js version (need 22.12.0+)
+node --version
 
-# Install dependencies
+# 2️⃣ Install dependencies
 npm install
 
-# Start development server
+# 3️⃣ Start development server
 npm run dev
 ```
 
-Visit: http://localhost:5173
+### ✅ Done!
 
-## 📋 Common mise Tasks
+Visit: [http://localhost:5173](http://localhost:5173)
 
-```bash
-mise run dev        # Start dev server (localhost:5173)
-mise run build      # Build for production
-mise run preview    # Preview production build
-mise run check      # Type check
-mise run format     # Format code
-```
+---
+
+## 📊 Common Commands
+
+<div align="center">
+
+| Task | mise | npm |
+|:-----|:-----|:----|
+| **Start dev server** | `mise run dev` | `npm run dev` |
+| **Build production** | `mise run build` | `npm run build` |
+| **Preview build** | `mise run preview` | `npm run preview` |
+| **Type check** | `mise run check` | `npm run check` |
+| **Format code** | `mise run format` | `npm run format` |
+
+</div>
+
+---
 
 ## 🗄️ Set Up Database (Supabase)
 
-1. **Create Supabase project**: https://supabase.com
-2. **Copy credentials**:
-   - Project URL
-   - Anon key (from Settings → API)
-3. **Run schema**:
-   - Open SQL Editor in Supabase
-   - Copy contents of `supabase-schema.sql`
-   - Paste and run
-4. **Add to .env**:
-   ```bash
-   cp .env.example .env
-   # Edit .env with your Supabase credentials
-   ```
+<table>
+<tr>
+<th>Step</th>
+<th>Action</th>
+</tr>
+<tr>
+<td><strong>1️⃣</strong></td>
+<td>Create account at <a href="https://supabase.com">supabase.com</a></td>
+</tr>
+<tr>
+<td><strong>2️⃣</strong></td>
+<td>Create new project, wait ~2 minutes</td>
+</tr>
+<tr>
+<td><strong>3️⃣</strong></td>
+<td>Go to <strong>Settings → API</strong>, copy URL and anon key</td>
+</tr>
+<tr>
+<td><strong>4️⃣</strong></td>
+<td>Go to <strong>SQL Editor</strong>, run <code>supabase-schema.sql</code></td>
+</tr>
+<tr>
+<td><strong>5️⃣</strong></td>
+<td>Create <code>.env</code> file with credentials</td>
+</tr>
+</table>
+
+### .env File
+
+```bash
+# Copy example file
+cp .env.example .env
+```
+
+**Edit `.env`:**
+
+```env
+PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
+PUBLIC_SUPABASE_ANON_KEY=eyJhb...
+
+# Optional
+PUBLIC_SHOPIFY_DOMAIN=
+PUBLIC_SHOPIFY_STOREFRONT_TOKEN=
+```
+
+---
 
 ## 🚢 Deploy to Vercel
 
-```bash
-# Build locally first (optional)
-mise run build
+<div align="center">
 
-# Push to GitHub
+### Step-by-Step
+
+| # | Action | Time |
+|:-:|--------|:----:|
+| **1️⃣** | Push code to GitHub | 2 min |
+| **2️⃣** | Import to Vercel | 1 min |
+| **3️⃣** | Add environment variables | 2 min |
+| **4️⃣** | Deploy | 2 min |
+
+**Total:** ~7 minutes
+
+</div>
+
+### 1️⃣ Push to GitHub
+
+```bash
 git init
 git add .
 git commit -m "Initial commit"
 git remote add origin YOUR_REPO_URL
 git push -u origin main
-
-# Then on Vercel:
-# 1. Import from GitHub
-# 2. Add environment variables (from .env)
-# 3. Deploy!
 ```
 
-## 📁 Key Files
+### 2️⃣ Import to Vercel
 
-| File | Purpose |
-|------|---------|
-| `src/routes/+page.svelte` | Homepage |
-| `src/routes/reviews/+page.svelte` | Reviews listing |
-| `src/routes/haunt/+page.svelte` | McCloud Manor page |
-| `supabase-schema.sql` | Database schema |
-| `tailwind.config.js` | Brand colors |
-| `static/` | Logo, images, favicon |
+1. Go to [vercel.com](https://vercel.com)
+2. Click **"Add New" → "Project"**
+3. Import your GitHub repo
+4. Vercel auto-detects SvelteKit ✅
+
+### 3️⃣ Add Environment Variables
+
+**Before deploying**, add these in Vercel:
+
+```env
+PUBLIC_SUPABASE_URL=https://xxxxx.supabase.co
+PUBLIC_SUPABASE_ANON_KEY=eyJhb...
+```
+
+Apply to: **Production**, **Preview**, **Development**
+
+### 4️⃣ Deploy
+
+Click **"Deploy"** → Wait ~2 minutes → Done! 🎉
+
+---
+
+## 📁 Key Files Reference
+
+<table>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+<tr>
+<td><code>src/routes/+page.svelte</code></td>
+<td>Homepage</td>
+</tr>
+<tr>
+<td><code>src/routes/reviews/+page.svelte</code></td>
+<td>Reviews listing</td>
+</tr>
+<tr>
+<td><code>src/routes/haunt/+page.svelte</code></td>
+<td>McCloud Manor page</td>
+</tr>
+<tr>
+<td><code>supabase-schema.sql</code></td>
+<td>Database schema</td>
+</tr>
+<tr>
+<td><code>tailwind.config.js</code></td>
+<td>Brand colors</td>
+</tr>
+<tr>
+<td><code>static/</code></td>
+<td>Logo, images, favicon</td>
+</tr>
+</table>
+
+---
 
 ## 🎨 Customize Branding
 
-**Colors** (edit `tailwind.config.js`):
-```js
+### Colors
+
+**Edit `tailwind.config.js`:**
+
+```javascript
 colors: {
   'haunt-orange': '#FC7403',  // Primary orange
   'haunt-red': '#a41214',     // Primary red
 }
 ```
 
-**Images**:
-- Logo: `static/logo-url.png`
-- Background: `static/bg.jpg`
-- Favicon: `static/favicon.png`
+### Images
 
-## 🛠️ Tech Stack Reference
-
-- **Framework**: SvelteKit (like Next.js but faster)
-- **Styling**: Tailwind CSS
-- **Database**: Supabase (PostgreSQL)
-- **Hosting**: Vercel
-- **Package Manager**: npm
-
-## 📚 Need More Help?
-
-- **Full guide**: See [../README.md](../README.md)
-- **Local development**: See [LOCAL_DEVELOPMENT.md](LOCAL_DEVELOPMENT.md)
-- **Deployment**: See [DEPLOYMENT.md](DEPLOYMENT.md)
-- **Technical details**: See [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)
-
-## ⚡ Quick Commands Cheat Sheet
-
-```bash
-# Development
-mise run dev          # Start dev server
-mise run build        # Build for production
-mise run preview      # Test production build
-
-# Code quality
-mise run check        # Type checking
-mise run format       # Auto-format code
-mise run lint         # Lint code
-
-# Database
-# → Use Supabase web interface (supabase.com)
-# → Or use SQL Editor for direct queries
-```
-
-## 🎯 First Tasks After Setup
-
-1. ✅ Get dev server running
-2. ✅ Create Supabase project & run schema
-3. ✅ Add environment variables
-4. ✅ Add one test review in Supabase
-5. ✅ Deploy to Vercel
-6. ✅ Migrate production data
-7. ✅ Point DNS to Vercel
+| Asset | Location | Purpose |
+|-------|----------|---------|
+| **Logo** | `static/logo-url.png` | Site logo |
+| **Background** | `static/bg.jpg` | Parallax hero |
+| **Favicon** | `static/favicon.png` | Browser icon |
 
 ---
 
-**You're all set!** The site is production-ready. 🎃
+## 🛠️ Tech Stack Overview
+
+<div align="center">
+
+| Layer | Technology | Why |
+|:------|:-----------|:----|
+| **Frontend** | SvelteKit | Fast & modern |
+| **Styling** | Tailwind CSS | Utility-first |
+| **Database** | Supabase | Free PostgreSQL |
+| **Hosting** | Vercel | Free & auto-scaling |
+
+</div>
+
+---
+
+## 📚 Need More Help?
+
+<table>
+<tr>
+<th>Document</th>
+<th>Purpose</th>
+</tr>
+<tr>
+<td><a href="../README.md">README.md</a></td>
+<td>Complete project overview</td>
+</tr>
+<tr>
+<td><a href="LOCAL_DEVELOPMENT.md">LOCAL_DEVELOPMENT.md</a></td>
+<td>Detailed setup instructions</td>
+</tr>
+<tr>
+<td><a href="DEPLOYMENT.md">DEPLOYMENT.md</a></td>
+<td>Full deployment guide</td>
+</tr>
+<tr>
+<td><a href="PROJECT_SUMMARY.md">PROJECT_SUMMARY.md</a></td>
+<td>Technical details</td>
+</tr>
+</table>
+
+---
+
+## ⚡ Quick Commands Cheat Sheet
+
+### Development
+
+```bash
+# Start development
+mise run dev              # Start dev server
+npm run dev               # Alternative
+
+# Build
+mise run build            # Build for production
+mise run preview          # Test production build
+```
+
+### Code Quality
+
+```bash
+# Type checking
+mise run check            # Run type checker
+mise run check:watch      # Watch mode
+
+# Formatting
+mise run format           # Auto-format code
+mise run lint             # Lint code
+```
+
+### Database
+
+```bash
+# Use Supabase web interface
+# → https://supabase.com/dashboard
+# → SQL Editor for queries
+# → Table Editor for data
+```
+
+---
+
+## 🎯 First Tasks After Setup
+
+<div align="center">
+
+### ✅ Setup Checklist
+
+| # | Task | Status |
+|:-:|------|:------:|
+| 1 | Get dev server running | [ ] |
+| 2 | Create Supabase project | [ ] |
+| 3 | Run database schema | [ ] |
+| 4 | Add environment variables | [ ] |
+| 5 | Add test review in Supabase | [ ] |
+| 6 | Deploy to Vercel | [ ] |
+| 7 | Migrate production data | [ ] |
+| 8 | Point DNS to Vercel | [ ] |
+
+</div>
+
+---
+
+## 💡 Pro Tips
+
+<table>
+<tr><td>💾 <strong>Restart dev server</strong></td><td>After changing <code>.env</code></td></tr>
+<tr><td>🔍 <strong>Check browser console</strong></td><td>For Supabase errors</td></tr>
+<tr><td>🗄️ <strong>Use Table Editor</strong></td><td>Easiest way to manage data</td></tr>
+<tr><td>🚀 <strong>Vercel auto-deploys</strong></td><td>On every git push to main</td></tr>
+<tr><td>📊 <strong>Enable analytics</strong></td><td>In Vercel dashboard</td></tr>
+</table>
+
+---
+
+## 🔍 Troubleshooting
+
+### "fetch failed" Errors
+
+```bash
+# Fix: Update .env with real Supabase credentials
+# Then restart dev server
+```
+
+### Build Fails
+
+| Issue | Solution |
+|-------|----------|
+| Missing env vars | Add to Vercel settings |
+| Type errors | Run `npm run check` locally |
+| Node version | Use Node.js 22+ |
+
+### Images Not Loading
+
+<table>
+<tr><td>✅ Check Supabase Storage buckets are <strong>public</strong></td></tr>
+<tr><td>✅ Verify image URLs are complete</td></tr>
+<tr><td>✅ Check CORS settings in Supabase</td></tr>
+</table>
+
+---
+
+## 💰 Cost Estimate
+
+<div align="center">
+
+| Service | Tier | Monthly Cost |
+|:-------:|:----:|:------------:|
+| **Supabase** | Free | $0 |
+| **Vercel** | Free | $0 |
+| **Shopify** | Basic | $29 (optional) |
+
+**Total:** **$0/month** for typical traffic 🎉
+
+</div>
+
+---
+
+## 📖 External Resources
+
+<table>
+<tr>
+<th>Resource</th>
+<th>URL</th>
+</tr>
+<tr>
+<td><strong>SvelteKit</strong></td>
+<td><a href="https://kit.svelte.dev">kit.svelte.dev</a></td>
+</tr>
+<tr>
+<td><strong>Supabase</strong></td>
+<td><a href="https://supabase.com/docs">supabase.com/docs</a></td>
+</tr>
+<tr>
+<td><strong>Tailwind CSS</strong></td>
+<td><a href="https://tailwindcss.com">tailwindcss.com</a></td>
+</tr>
+<tr>
+<td><strong>Vercel</strong></td>
+<td><a href="https://vercel.com/docs">vercel.com/docs</a></td>
+</tr>
+</table>
+
+---
+
+<div align="center">
+
+**🎃 You're All Set! 🎃**
+
+**The site is production-ready and costs $0/month**
+
+---
+
+### Quick Links
+
+[📖 Full README](../README.md) • [🔧 Setup Guide](LOCAL_DEVELOPMENT.md) • [🚀 Deploy Guide](DEPLOYMENT.md) • [📊 Tech Details](PROJECT_SUMMARY.md)
+
+---
+
+**Last Updated:** October 23, 2025
+
+</div>

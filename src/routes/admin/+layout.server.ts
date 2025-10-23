@@ -1,0 +1,70 @@
+import { redirect } from '@sveltejs/kit';
+import type { LayoutServerLoad } from './$types';
+import { createServerClient } from '@supabase/ssr';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+
+export const load: LayoutServerLoad = async ({ url, cookies }) => {
+	// Allow access to login page without authentication
+	if (url.pathname === '/admin/login') {
+		return { session: null, user: null };
+	}
+
+	// Try Supabase authentication FIRST
+	const supabase = createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+		cookies: {
+			get: (key) => cookies.get(key),
+			set: (key, value, options) => {
+				cookies.set(key, value, { ...options, path: '/' });
+			},
+			remove: (key, options) => {
+				cookies.delete(key, { ...options, path: '/' });
+			}
+		}
+	});
+
+	const {
+		data: { session }
+	} = await supabase.auth.getSession();
+
+	if (session) {
+		// Clear old admin_session cookie if it exists
+		cookies.delete('admin_session', { path: '/' });
+		return {
+			session,
+			user: session.user
+		};
+	}
+
+	// Fallback to simple admin session cookie (for backward compatibility)
+	const adminSession = cookies.get('admin_session');
+	if (adminSession) {
+		try {
+			// Try parsing as JSON (new format with token and timestamp)
+			const sessionData = JSON.parse(adminSession);
+			const maxAge = 60 * 60 * 24 * 7 * 1000; // 7 days in milliseconds
+
+			// Validate timestamp - session expires after 7 days
+			if (sessionData.timestamp && sessionData.token &&
+			    (Date.now() - sessionData.timestamp) < maxAge) {
+				return {
+					session: { user: { email: sessionData.email || 'admin@hauntjunkies.com' } },
+					user: { email: sessionData.email || 'admin@hauntjunkies.com' }
+				};
+			}
+		} catch (e) {
+			// Old format (just "authenticated" string) - for backward compatibility
+			if (adminSession === 'authenticated') {
+				return {
+					session: { user: { email: 'admin@hauntjunkies.com' } },
+					user: { email: 'admin@hauntjunkies.com' }
+				};
+			}
+		}
+
+		// Invalid or expired session - clear the cookie
+		cookies.delete('admin_session', { path: '/' });
+	}
+
+	// No authentication found, redirect to login
+	throw redirect(303, '/admin/login');
+};

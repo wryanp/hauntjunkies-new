@@ -14,6 +14,11 @@ export default {
         'eater': ['Eater', 'Creepster', 'cursive'],
         'fell': ['IM Fell English', 'serif'],
       },
+      screens: {
+        'mobile-landscape': {'raw': '(max-width: 767px) and (orientation: landscape)'},
+        'mobile-portrait': {'raw': '(max-width: 767px) and (orientation: portrait)'},
+        'mobile-landscape-short': {'raw': '(max-width: 767px) and (max-height: 500px) and (orientation: landscape)'},
+      },
     },
   },
   plugins: [],

@@ -1,3 +1,9 @@
-# allow crawling everything by default
+# Haunt Junkies - robots.txt
 User-agent: *
-Disallow:
+# Block admin panel from search engines
+Disallow: /admin/
+# Allow all other pages
+Allow: /
+
+# Sitemap
+Sitemap: https://hauntjunkies.com/sitemap.xml

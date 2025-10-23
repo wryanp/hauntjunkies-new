@@ -1,16 +1,73 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import type { PageData, ActionData } from './$types';
+	import TurnstileWidget from '$lib/components/TurnstileWidget.svelte';
+	import ViewCounter from '$lib/components/ViewCounter.svelte';
+	import SEO from '$lib/components/SEO.svelte';
+	import StructuredData from '$lib/components/StructuredData.svelte';
+	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
+	import { dev } from '$app/environment';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
 	let commentFormVisible = $state(false);
+	let submitting = $state(false);
+	let captchaToken = $state(dev ? 'dev-mode' : ''); // Auto-pass in dev mode
+
+	// Parse review text and replace image placeholders with actual images
+	// Supports placeholders like [REVIEWER_PHOTO:1], [REVIEWER_PHOTO:2], etc.
+	function parseReviewText(text: string | undefined): string {
+		if (!text) return '';
+
+		// Replace [REVIEWER_PHOTO:N] with actual images
+		return text.replace(/\[REVIEWER_PHOTO:(\d+)\]/g, (match, photoIndex) => {
+			const index = parseInt(photoIndex) - 1; // Convert to 0-based index
+			const photo = data.reviewerPhotos?.[index];
+
+			if (!photo) {
+				return match; // Return placeholder if photo not found
+			}
+
+			// Generate HTML for the image
+			const caption = photo.caption ? `<p class="text-sm text-gray-400 text-center mt-2 italic">${photo.caption}</p>` : '';
+			const altText = photo.alt_text || photo.caption || 'Reviewer photo from the haunt';
+
+			return `
+				<div class="my-8 mx-auto max-w-2xl">
+					<img
+						src="${photo.image_url}"
+						alt="${altText}"
+						class="w-full rounded-lg border-2 border-haunt-orange/30 shadow-xl"
+					/>
+					${caption}
+				</div>
+			`;
+		});
+	}
+
+	const formattedReviewText = $derived(parseReviewText(data.review.review_text));
 </script>
 
-<svelte:head>
-	<title>{data.review.name} - Haunt Junkies</title>
-	<meta name="description" content={data.review.description || `Review of ${data.review.name}`} />
-</svelte:head>
+<SEO
+	title={data.review.name}
+	description={data.review.description || `Expert review of ${data.review.name}. Ratings for scares, atmosphere, and value. Located in ${data.review.city}, ${data.review.state}. Read our full review and see photos.`}
+	url={`/reviews/${data.review.slug}`}
+	image={data.review.cover_image_url || '/og-review-default.jpg'}
+	type="article"
+	article={{
+		publishedTime: data.review.created_at,
+		modifiedTime: data.review.updated_at,
+		section: 'Haunt Reviews',
+		tags: [
+			data.review.state || '',
+			data.review.city || '',
+			data.review.year?.toString() || '',
+			'haunted house',
+			'halloween'
+		].filter(Boolean)
+	}}
+/>
+<StructuredData review={data.review} />
 
 <div class="bg-gradient-to-b from-gray-900 to-black min-h-screen">
 	<!-- Hero Image -->
@@ -26,6 +83,14 @@
 	{/if}
 
 	<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 {data.review.cover_image_url ? '-mt-32' : 'pt-12'} pb-20 relative">
+		<!-- Breadcrumbs -->
+		<Breadcrumbs
+			items={[
+				{ label: 'Reviews', href: '/reviews' },
+				{ label: data.review.name, href: `/reviews/${data.review.slug}` }
+			]}
+		/>
+
 		<!-- Review Header -->
 		<div class="mb-8">
 			<h1 class="text-4xl md:text-6xl font-bold text-white mb-4">
@@ -48,6 +113,9 @@
 						</svg>
 						<span>{data.review.year}</span>
 					</div>
+				{/if}
+				{#if data.review.view_count && data.review.view_count > 0}
+					<ViewCounter viewCount={data.review.view_count} size="md" showLabel={true} />
 				{/if}
 			</div>
 
@@ -144,12 +212,12 @@
 			</div>
 		{/if}
 
-		<!-- Review Text -->
+		<!-- Review Text with Inline Images -->
 		{#if data.review.review_text}
 			<div class="bg-gray-800/50 rounded-lg p-6 mb-6 border border-gray-700">
 				<h2 class="text-2xl font-bold text-haunt-orange mb-4 font-creepster">Our Review</h2>
-				<div class="prose prose-invert max-w-none text-gray-300 leading-relaxed whitespace-pre-line">
-					{data.review.review_text}
+				<div class="prose prose-invert max-w-none text-gray-300 leading-relaxed" style="white-space: pre-line;">
+					{@html formattedReviewText}
 				</div>
 			</div>
 		{/if}
@@ -190,7 +258,15 @@
 
 			<!-- Comment Form -->
 			{#if commentFormVisible}
-				<form method="POST" action="?/comment" use:enhance class="mb-8 bg-gray-900/50 rounded-lg p-6 border border-gray-700">
+				<form method="POST" action="?/comment" use:enhance={() => {
+					submitting = true;
+					return async ({ update }) => {
+						await update();
+						submitting = false;
+						// Reset CAPTCHA after submission
+						captchaToken = '';
+					};
+				}} class="mb-8 bg-gray-900/50 rounded-lg p-6 border border-gray-700">
 					{#if form?.success}
 						<div class="mb-4 p-4 bg-green-900/30 border border-green-700 rounded-lg text-green-300">
 							Thank you! Your comment has been submitted and is awaiting approval.
@@ -234,12 +310,24 @@
 							class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-haunt-orange"
 						></textarea>
 					</div>
+
+					<!-- CAPTCHA Widget (hidden in dev mode) -->
+					{#if !dev}
+						<div class="mb-4">
+							<TurnstileWidget
+								onVerify={(token) => captchaToken = token}
+								onError={() => captchaToken = ''}
+							/>
+						</div>
+					{/if}
+
 					<div class="flex gap-3">
 						<button
 							type="submit"
-							class="bg-haunt-orange hover:bg-orange-600 text-white px-6 py-2 rounded-lg transition-colors font-medium"
+							disabled={submitting || !captchaToken}
+							class="bg-haunt-orange hover:bg-orange-600 text-white px-6 py-2 rounded-lg transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
 						>
-							Submit Comment
+							{submitting ? 'Submitting...' : 'Submit Comment'}
 						</button>
 						<button
 							type="button"

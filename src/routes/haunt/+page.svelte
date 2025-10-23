@@ -2,17 +2,25 @@
 	import { enhance } from '$app/forms';
 	import { onMount } from 'svelte';
 	import type { PageData, ActionData } from './$types';
+	import SEO from '$lib/components/SEO.svelte';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
-	// Image slider state
-	let currentSlide = $state(0);
-	const placeholderImages = [
-		{ url: '/placeholder-1.jpg', caption: 'Gallery Image 1' },
-		{ url: '/placeholder-2.jpg', caption: 'Gallery Image 2' },
-		{ url: '/placeholder-3.jpg', caption: 'Gallery Image 3' },
-		{ url: '/placeholder-4.jpg', caption: 'Gallery Image 4' }
-	];
+	// Calculate the next haunt season year (October-November)
+	// If we're currently before August, use current year; otherwise use next year
+	const now = new Date();
+	const currentYear = now.getFullYear();
+	const currentMonth = now.getMonth(); // 0-indexed (0 = January)
+	const hauntYear = currentMonth < 7 ? currentYear : currentYear + 1; // Use next year if after July
+
+	// Helper to check if a specific date has tickets available
+	function hasTickets(year: number, month: number, day: number): boolean {
+		const dateString = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+		return data.ticketDates?.some((td: any) => td.date === dateString) || false;
+	}
+
+	// Get first available ticket date or fallback
+	const firstAvailableDate = $derived(data.ticketDates?.[0]?.date || `${hauntYear}-10-29`);
 
 	// Story expand/collapse state
 	let storyExpanded = $state(false);
@@ -63,23 +71,28 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 	const storyTeaser = $derived(storyParagraphs[0] || '');
 	const storyBody = $derived(storyParagraphs.slice(1));
 
-	function nextSlide() {
-		currentSlide = (currentSlide + 1) % placeholderImages.length;
-	}
-
-	function prevSlide() {
-		currentSlide = currentSlide === 0 ? placeholderImages.length - 1 : currentSlide - 1;
-	}
-
-	function goToSlide(index: number) {
-		currentSlide = index;
-	}
-
 	function toggleStory() {
 		storyExpanded = !storyExpanded;
+		// If closing the story, scroll to the legend section
+		if (!storyExpanded) {
+			setTimeout(() => {
+				const legendSection = document.getElementById('legend-section');
+				if (legendSection) {
+					legendSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+				}
+			}, 100);
+		}
 	}
 
 	onMount(async () => {
+		// Scroll to top when page loads
+		window.scrollTo({ top: 0, behavior: 'instant' });
+
+		// Check if URL hash is #faq-section and auto-expand FAQs
+		if (window.location.hash === '#faq-section') {
+			faqExpanded = true;
+		}
+
 		const { PowerGlitch } = await import('powerglitch');
 
 		// Apply glitch to primary text
@@ -140,22 +153,86 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 			},
 		});
 
-		// Scroll-based video playback for McCloud Manor video
+		// Scroll-based video unmute for McCloud Manor video
 		const mccloudVideo = document.querySelector('#mccloud-manor-video') as HTMLVideoElement;
 		if (mccloudVideo) {
+			// Ensure video has loaded
+			mccloudVideo.load();
+
+			let mccloudHasBeenInView = false;
+
 			const observer = new IntersectionObserver(
 				(entries) => {
 					entries.forEach((entry) => {
-						if (entry.isIntersecting) {
-							mccloudVideo.play();
-						} else {
-							mccloudVideo.pause();
+						if (entry.isIntersecting && !mccloudHasBeenInView) {
+							// Only unmute the first time it comes into view (scrolling down)
+							mccloudVideo.muted = false;
+							mccloudVideo.volume = 1.0;
+							// Ensure it's playing
+							mccloudVideo.play().catch(() => {});
+							mccloudHasBeenInView = true;
+						} else if (!entry.isIntersecting && mccloudHasBeenInView) {
+							// Mute when not visible
+							mccloudVideo.muted = true;
 						}
 					});
 				},
-				{ threshold: 0.5 }
+				{ threshold: 0.1 }
 			);
 			observer.observe(mccloudVideo);
+
+			// Also add a click handler to unmute on user interaction
+			let hasInteracted = false;
+			const handleInteraction = () => {
+				if (!hasInteracted) {
+					hasInteracted = true;
+					document.removeEventListener('click', handleInteraction);
+					document.removeEventListener('touchstart', handleInteraction);
+				}
+			};
+			document.addEventListener('click', handleInteraction);
+			document.addEventListener('touchstart', handleInteraction);
+		}
+
+		// Scroll-based video unmute for Behind the Screams video
+		const behindScreamsVideo = document.querySelector('#behind-screams-video') as HTMLVideoElement;
+		if (behindScreamsVideo) {
+			// Ensure video has loaded
+			behindScreamsVideo.load();
+
+			let behindHasBeenInView = false;
+
+			const observerBehind = new IntersectionObserver(
+				(entries) => {
+					entries.forEach((entry) => {
+						if (entry.isIntersecting && !behindHasBeenInView) {
+							// Only unmute the first time it comes into view (scrolling down)
+							behindScreamsVideo.muted = false;
+							behindScreamsVideo.volume = 1.0;
+							// Ensure it's playing
+							behindScreamsVideo.play().catch(() => {});
+							behindHasBeenInView = true;
+						} else if (!entry.isIntersecting && behindHasBeenInView) {
+							// Mute when not visible
+							behindScreamsVideo.muted = true;
+						}
+					});
+				},
+				{ threshold: 0.1 }
+			);
+			observerBehind.observe(behindScreamsVideo);
+
+			// Also add a click handler to unmute on user interaction
+			let hasInteractedBehind = false;
+			const handleInteractionBehind = () => {
+				if (!hasInteractedBehind) {
+					hasInteractedBehind = true;
+					document.removeEventListener('click', handleInteractionBehind);
+					document.removeEventListener('touchstart', handleInteractionBehind);
+				}
+			};
+			document.addEventListener('click', handleInteractionBehind);
+			document.addEventListener('touchstart', handleInteractionBehind);
 		}
 	});
 
@@ -184,8 +261,15 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 		transform-style: preserve-3d;
 	}
 
-	.flip-card:hover .flip-card-inner,
-	.flip-card.flipped .flip-card-inner { /* .flipped is added dynamically via JavaScript */
+	/* Only enable hover on devices that support hover (not touch devices) */
+	@media (hover: hover) and (pointer: fine) {
+		.flip-card:hover .flip-card-inner {
+			transform: rotateY(180deg);
+		}
+	}
+
+	/* Click-based flip for all devices */
+	.flip-card.flipped .flip-card-inner {
 		transform: rotateY(180deg);
 	}
 
@@ -195,6 +279,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 		width: 100%;
 		height: 100%;
 		backface-visibility: hidden;
+		-webkit-backface-visibility: hidden; /* Safari support */
 		border-radius: 0.5rem;
 		overflow: hidden;
 	}
@@ -246,13 +331,16 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 	}
 </style>
 
-<svelte:head>
-	<title>McCloud Manor - Haunt Junkies</title>
-	<meta name="description" content="Experience the terror of McCloud Manor - A haunted attraction like no other" />
-</svelte:head>
+<SEO
+	title="McCloud Manor"
+	description="Experience the terror of McCloud Manor - A haunted attraction like no other. Professional haunted house in Atlanta featuring extreme scares, interactive actors, and unforgettable horror. Book your tickets now!"
+	url="/haunt"
+	image="/og-mccloud.jpg"
+	type="website"
+/>
 
 <!-- Video Hero Section -->
-<section class="relative h-screen overflow-hidden">
+<section class="relative overflow-hidden" style="min-height: 100vh;">
 	<!-- Background Video -->
 	<video
 		autoplay
@@ -260,6 +348,8 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 		loop
 		playsinline
 		preload="auto"
+		webkit-playsinline
+		x5-playsinline
 		class="absolute inset-0 w-full h-full object-cover"
 	>
 		<source src="/videos/haunt.mp4" type="video/mp4" />
@@ -267,44 +357,43 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 	</video>
 
 	<!-- Hero Content -->
-	<div class="relative z-10 h-full flex flex-col items-center justify-center text-center px-4">
+	<div class="relative z-10 h-full min-h-screen flex flex-col items-center justify-center text-center px-4 pt-32 pb-16">
 		<!-- Glitch Text -->
-		<div class="mb-12">
-			<h1 class="glitch-text text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 tracking-wider">
+		<div class="mb-8 md:mb-12">
+			<h1 class="glitch-text text-2xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-3 tracking-wider leading-tight">
 				LAWRENCEVILLE'S MOST TERRIFYING
 			</h1>
-			<h2 class="glitch-text-secondary text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-haunt-red tracking-widest">
+			<h2 class="glitch-text-secondary text-xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-haunt-red tracking-widest leading-tight">
 				HOME HAUNT EXPERIENCE
 			</h2>
 		</div>
 
 		<!-- Buttons -->
-		<div class="flex flex-col sm:flex-row gap-6">
+		<div class="flex flex-row gap-3 sm:gap-6 justify-center items-center">
 			<a
-				href="#tickets"
-				class="bg-haunt-red/40 hover:bg-haunt-red text-white font-bold py-6 px-12 rounded-xl transition-all transform hover:scale-105 text-xl shadow-2xl"
+				href="/tickets?date={firstAvailableDate}"
+				class="bg-haunt-red/30 backdrop-blur-sm hover:bg-haunt-red/40 text-white font-bold py-3 px-5 sm:py-6 sm:px-12 rounded-xl transition-all border-2 border-haunt-red text-sm sm:text-xl flex items-center justify-center touch-target"
 			>
 				Get Tickets
 			</a>
 			<a
 				href="#about"
-				class="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-bold py-6 px-12 rounded-xl transition-all border-2 border-white/30 text-xl"
+				class="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-bold py-3 px-5 sm:py-6 sm:px-12 rounded-xl transition-all border-2 border-white/30 text-sm sm:text-xl flex items-center justify-center touch-target"
 			>
 				Learn More
 			</a>
 		</div>
 	</div>
-
-	<!-- Scroll indicator -->
-	<div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10 animate-bounce">
-		<svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-			<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-		</svg>
-	</div>
 </section>
 
 <!-- About Section -->
-<section id="about" class="py-20 bg-black relative overflow-hidden">
+<section id="about" class="py-16 relative overflow-hidden">
+	<!-- Background Image -->
+	<div class="absolute inset-0" style="background-image: url('/experience-bg.jpg'); background-size: cover; background-position: center;"></div>
+
+	<!-- Dark overlay -->
+	<div class="absolute inset-0 bg-black/90"></div>
+
 	<!-- Smoky animated background -->
 	<div class="absolute inset-0">
 		<!-- Multiple smoke layers for depth -->
@@ -336,14 +425,16 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 </section>
 
 <!-- McCloud Manor Video Section -->
-<section class="relative h-screen overflow-hidden">
+<section class="relative w-full overflow-hidden">
 	<!-- Background Video -->
-	<div class="absolute inset-0 overflow-hidden">
+	<div class="relative w-full" style="padding-bottom: 56.25%; /* 16:9 aspect ratio */">
 		<video
 			id="mccloud-manor-video"
+			autoplay
 			loop
 			playsinline
-			class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full w-auto h-auto object-cover"
+			muted
+			class="absolute top-0 left-0 w-full h-full object-contain md:object-cover"
 		>
 			<source src="/videos/mccloud-manor.mp4" type="video/mp4" />
 		</video>
@@ -351,11 +442,12 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 </section>
 
 <!-- The Story Section -->
-<section class="py-20 bg-black relative overflow-hidden">
-	<!-- Atmospheric background with blood drips effect -->
-	<div class="absolute inset-0 opacity-10">
-		<div class="absolute inset-0" style="background: radial-gradient(circle at 20% 50%, rgba(164,18,20,0.3) 0%, transparent 50%), radial-gradient(circle at 80% 50%, rgba(164,18,20,0.3) 0%, transparent 50%);"></div>
-	</div>
+<section id="legend-section" class="py-20 bg-black relative overflow-hidden">
+	<!-- Background Image (same as quote section) -->
+	<div class="absolute inset-0 bg-cover bg-center md:bg-center" style="background-image: url('/legend-bg.jpg');"></div>
+
+	<!-- Dark overlay -->
+	<div class="absolute inset-0 bg-black/50 md:bg-black/40"></div>
 
 	<!-- Vignette effect -->
 	<div class="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black opacity-50"></div>
@@ -363,17 +455,10 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 	<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 		<!-- Story Header -->
 		<div class="text-center mb-16">
-			<div class="relative inline-block">
-				<!-- Decorative line -->
-				<div class="absolute -top-8 left-1/2 transform -translate-x-1/2 w-32 h-px bg-gradient-to-r from-transparent via-haunt-red to-transparent"></div>
-
-				<h2 class="text-6xl md:text-7xl lg:text-8xl font-bold text-haunt-red mb-6 tracking-wide drop-shadow-[0_0_40px_rgba(164,18,20,0.8)]">
-					The Legend of <span class="whitespace-nowrap">McCloud Manor</span>
-				</h2>
-
-				<!-- Decorative line -->
-				<div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-48 h-px bg-gradient-to-r from-transparent via-haunt-red to-transparent"></div>
-			</div>
+			<h2 class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-haunt-red via-red-600 to-haunt-red mb-4 tracking-tight" style="text-shadow: 0 0 40px rgba(164,18,20,0.6);">
+				THE LEGEND OF McCLOUD MANOR
+			</h2>
+			<div class="w-48 h-1 bg-gradient-to-r from-transparent via-haunt-red to-transparent mx-auto mb-6"></div>
 		</div>
 
 		<!-- Story Content -->
@@ -394,7 +479,8 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 				</div>
 
 				<!-- Expandable story content -->
-				<div class="overflow-hidden transition-all duration-700 ease-in-out {storyExpanded ? 'max-h-[3000px] opacity-100' : 'max-h-0 opacity-0'}">
+				<div class="grid {storyExpanded ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'} transition-all duration-300 ease-out">
+					<div class="overflow-hidden">
 					<div class="space-y-8">
 						{#each storyBody as paragraph, index}
 							<div class="group relative">
@@ -422,6 +508,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 								</footer>
 							</blockquote>
 						</div>
+					</div>
 					</div>
 				</div>
 
@@ -460,9 +547,9 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 
 <!-- Video + Text Section -->
 <section class="py-20 bg-black">
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+	<div class="max-w-7xl mx-auto px-1 sm:px-6 lg:px-8">
 		<!-- Striking Header -->
-		<div class="text-center mb-12">
+		<div class="text-center mb-12 px-2">
 			<h2 class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-haunt-red via-red-600 to-haunt-red mb-4 tracking-tight" style="text-shadow: 0 0 40px rgba(164,18,20,0.6);">
 				BEHIND THE SCREAMS
 			</h2>
@@ -470,27 +557,29 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 		</div>
 
 		<!-- Video Container -->
-		<div class="relative mx-auto max-w-4xl w-full">
+		<div class="relative mx-auto w-full sm:max-w-5xl">
 			<!-- Subtle red glow behind video -->
 			<div class="absolute -inset-4 bg-gradient-to-r from-haunt-red/20 via-red-600/25 to-haunt-red/20 blur-2xl opacity-50"></div>
 
 			<!-- Clean video frame -->
-			<div class="relative bg-gradient-to-br from-red-900/20 via-black/40 to-red-900/20 rounded-2xl border-2 border-haunt-red/40 p-4 md:p-6" style="box-shadow: 0 0 30px rgba(164,18,20,0.3), inset 0 0 20px rgba(0,0,0,0.5);">
-				<!-- Video -->
-				<div class="aspect-video rounded-2xl overflow-hidden" style="box-shadow: 0 10px 40px rgba(0,0,0,0.8);">
-					<video
-						autoplay
-						muted
-						controls
-						preload="metadata"
-						class="w-full h-full object-cover bg-black"
-						onmouseenter={(e) => { e.currentTarget.muted = false; }}
-						onmouseleave={(e) => { e.currentTarget.muted = true; }}
-					>
-						<source src="/videos/fox5-news.mp4" type="video/mp4" />
-						Your browser does not support the video tag.
-					</video>
-				</div>
+			<div class="relative bg-gradient-to-br from-red-900/20 via-black/40 to-red-900/20 rounded-2xl border-2 border-haunt-red/40 p-0.5 sm:p-6" style="box-shadow: 0 0 30px rgba(164,18,20,0.3), inset 0 0 20px rgba(0,0,0,0.5);">
+			<!-- Video Wrapper -->
+			<div class="relative rounded-2xl overflow-hidden" style="aspect-ratio: 16/9; box-shadow: 0 10px 40px rgba(0,0,0,0.8);">
+				<video
+					id="behind-screams-video"
+					autoplay
+					muted
+					controls
+					playsinline
+					preload="metadata"
+					class="absolute inset-0 w-full h-full bg-black"
+					style="object-fit: cover;"
+					onmouseenter={(e) => { e.currentTarget.muted = false; }}
+					onmouseleave={(e) => { e.currentTarget.muted = true; }}
+				>
+					<source src="/videos/fox5-news.mp4" type="video/mp4" />
+					Your browser does not support the video tag.
+				</video>
 			</div>
 		</div>
 
@@ -519,7 +608,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 </section>
 
 <!-- Schedule Section -->
-<section class="py-16 bg-black relative overflow-hidden" style="background-image: url('/calendar-bg.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+<section class="py-16 pb-16 bg-black relative overflow-hidden" style="background-image: url('/calendar-bg.png'); background-size: cover; background-position: center center; background-repeat: no-repeat; background-attachment: scroll; min-height: 100vh;">
 	<!-- Red glow overlay -->
 	<div class="absolute inset-0 bg-gradient-radial from-haunt-red/30 via-haunt-red/10 to-transparent" style="background: radial-gradient(circle at center, rgba(164,18,20,0.4) 0%, rgba(164,18,20,0.2) 40%, transparent 70%);"></div>
 	<!-- Overlay for better text readability -->
@@ -528,7 +617,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 	<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 		<div class="text-center mb-12">
 			<h2 class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-haunt-red via-red-600 to-haunt-red mb-4 tracking-tight" style="text-shadow: 0 0 40px rgba(164,18,20,0.6);">
-				2026 SCHEDULE
+				{hauntYear} SCHEDULE
 			</h2>
 			<div class="w-32 h-1 bg-gradient-to-r from-transparent via-haunt-red to-transparent mx-auto"></div>
 		</div>
@@ -536,100 +625,106 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 		<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 			<!-- Calendar (Left - 2 columns) -->
 			<div class="lg:col-span-2">
-				<div class="bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-lg overflow-hidden shadow-2xl border-4 border-haunt-red/50 relative" style="box-shadow: 0 0 30px rgba(164,18,20,0.5), inset 0 0 20px rgba(0,0,0,0.8);">
+				<div class="rounded-lg overflow-hidden shadow-2xl border-4 border-haunt-red/70 relative" style="background-image: url('/schedule-bg.jpg'); background-size: cover; background-position: center center; background-repeat: no-repeat; box-shadow: 0 0 40px rgba(164,18,20,0.8), inset 0 0 30px rgba(0,0,0,0.9);">
+					<!-- Dark overlay for readability -->
+					<div class="absolute inset-0 bg-black/50"></div>
 					<!-- Blood drips effect -->
-					<div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-b from-haunt-red/80 to-transparent"></div>
+					<div class="absolute top-0 left-0 w-full h-3 bg-gradient-to-b from-haunt-red to-transparent z-10" style="filter: drop-shadow(0 2px 4px rgba(164,18,20,0.8));"></div>
+
+					<!-- Vignette effect -->
+					<div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/40"></div>
+					<div class="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40"></div>
 
 					<!-- Calendar Header -->
-					<div class="bg-gradient-to-b from-haunt-red to-red-900 text-white text-center py-2 border-b-4 border-black relative">
-						<h3 class="text-lg md:text-xl font-bold tracking-widest drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">OCTOBER 2026</h3>
-						<div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-black to-transparent"></div>
+					<div class="bg-gradient-to-b from-haunt-red via-red-900 to-black text-white text-center py-3 border-b-4 border-haunt-red/80 relative" style="box-shadow: 0 4px 8px rgba(0,0,0,0.8);">
+						<h3 class="text-lg md:text-xl font-bold tracking-[0.3em] drop-shadow-[0_0_8px_rgba(164,18,20,0.4)] uppercase">OCTOBER {hauntYear}</h3>
+						<div class="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-haunt-red to-transparent"></div>
 					</div>
 
 					<!-- Days of Week -->
-					<div class="grid grid-cols-7 bg-black text-white border-b-2 border-haunt-red/30">
-						<div class="text-center py-2 text-xs font-bold border-r border-gray-800 text-gray-400">SUN</div>
-						<div class="text-center py-2 text-xs font-bold border-r border-gray-800 text-gray-400">MON</div>
-						<div class="text-center py-2 text-xs font-bold border-r border-gray-800 text-gray-400">TUE</div>
-						<div class="text-center py-2 text-xs font-bold border-r border-gray-800 text-gray-400">WED</div>
-						<div class="text-center py-2 text-xs font-bold border-r border-gray-800 text-gray-400">THU</div>
-						<div class="text-center py-2 text-xs font-bold border-r border-gray-800 text-gray-400">FRI</div>
-						<div class="text-center py-2 text-xs font-bold text-gray-400">SAT</div>
+					<div class="grid grid-cols-7 bg-black/40 text-white border-b border-haunt-red/50 relative">
+						<div class="text-center py-2 text-xs font-bold border-r border-red-900/40 text-white relative z-10 tracking-wider">SUN</div>
+						<div class="text-center py-2 text-xs font-bold border-r border-red-900/40 text-white relative z-10 tracking-wider">MON</div>
+						<div class="text-center py-2 text-xs font-bold border-r border-red-900/40 text-white relative z-10 tracking-wider">TUE</div>
+						<div class="text-center py-2 text-xs font-bold border-r border-red-900/40 text-white relative z-10 tracking-wider">WED</div>
+						<div class="text-center py-2 text-xs font-bold border-r border-red-900/40 text-white relative z-10 tracking-wider">THU</div>
+						<div class="text-center py-2 text-xs font-bold border-r border-red-900/40 text-white relative z-10 tracking-wider">FRI</div>
+						<div class="text-center py-2 text-xs font-bold text-white relative z-10 tracking-wider">SAT</div>
 					</div>
 
 					<!-- Calendar Days -->
-					<div class="grid grid-cols-7">
+					<div class="grid grid-cols-7 relative">
 						<!-- Week 1 -->
-						<div class="bg-gray-900/30 border border-gray-800/50 p-3 h-16"></div>
-						<div class="bg-gray-900/30 border border-gray-800/50 p-3 h-16"></div>
-						<div class="bg-gray-900/30 border border-gray-800/50 p-3 h-16"></div>
-						<div class="bg-gray-900/30 border border-gray-800/50 p-3 h-16"></div>
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">1</span></div>
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">2</span></div>
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">3</span></div>
+						<div class="bg-transparent border border-red-900/30 p-3 h-16"></div>
+						<div class="bg-transparent border border-red-900/30 p-3 h-16"></div>
+						<div class="bg-transparent border border-red-900/30 p-3 h-16"></div>
+						<div class="bg-transparent border border-red-900/30 p-3 h-16"></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">1</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">2</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">3</span></div>
 
 						<!-- Week 2 -->
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">4</span></div>
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">5</span></div>
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">6</span></div>
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">7</span></div>
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">8</span></div>
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">9</span></div>
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">10</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">4</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">5</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">6</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">7</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">8</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">9</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">10</span></div>
 
 						<!-- Week 3 -->
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">11</span></div>
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">12</span></div>
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">13</span></div>
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">14</span></div>
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">15</span></div>
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">16</span></div>
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">17</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">11</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">12</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">13</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">14</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">15</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">16</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">17</span></div>
 
 						<!-- Week 4 -->
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">18</span></div>
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">19</span></div>
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">20</span></div>
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">21</span></div>
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">22</span></div>
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">23</span></div>
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">24</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">18</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">19</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">20</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">21</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">22</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">23</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">24</span></div>
 
 						<!-- Week 5 -->
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">25</span></div>
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">26</span></div>
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">27</span></div>
-						<div class="bg-gray-900 border-2 border-gray-800 p-3 h-16 hover:bg-gray-800 transition-colors"><span class="text-base md:text-lg font-extrabold text-gray-400">28</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">25</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">26</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">27</span></div>
+						<div class="bg-black/20 border border-red-900/40 p-3 h-16 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">28</span></div>
 						<!-- Oct 29 - HIGHLIGHTED -->
-						<a href="#tickets" class="block bg-gradient-to-br from-haunt-red via-red-900 to-black border-4 border-haunt-red p-3 h-16 relative transform hover:scale-110 transition-all cursor-pointer" style="box-shadow: 0 0 20px rgba(164,18,20,1), inset 0 0 10px rgba(164,18,20,0.5);">
+						<a href="/tickets?date={hauntYear}-10-29" class="block bg-gradient-to-br from-haunt-red/40 via-red-900/30 to-black border-2 border-haunt-red/40 p-3 h-16 relative transform hover:scale-105 transition-all cursor-pointer" style="box-shadow: 0 0 10px rgba(164,18,20,0.3), inset 0 0 8px rgba(164,18,20,0.2);">
 							<span class="font-extrabold text-white text-xl md:text-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,1)]">29</span>
-							<div class="absolute bottom-1 right-1 text-white text-xs font-extrabold bg-black/70 px-2 py-0.5 rounded">OPEN</div>
+							<div class="absolute bottom-1 right-1 text-haunt-red text-[10px] font-bold uppercase tracking-wider bg-black/60 px-1.5 py-0.5 rounded border border-haunt-red/50" style="text-shadow: 0 0 4px rgba(164,18,20,0.8);">OPEN</div>
 						</a>
 						<!-- Oct 30 - HIGHLIGHTED -->
-						<a href="#tickets" class="block bg-gradient-to-br from-haunt-red via-red-900 to-black border-4 border-haunt-red p-3 h-16 relative transform hover:scale-110 transition-all cursor-pointer" style="box-shadow: 0 0 20px rgba(164,18,20,1), inset 0 0 10px rgba(164,18,20,0.5);">
+						<a href="/tickets?date={hauntYear}-10-30" class="block bg-gradient-to-br from-haunt-red/40 via-red-900/30 to-black border-2 border-haunt-red/40 p-3 h-16 relative transform hover:scale-105 transition-all cursor-pointer" style="box-shadow: 0 0 10px rgba(164,18,20,0.3), inset 0 0 8px rgba(164,18,20,0.2);">
 							<span class="font-extrabold text-white text-xl md:text-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,1)]">30</span>
-							<div class="absolute bottom-1 right-1 text-white text-xs font-extrabold bg-black/70 px-2 py-0.5 rounded">OPEN</div>
+							<div class="absolute bottom-1 right-1 text-haunt-red text-[10px] font-bold uppercase tracking-wider bg-black/60 px-1.5 py-0.5 rounded border border-haunt-red/50" style="text-shadow: 0 0 4px rgba(164,18,20,0.8);">OPEN</div>
 						</a>
 						<!-- Oct 31 - HIGHLIGHTED -->
-						<a href="#tickets" class="block bg-gradient-to-br from-haunt-red via-red-900 to-black border-4 border-haunt-red p-3 h-16 relative transform hover:scale-110 transition-all cursor-pointer" style="box-shadow: 0 0 20px rgba(164,18,20,1), inset 0 0 10px rgba(164,18,20,0.5);">
+						<a href="/tickets?date={hauntYear}-10-31" class="block bg-gradient-to-br from-haunt-red/40 via-red-900/30 to-black border-2 border-haunt-red/40 p-3 h-16 relative transform hover:scale-105 transition-all cursor-pointer" style="box-shadow: 0 0 10px rgba(164,18,20,0.3), inset 0 0 8px rgba(164,18,20,0.2);">
 							<span class="font-extrabold text-white text-xl md:text-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,1)]">31</span>
-							<div class="absolute bottom-1 right-1 text-white text-xs font-extrabold bg-black/70 px-2 py-0.5 rounded">OPEN</div>
+							<div class="absolute bottom-1 right-1 text-haunt-red text-[10px] font-bold uppercase tracking-wider bg-black/60 px-1.5 py-0.5 rounded border border-haunt-red/50" style="text-shadow: 0 0 4px rgba(164,18,20,0.8);">OPEN</div>
 						</a>
 					</div>
 
 					<!-- November Row -->
-					<div class="grid grid-cols-7 border-t-4 border-haunt-red/80" style="box-shadow: inset 0 4px 8px rgba(164,18,20,0.3);">
+					<div class="grid grid-cols-7 border-t-4 border-haunt-red/80 relative" style="box-shadow: inset 0 4px 8px rgba(164,18,20,0.3);">
 						<!-- Nov 1 - HIGHLIGHTED -->
-						<a href="#tickets" class="block bg-gradient-to-br from-haunt-red via-red-900 to-black border-4 border-haunt-red p-3 h-16 relative transform hover:scale-110 transition-all cursor-pointer" style="box-shadow: 0 0 20px rgba(164,18,20,1), inset 0 0 10px rgba(164,18,20,0.5);">
+						<a href="/tickets?date={hauntYear}-11-01" class="block bg-gradient-to-br from-haunt-red/40 via-red-900/30 to-black border-2 border-haunt-red/40 p-3 h-16 relative transform hover:scale-105 transition-all cursor-pointer" style="box-shadow: 0 0 10px rgba(164,18,20,0.3), inset 0 0 8px rgba(164,18,20,0.2);">
 							<span class="font-extrabold text-white text-xl md:text-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,1)]">1</span>
-							<div class="absolute bottom-1 right-1 text-white text-xs font-extrabold bg-black/70 px-2 py-0.5 rounded">OPEN</div>
+							<div class="absolute bottom-1 right-1 text-haunt-red text-[10px] font-bold uppercase tracking-wider bg-black/60 px-1.5 py-0.5 rounded border border-haunt-red/50" style="text-shadow: 0 0 4px rgba(164,18,20,0.8);">OPEN</div>
 						</a>
-						<div class="bg-gray-900/30 border border-gray-800/50 p-3 h-16"></div>
-						<div class="bg-gray-900/30 border border-gray-800/50 p-3 h-16"></div>
-						<div class="bg-gray-900/30 border border-gray-800/50 p-3 h-16"></div>
-						<div class="bg-gray-900/30 border border-gray-800/50 p-3 h-16"></div>
-						<div class="bg-gray-900/30 border border-gray-800/50 p-3 h-16"></div>
-						<div class="bg-gray-900/30 border border-gray-800/50 p-3 h-16"></div>
+						<div class="bg-transparent border border-red-900/30 p-3 h-16"></div>
+						<div class="bg-transparent border border-red-900/30 p-3 h-16"></div>
+						<div class="bg-transparent border border-red-900/30 p-3 h-16"></div>
+						<div class="bg-transparent border border-red-900/30 p-3 h-16"></div>
+						<div class="bg-transparent border border-red-900/30 p-3 h-16"></div>
+						<div class="bg-transparent border border-red-900/30 p-3 h-16"></div>
 					</div>
 				</div>
 
@@ -643,40 +738,45 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 
 			<!-- Schedule Info (Right - 1 column) -->
 			<div class="lg:col-span-1">
-				<div class="bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-lg overflow-hidden shadow-2xl border-4 border-haunt-red/50 relative" style="box-shadow: 0 0 30px rgba(164,18,20,0.5), inset 0 0 20px rgba(0,0,0,0.8); height: 100%;">
+				<div class="bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-lg overflow-hidden shadow-2xl border-4 border-haunt-red/70 relative" style="background-image: url('/schedule-bg.jpg'); background-size: cover; background-position: center; box-shadow: 0 0 40px rgba(164,18,20,0.8), inset 0 0 30px rgba(0,0,0,0.9); height: 100%;">
+					<!-- Dark overlay for readability -->
+					<div class="absolute inset-0 bg-black/50"></div>
 					<!-- Blood drips effect -->
-					<div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-b from-haunt-red/80 to-transparent"></div>
+					<div class="absolute top-0 left-0 w-full h-3 bg-gradient-to-b from-haunt-red to-transparent z-10" style="filter: drop-shadow(0 2px 4px rgba(164,18,20,0.8));"></div>
+
+					<!-- Vignette effect -->
+					<div class="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/40"></div>
+					<div class="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40"></div>
 
 					<!-- Header -->
-					<div class="bg-gradient-to-b from-haunt-red to-red-900 text-white text-center py-2 border-b-4 border-black relative">
-						<h3 class="text-lg md:text-xl font-bold tracking-widest drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">HOURS</h3>
-						<div class="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-black to-transparent"></div>
+					<div class="bg-gradient-to-b from-haunt-red via-red-900 to-black text-white text-center py-3 border-b-4 border-haunt-red/80 relative" style="box-shadow: 0 4px 8px rgba(0,0,0,0.8);">
+						<h3 class="text-lg md:text-xl font-bold tracking-[0.3em] drop-shadow-[0_0_10px_rgba(164,18,20,0.8)] uppercase">HOURS</h3>
 					</div>
 
 					<!-- Hours Content -->
-					<div class="flex flex-col justify-center p-6 space-y-6">
+					<div class="flex flex-col justify-center p-6 space-y-6 relative z-10">
 						<!-- Thursday -->
-						<div class="border-b-2 border-haunt-red/30 pb-4">
-							<div class="text-base md:text-lg font-bold text-haunt-red mb-2 tracking-wider drop-shadow-lg">THURSDAY</div>
-							<div class="text-xl md:text-2xl font-extrabold text-white drop-shadow-xl">8PM - 11PM</div>
+						<div class="border-b-2 border-haunt-red/50 pb-4">
+							<div class="text-base md:text-lg font-bold text-haunt-red mb-2 tracking-wider" style="text-shadow: 0 0 10px rgba(164,18,20,0.8);">THURSDAY</div>
+							<div class="text-xl md:text-2xl font-extrabold text-white" style="text-shadow: 0 0 8px rgba(255,255,255,0.5);">8PM - 11PM</div>
 						</div>
 
 						<!-- Friday -->
-						<div class="border-b-2 border-haunt-red/30 pb-4">
-							<div class="text-base md:text-lg font-bold text-haunt-red mb-2 tracking-wider drop-shadow-lg">FRIDAY</div>
-							<div class="text-xl md:text-2xl font-extrabold text-white drop-shadow-xl">8PM - 12AM</div>
+						<div class="border-b-2 border-haunt-red/50 pb-4">
+							<div class="text-base md:text-lg font-bold text-haunt-red mb-2 tracking-wider" style="text-shadow: 0 0 10px rgba(164,18,20,0.8);">FRIDAY</div>
+							<div class="text-xl md:text-2xl font-extrabold text-white" style="text-shadow: 0 0 8px rgba(255,255,255,0.5);">8PM - 12AM</div>
 						</div>
 
 						<!-- Saturday -->
-						<div class="border-b-2 border-haunt-red/30 pb-4">
-							<div class="text-base md:text-lg font-bold text-haunt-red mb-2 tracking-wider drop-shadow-lg">SATURDAY</div>
-							<div class="text-xl md:text-2xl font-extrabold text-white drop-shadow-xl">8PM - 12AM</div>
+						<div class="border-b-2 border-haunt-red/50 pb-4">
+							<div class="text-base md:text-lg font-bold text-haunt-red mb-2 tracking-wider" style="text-shadow: 0 0 10px rgba(164,18,20,0.8);">SATURDAY</div>
+							<div class="text-xl md:text-2xl font-extrabold text-white" style="text-shadow: 0 0 8px rgba(255,255,255,0.5);">8PM - 12AM</div>
 						</div>
 
 						<!-- Sunday -->
 						<div class="pb-4">
-							<div class="text-base md:text-lg font-bold text-haunt-red mb-2 tracking-wider drop-shadow-lg">SUNDAY</div>
-							<div class="text-xl md:text-2xl font-extrabold text-white drop-shadow-xl">8PM - 11PM</div>
+							<div class="text-base md:text-lg font-bold text-haunt-red mb-2 tracking-wider" style="text-shadow: 0 0 10px rgba(164,18,20,0.8);">SUNDAY</div>
+							<div class="text-xl md:text-2xl font-extrabold text-white" style="text-shadow: 0 0 8px rgba(255,255,255,0.5);">8PM - 11PM</div>
 						</div>
 					</div>
 				</div>
@@ -686,14 +786,14 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 </section>
 
 <!-- FAQs Section -->
-<section class="py-20 bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
+<section id="faq-section" class="py-20 bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
 	<!-- Background texture overlay -->
 	<div class="absolute inset-0 opacity-5" style="background-image: url('/calendar-bg.png'); background-size: cover;"></div>
 
 	<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 		<!-- Striking Header -->
 		<div class="text-center mb-12">
-			<h2 class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-haunt-red via-red-600 to-haunt-red mb-4 tracking-tight" style="text-shadow: 0 0 40px rgba(164,18,20,0.6);">
+			<h2 class="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-haunt-red via-red-600 to-haunt-red mb-4 tracking-tight" style="text-shadow: 0 0 40px rgba(164,18,20,0.6);">
 				FREQUENTLY ASKED QUESTIONS
 			</h2>
 			<div class="w-32 h-1 bg-gradient-to-r from-transparent via-haunt-red to-transparent mx-auto"></div>
@@ -709,7 +809,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 				<!-- Animated background -->
 				<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
 
-				<span class="text-xl md:text-2xl relative z-10 tracking-wide">
+				<span class="text-2xl relative z-10 tracking-wide">
 					{faqExpanded ? 'HIDE FAQs' : 'SHOW FAQs'}
 				</span>
 				<svg
@@ -741,12 +841,12 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 				{ q: 'Is there a bathroom on-site?', a: 'Unfortunately no, but there are several gas stations nearby.' }
 			] as faq, index}
 				<details class="group bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-xl border-4 border-haunt-red/30 hover:border-haunt-red transition-all duration-300 overflow-hidden shadow-xl" style="box-shadow: 0 0 20px rgba(164,18,20,0.3);">
-					<summary class="cursor-pointer list-none p-6 md:p-8 flex items-center justify-between gap-4 hover:bg-haunt-red/10 transition-colors">
-						<h3 class="text-xl md:text-2xl font-extrabold text-white group-hover:text-haunt-red transition-colors tracking-wide flex-1">
+					<summary class="cursor-pointer list-none p-8 flex items-center justify-between gap-4 hover:bg-haunt-red/10 transition-colors">
+						<h3 class="text-2xl font-extrabold text-white group-hover:text-haunt-red transition-colors tracking-wide flex-1">
 							{faq.q}
 						</h3>
 						<svg
-							class="w-7 h-7 md:w-8 md:h-8 text-haunt-red transform transition-transform duration-300 group-open:rotate-180 flex-shrink-0"
+							class="w-8 h-8 text-haunt-red transform transition-transform duration-300 group-open:rotate-180 flex-shrink-0"
 							fill="none"
 							viewBox="0 0 24 24"
 							stroke="currentColor"
@@ -755,10 +855,10 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 							<path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
 						</svg>
 					</summary>
-					<div class="px-6 md:px-8 pb-6 md:pb-8 pt-2">
-						<div class="pr-4 md:pr-10">
-							<div class="h-1 bg-gradient-to-r from-haunt-red/50 via-haunt-red to-haunt-red/50 mb-6 rounded-full"></div>
-							<p class="text-gray-300 text-lg md:text-xl leading-relaxed font-medium">
+					<div class="px-8 pb-8 pt-2">
+						<div class="pr-10">
+							<div class="h-px bg-gradient-to-r from-haunt-red/50 via-haunt-red to-haunt-red/50 mb-6"></div>
+							<p class="text-gray-300 text-xl leading-relaxed font-medium">
 								{faq.a}
 							</p>
 						</div>
@@ -777,10 +877,10 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 <!-- Ticket Request Form -->
 <section id="tickets" class="py-20 relative overflow-hidden">
 	<!-- Ticket background image -->
-	<div class="absolute inset-0" style="background-image: url('/ticketbg.png'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
+	<div class="absolute inset-0 bg-center" style="background-image: url('/ticketbg.png'); background-size: 120%;"></div>
 
 	<!-- Dark overlay for better text readability -->
-	<div class="absolute inset-0 bg-black/40"></div>
+	<div class="absolute inset-0 bg-black/50 md:bg-black/40"></div>
 
 	<!-- Vignette effect -->
 	<div class="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/30"></div>
@@ -797,7 +897,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 
 		<div class="text-center">
 			<a
-				href="#"
+				href="/tickets?date={firstAvailableDate}"
 				class="group inline-flex items-center gap-3 bg-gradient-to-r from-haunt-red to-red-900 hover:from-red-900 hover:to-haunt-red text-white font-extrabold py-5 px-12 rounded-xl transition-all transform hover:scale-105 shadow-2xl overflow-hidden relative text-xl"
 				style="box-shadow: 0 0 40px rgba(164,18,20,0.6);"
 			>
@@ -880,7 +980,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 							<path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm192 96c44.2 0 80 35.8 80 80c0 44.2-35.8 80-80 80H224v64c0 8.8-7.2 16-16 16s-16-7.2-16-16V368 240 144c0-8.8 7.2-16 16-16h64zm0 128c26.5 0 48-21.5 48-48s-21.5-48-48-48H224v96h32z"/>
 						</svg>
 						<div>
-							<h4 class="text-lg font-bold text-white mb-2">Parking Information</h4>
+							<h4 class="text-2xl font-bold text-white mb-2">Parking Information</h4>
 							<p class="text-gray-400">Parking is free but EXTREMELY limited! Please carpool or even Uber/Lyft if possible. Do not park in or block our neighbors' driveways.</p>
 						</div>
 					</div>
@@ -893,17 +993,17 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 				<div class="absolute -inset-4 bg-gradient-to-r from-haunt-red/20 via-red-600/25 to-haunt-red/20 blur-2xl opacity-50"></div>
 
 				<!-- Map Container -->
-				<div class="relative bg-gradient-to-br from-gray-900/80 via-black/80 to-gray-900/80 rounded-2xl border-2 border-haunt-red/40 p-4" style="box-shadow: 0 0 30px rgba(164,18,20,0.3), inset 0 0 20px rgba(0,0,0,0.5);">
-					<div class="relative rounded-xl overflow-hidden" style="aspect-ratio: 4/3;">
+				<div class="relative bg-gradient-to-br from-gray-900/80 via-black/80 to-gray-900/80 rounded-2xl border-2 border-haunt-red/40 p-2 sm:p-4" style="box-shadow: 0 0 30px rgba(164,18,20,0.3), inset 0 0 20px rgba(0,0,0,0.5);">
+					<div class="relative rounded-xl overflow-hidden w-full h-[500px] sm:h-[400px]">
 						<iframe
 							src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3307.8447259384676!2d-84.0007!3d33.9734!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88f5a3e4c8d8a8e7%3A0x1234567890abcdef!2s2100%20Carlysle%20Park%20Ln%2C%20Lawrenceville%2C%20GA%2030044!5e0!3m2!1sen!2sus!4v1234567890123!5m2!1sen!2sus"
 							width="100%"
 							height="100%"
-							style="border:0;"
+							style="border:0; filter: invert(90%) hue-rotate(180deg) brightness(95%) contrast(90%); display: block;"
 							allowfullscreen=""
 							loading="lazy"
 							referrerpolicy="no-referrer-when-downgrade"
-							class="absolute inset-0"
+							class="absolute inset-0 w-full h-full"
 							title="McCloud Manor Location"
 						></iframe>
 					</div>

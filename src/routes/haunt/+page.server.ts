@@ -1,5 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
+import { createServerClient } from '@supabase/ssr';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
 import { fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import type { McCloudInfo, McCloudPhoto } from '$lib/types';
@@ -28,17 +30,37 @@ export const load: PageServerLoad = async () => {
 	const { data: photos } = await supabase
 		.from('mccloud_photos')
 		.select('*')
-		.order('display_order', { ascending: true });
+		.order('display_order', { ascending: true});
+
+	// Fetch available ticket dates
+	const { data: ticketDates } = await supabase
+		.from('ticket_dates')
+		.select('*')
+		.eq('is_available', true)
+		.gte('date', new Date().toISOString().split('T')[0])
+		.order('date', { ascending: true });
 
 	return {
 		info: info as McCloudInfo | null,
-		photos: (photos as McCloudPhoto[]) || []
+		photos: (photos as McCloudPhoto[]) || [],
+		ticketDates: ticketDates || []
 	};
 };
 
 export const actions: Actions = {
-	requestTickets: async ({ request }) => {
-		const supabase = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
+	requestTickets: async ({ request, cookies }) => {
+		// Use service_role key to bypass RLS for ticket request submissions
+		const supabase = createServerClient(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+			cookies: {
+				get: (key) => cookies.get(key),
+				set: (key, value, options) => {
+					cookies.set(key, value, { ...options, path: '/' });
+				},
+				remove: (key, options) => {
+					cookies.delete(key, { ...options, path: '/' });
+				}
+			}
+		});
 		const formData = await request.formData();
 
 		const name = formData.get('name')?.toString();

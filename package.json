@@ -27,6 +27,8 @@
 	"dependencies": {
 		"@supabase/ssr": "^0.7.0",
 		"@supabase/supabase-js": "^2.75.1",
-		"powerglitch": "^2.5.0"
+		"ical-generator": "^9.0.0",
+		"powerglitch": "^2.5.0",
+		"resend": "^6.2.2"
 	}
 }

@@ -17,7 +17,8 @@ export const load: PageServerLoad = async () => {
 	const { data: reviews, error } = await supabase
 		.from('reviews')
 		.select('*')
-		.order('created_at', { ascending: false });
+		.order('review_date', { ascending: false, nullsFirst: false })
+		.order('created_at', { ascending: false }); // Fallback for reviews without review_date
 
 	if (error) {
 		console.error('Error fetching reviews:', error);

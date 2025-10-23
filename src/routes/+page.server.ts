@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import type { PageServerLoad } from './$types';
-import type { Review, HeroMessage } from '$lib/types';
+import type { Review, HeroMessage, Quote } from '$lib/types';
 
 export const load: PageServerLoad = async () => {
 	// Handle missing Supabase credentials gracefully
@@ -11,7 +11,9 @@ export const load: PageServerLoad = async () => {
 		console.warn('Supabase credentials not configured - returning empty data');
 		return {
 			heroMessage: undefined,
-			featuredReviews: []
+			featuredReviews: [],
+			popularReviews: [],
+			quotes: []
 		};
 	}
 
@@ -32,18 +34,38 @@ export const load: PageServerLoad = async () => {
 		.select('*')
 		.eq('featured', true)
 		.order('created_at', { ascending: false })
-		.limit(6);
+		.limit(3);
 
 	if (error) {
 		console.error('Error fetching featured reviews:', error);
-		return {
-			heroMessage,
-			featuredReviews: []
-		};
+	}
+
+	// Fetch popular reviews (most viewed)
+	const { data: popularReviews, error: popularError } = await supabase
+		.from('reviews')
+		.select('*')
+		.order('view_count', { ascending: false, nullsFirst: false })
+		.limit(3);
+
+	if (popularError) {
+		console.error('Error fetching popular reviews:', popularError);
+	}
+
+	// Fetch active quotes (always fetch quotes even if reviews fail)
+	const { data: quotes, error: quotesError } = await supabase
+		.from('quotes')
+		.select('*')
+		.eq('is_active', true)
+		.order('display_order', { ascending: true });
+
+	if (quotesError) {
+		console.error('Error fetching quotes:', quotesError);
 	}
 
 	return {
 		heroMessage,
-		featuredReviews: (featuredReviews as Review[]) || []
+		featuredReviews: (featuredReviews as Review[]) || [],
+		popularReviews: (popularReviews as Review[]) || [],
+		quotes: (quotes as Quote[]) || []
 	};
 };

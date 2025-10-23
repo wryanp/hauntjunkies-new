@@ -4,21 +4,34 @@
 	import Footer from '$lib/components/Footer.svelte';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import type { LayoutData } from './$types';
 
-	let { children } = $props();
+	let { children, data }: { children: any; data: LayoutData } = $props();
 	let showScrollTop = $state(false);
+
+	// Check if we're on an admin page
+	const isAdminPage = $derived($page.url.pathname.startsWith('/admin'));
 
 	// Determine button color based on current page
 	const isHauntPage = $derived($page.url.pathname === '/haunt');
 	const buttonColorClass = $derived(isHauntPage ? 'bg-haunt-red/40 hover:bg-haunt-red' : 'bg-haunt-orange/40 hover:bg-haunt-orange');
 
 	onMount(() => {
+		// Check for ?admin URL parameter and redirect to admin login
+		if ($page.url.searchParams.has('admin')) {
+			window.location.href = '/admin/login';
+			return;
+		}
+
 		const handleScroll = () => {
 			showScrollTop = window.scrollY > 300;
 		};
 
 		window.addEventListener('scroll', handleScroll);
-		return () => window.removeEventListener('scroll', handleScroll);
+
+		return () => {
+			window.removeEventListener('scroll', handleScroll);
+		};
 	});
 
 	function scrollToTop() {
@@ -34,17 +47,21 @@
 	<title>Haunt Junkies - Haunted Attraction Reviews</title>
 </svelte:head>
 
-<div class="flex flex-col min-h-screen">
-	<Navigation />
+<div class="flex flex-col min-h-screen w-full max-w-full overflow-x-hidden">
+	{#if !isAdminPage}
+		<Navigation />
+	{/if}
 
-	<main class="flex-grow">
+	<main class="flex-grow w-full max-w-full">
 		{@render children?.()}
 	</main>
 
-	<Footer />
+	{#if !isAdminPage}
+		<Footer isAuthenticated={data.isAuthenticated} />
+	{/if}
 
 	<!-- Scroll to Top Button -->
-	{#if showScrollTop}
+	{#if showScrollTop && !isAdminPage}
 		<button
 			onclick={scrollToTop}
 			class="fixed bottom-8 right-8 {buttonColorClass} text-white p-4 rounded-full shadow-2xl transition-all transform hover:scale-110 z-50 group"

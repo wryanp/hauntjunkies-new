@@ -1,0 +1,400 @@
+import { Resend } from 'resend';
+import { RESEND_API_KEY } from '$env/static/private';
+import ical from 'ical-generator';
+
+const resend = new Resend(RESEND_API_KEY);
+
+interface TicketData {
+	confirmationNumber: string;
+	firstName: string;
+	lastName: string;
+	email: string;
+	date: string;
+	startTime?: string;
+	endTime?: string;
+	tickets: number;
+	specialRequests?: string;
+}
+
+function generateConfirmationNumber(): string {
+	// Generate format: MCM-YYYYMMDD-XXXX (MCM = McCloud Manor)
+	const date = new Date();
+	const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');
+	const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+	return `MCM-${dateStr}-${random}`;
+}
+
+function formatDate(dateString: string): string {
+	return new Date(dateString).toLocaleDateString('en-US', {
+		weekday: 'long',
+		month: 'long',
+		day: 'numeric',
+		year: 'numeric'
+	});
+}
+
+function formatTime(timeString: string): string {
+	if (!timeString) return '';
+	return new Date(`2000-01-01T${timeString}`).toLocaleTimeString('en-US', {
+		hour: 'numeric',
+		minute: '2-digit',
+		hour12: true
+	});
+}
+
+function generateCalendarInvite(ticketData: TicketData): string {
+	const calendar = ical({ name: 'McCloud Manor Ticket' });
+
+	const eventDate = new Date(ticketData.date);
+	const startTime = ticketData.startTime || '20:00:00'; // Default 8 PM
+	const endTime = ticketData.endTime || '23:00:00'; // Default 11 PM
+
+	const startDateTime = new Date(`${ticketData.date}T${startTime}`);
+	const endDateTime = new Date(`${ticketData.date}T${endTime}`);
+
+	calendar.createEvent({
+		start: startDateTime,
+		end: endDateTime,
+		summary: 'McCloud Manor - Your Haunt Experience',
+		description: `Your tickets for McCloud Manor!\n\nConfirmation: ${ticketData.confirmationNumber}\nTickets: ${ticketData.tickets}\n\nAddress: 2100 Carlysle Park Lane, Lawrenceville, GA 30044\n\nParking: Free but EXTREMELY limited. Please carpool or use Uber/Lyft.\n\nMore info: https://hauntjunkies.com/haunt#faq`,
+		location: '2100 Carlysle Park Lane, Lawrenceville, GA 30044',
+		url: 'https://hauntjunkies.com/haunt'
+	});
+
+	return calendar.toString();
+}
+
+function createCustomerEmailHTML(ticketData: TicketData): string {
+	const dateFormatted = formatDate(ticketData.date);
+	const timeStr = ticketData.startTime && ticketData.endTime
+		? `${formatTime(ticketData.startTime)} - ${formatTime(ticketData.endTime)}`
+		: 'See details below';
+
+	return `
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="color-scheme" content="light only">
+	<meta name="supported-color-schemes" content="light only">
+	<title>Your McCloud Manor Tickets</title>
+	<style type="text/css">
+		:root {
+			color-scheme: light only;
+			supported-color-schemes: light only;
+		}
+		@media only screen and (max-width: 600px) {
+			.responsive-table {
+				width: 100% !important;
+			}
+			.mobile-padding {
+				padding: 20px !important;
+			}
+			.mobile-header-padding {
+				padding: 30px 20px !important;
+			}
+			.mobile-font-xlarge {
+				font-size: 32px !important;
+			}
+			.mobile-font-large {
+				font-size: 24px !important;
+			}
+			.mobile-font-medium {
+				font-size: 16px !important;
+			}
+			.mobile-font-small {
+				font-size: 14px !important;
+			}
+			.button-column {
+				display: block !important;
+				width: 100% !important;
+				padding: 0 0 10px 0 !important;
+			}
+			.button-link {
+				display: block !important;
+				width: 100% !important;
+				box-sizing: border-box !important;
+			}
+		}
+	</style>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f4f4f4; color: #333333;">
+	<table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f4;">
+		<tr>
+			<td align="center" style="padding: 40px 20px;">
+				<table width="600" cellpadding="0" cellspacing="0" class="responsive-table" style="max-width: 600px; width: 100%; background-color: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden;">
+
+					<!-- Header -->
+					<tr>
+						<td align="center" class="mobile-header-padding" style="padding: 50px 40px; background-color: #000000; border-bottom: 4px solid #a41214;">
+							<h1 class="mobile-font-xlarge" style="margin: 0; font-size: 42px; font-weight: 700; color: #ffffff; letter-spacing: 3px; font-family: 'Georgia', 'Times New Roman', serif;">
+								MCCLOUD MANOR
+							</h1>
+						</td>
+					</tr>
+
+					<!-- Ticket Intro -->
+					<tr>
+						<td class="mobile-padding" style="padding: 40px 40px 30px 40px; text-align: center;">
+							<h2 class="mobile-font-large" style="margin: 0 0 12px 0; font-size: 28px; font-weight: 700; color: #000000;">Your Tickets Are Confirmed</h2>
+							<p style="margin: 0 0 8px 0; font-size: 16px; color: #666666; line-height: 1.6;">
+								We're excited to terrify you at McCloud Manor.
+							</p>
+							<p style="margin: 0; font-size: 16px; color: #666666; line-height: 1.6;">
+								Please review your event details below.
+							</p>
+						</td>
+					</tr>
+
+					<!-- Event Details -->
+					<tr>
+						<td class="mobile-padding" style="padding: 0 40px 30px 40px;">
+							<table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f9f9f9; border-radius: 6px; overflow: hidden;">
+								<tr>
+									<td style="padding: 20px 24px; border-bottom: 1px solid #e5e5e5;">
+										<table width="100%" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="40%" style="color: #666666; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Guest Name</td>
+												<td style="color: #000000; font-size: 16px; font-weight: 600; text-align: right;">${ticketData.firstName} ${ticketData.lastName}</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td style="padding: 20px 24px; border-bottom: 1px solid #e5e5e5;">
+										<table width="100%" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="40%" style="color: #666666; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Date</td>
+												<td style="color: #000000; font-size: 16px; font-weight: 600; text-align: right;">${dateFormatted}</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td style="padding: 20px 24px; border-bottom: 1px solid #e5e5e5;">
+										<table width="100%" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="40%" style="color: #666666; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Time</td>
+												<td style="color: #000000; font-size: 16px; font-weight: 600; text-align: right;">${timeStr}</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								<tr>
+									<td style="padding: 20px 24px;">
+										<table width="100%" cellpadding="0" cellspacing="0">
+											<tr>
+												<td width="40%" style="color: #666666; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Tickets</td>
+												<td style="color: #a41214; font-size: 18px; font-weight: 700; text-align: right;">${ticketData.tickets} ${ticketData.tickets === 1 ? 'Ticket' : 'Tickets'}</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+							</table>
+
+							${ticketData.specialRequests ? `
+							<div style="margin-top: 20px; padding: 18px 20px; background-color: #f5f5f5; border-left: 3px solid #a41214; border-radius: 4px;">
+								<p style="margin: 0 0 6px 0; color: #a41214; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Special Requests</p>
+								<p style="margin: 0; color: #666666; font-size: 14px; line-height: 1.6;">${ticketData.specialRequests}</p>
+							</div>
+							` : ''}
+						</td>
+					</tr>
+
+					<!-- Calendar Invite CTA -->
+					<tr>
+						<td class="mobile-padding" style="padding: 0 40px 25px 40px;">
+							<div style="text-align: center; background-color: #f0f8ff; border: 2px dashed #a41214; border-radius: 8px; padding: 24px;">
+								<p style="margin: 0 0 4px 0; font-size: 12px; color: #666666; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">📅 Calendar Invite Attached</p>
+								<p style="margin: 0; font-size: 14px; color: #333333; line-height: 1.5;">
+									A calendar invite (.ics file) is attached to this email. Click it to add this event to your calendar!
+								</p>
+							</div>
+						</td>
+					</tr>
+
+					<!-- Action Buttons -->
+					<tr>
+						<td class="mobile-padding" style="padding: 0 40px 30px 40px;">
+							<table width="100%" cellpadding="0" cellspacing="0">
+								<tr>
+									<td class="button-column" width="48%" style="padding-right: 2%;">
+										<a href="https://www.google.com/maps/dir/?api=1&destination=2100+Carlysle+Park+Lane+Lawrenceville+GA+30044" class="button-link" style="display: block; background-color: #a41214; color: #ffffff; text-decoration: none; padding: 14px 24px; border-radius: 4px; text-align: center; font-weight: 600; font-size: 14px;">
+											Get Directions
+										</a>
+									</td>
+									<td class="button-column" width="48%" style="padding-left: 2%;">
+										<a href="https://hauntjunkies.com/haunt#faq" class="button-link" style="display: block; background-color: #a41214; color: #ffffff; text-decoration: none; padding: 14px 24px; border-radius: 4px; text-align: center; font-weight: 600; font-size: 14px;">
+											View FAQ
+										</a>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+
+					<!-- Important Info -->
+					<tr>
+						<td class="mobile-padding" style="padding: 0 40px 40px 40px;">
+							<div style="background-color: #f9f9f9; border-radius: 6px; padding: 28px 24px;">
+								<h3 class="mobile-font-medium" style="margin: 0 0 16px 0; font-size: 18px; font-weight: 700; color: #000000;">Important Information</h3>
+								<table width="100%" cellpadding="0" cellspacing="0">
+									<tr>
+										<td style="padding-bottom: 12px;">
+											<p style="margin: 0; color: #666666; font-size: 14px; line-height: 1.6;">
+												<strong style="color: #000000;">Parking:</strong> Free but EXTREMELY LIMITED. Please carpool or use Uber/Lyft. Do not park in or block neighbors' driveways.
+											</p>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<p style="margin: 0; color: #666666; font-size: 14px; line-height: 1.6;">
+												<strong style="color: #000000;">Weather:</strong> Open rain or shine (line is not covered)
+											</p>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</td>
+					</tr>
+
+					<!-- Footer -->
+					<tr>
+						<td align="center" class="mobile-padding" style="padding: 40px 40px; background-color: #fafafa; border-top: 1px solid #e5e5e5;">
+							<p style="margin: 0 0 8px 0; font-size: 14px; color: #666666;">
+								Questions? Contact us at <a href="mailto:hauntjunkies@gmail.com" style="color: #a41214; text-decoration: none; font-weight: 600;">hauntjunkies@gmail.com</a>
+							</p>
+							<p style="margin: 0 0 16px 0; font-size: 14px; color: #666666;">
+								<a href="https://hauntjunkies.com/haunt" style="color: #a41214; text-decoration: none; font-weight: 600;">Visit McCloud Manor Website</a>
+							</p>
+							<p style="margin: 0; font-size: 12px; color: #999999;">
+								© ${new Date().getFullYear()} Haunt Junkies. All rights reserved.
+							</p>
+						</td>
+					</tr>
+
+				</table>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>
+`;
+}
+
+function createAdminEmailHTML(ticketData: TicketData): string {
+	const dateFormatted = formatDate(ticketData.date);
+	const timeStr = ticketData.startTime && ticketData.endTime
+		? `${formatTime(ticketData.startTime)} - ${formatTime(ticketData.endTime)}`
+		: 'Not specified';
+
+	return `
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>New Ticket Request</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #ffffff; background-color: #1a1a1a; max-width: 600px; margin: 0 auto; padding: 20px;">
+	<h1 style="color: #cc0000; border-bottom: 3px solid #cc0000; padding-bottom: 10px;">New Ticket Request</h1>
+
+	<h2 style="color: #cc0000; margin-top: 30px;">Guest Details</h2>
+	<table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+		<tr>
+			<td style="padding: 8px; background-color: #2a2a2a; color: #cccccc; font-weight: bold; width: 40%;">Guest Name:</td>
+			<td style="padding: 8px; background-color: #333333; color: #ffffff; border: 1px solid #444;">${ticketData.firstName} ${ticketData.lastName}</td>
+		</tr>
+		<tr>
+			<td style="padding: 8px; background-color: #2a2a2a; color: #cccccc; font-weight: bold;">Email:</td>
+			<td style="padding: 8px; background-color: #333333; color: #ffffff; border: 1px solid #444;">${ticketData.email || 'Not provided'}</td>
+		</tr>
+		<tr>
+			<td style="padding: 8px; background-color: #2a2a2a; color: #cccccc; font-weight: bold;">Date:</td>
+			<td style="padding: 8px; background-color: #333333; color: #ffffff; border: 1px solid #444;">${dateFormatted}</td>
+		</tr>
+		<tr>
+			<td style="padding: 8px; background-color: #2a2a2a; color: #cccccc; font-weight: bold;">Time:</td>
+			<td style="padding: 8px; background-color: #333333; color: #ffffff; border: 1px solid #444;">${timeStr}</td>
+		</tr>
+		<tr>
+			<td style="padding: 8px; background-color: #2a2a2a; color: #cccccc; font-weight: bold;">Number of Tickets:</td>
+			<td style="padding: 8px; background-color: #333333; color: #cc0000; border: 1px solid #444; font-size: 18px; font-weight: bold;">${ticketData.tickets}</td>
+		</tr>
+	</table>
+
+	${ticketData.specialRequests ? `
+	<h2 style="color: #cc0000; margin-top: 30px;">Special Requests</h2>
+	<div style="padding: 15px; background-color: #2a2a2a; border-left: 4px solid #cc0000; margin-bottom: 20px;">
+		<p style="margin: 0; color: #cccccc;">${ticketData.specialRequests}</p>
+	</div>
+	` : ''}
+
+	<div style="margin-top: 30px; padding: 15px; background-color: #2a2a2a; border-radius: 5px; border: 1px solid #444;">
+		<p style="margin: 0; font-size: 14px; color: #cccccc;">
+			<strong style="color: #ffffff;">Next Steps:</strong> This request has been automatically confirmed and the customer has received their digital ticket via email.
+		</p>
+	</div>
+
+	<hr style="margin: 30px 0; border: none; border-top: 1px solid #444;">
+
+	<p style="font-size: 12px; color: #666; text-align: center;">
+		Sent from HauntJunkies Ticket System
+	</p>
+</body>
+</html>
+`;
+}
+
+export async function sendTicketConfirmation(ticketData: TicketData) {
+	const calendarInvite = generateCalendarInvite(ticketData);
+
+	try {
+		// Send email to customer
+		// Note: Use 'onboarding@resend.dev' for testing, or verify your domain in Resend dashboard
+		const fromEmail = process.env.NODE_ENV === 'development'
+			? 'McCloud Manor <onboarding@resend.dev>'
+			: 'McCloud Manor <noreply@hauntjunkies.com>';
+
+		// Send customer email with calendar attachment
+		const customerEmailResult = await resend.emails.send({
+			from: fromEmail,
+			to: ticketData.email,
+			subject: 'Your McCloud Manor Tickets',
+			html: createCustomerEmailHTML(ticketData),
+			attachments: [
+				{
+					filename: 'mccloud-manor-ticket.ics',
+					content: calendarInvite
+				}
+			]
+		});
+
+		// Check if customer email failed
+		if (customerEmailResult.error) {
+			console.error('Customer email failed:', customerEmailResult.error);
+			throw new Error(`Customer email failed: ${customerEmailResult.error.message}`);
+		}
+
+		// Send notification to admin
+		const adminEmailResult = await resend.emails.send({
+			from: fromEmail,
+			to: 'hauntjunkies@gmail.com',
+			subject: `New Ticket Request - ${new Date(ticketData.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} (${ticketData.tickets} tickets)`,
+			html: createAdminEmailHTML(ticketData)
+		});
+
+		// Check if admin email failed
+		if (adminEmailResult.error) {
+			console.error('Admin email failed:', adminEmailResult.error);
+			// Don't throw here - customer email succeeded, that's more important
+		}
+
+		return { success: true };
+	} catch (error) {
+		console.error('Error sending emails:', error);
+		return { success: false, error };
+	}
+}
+
+export { generateConfirmationNumber };

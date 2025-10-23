@@ -1,49 +1,40 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-
-	let currentSlide = $state(0);
-	const placeholderImages = [
-		{ url: '/placeholder-1.jpg', caption: 'Image 1' },
-		{ url: '/placeholder-2.jpg', caption: 'Image 2' },
-		{ url: '/placeholder-3.jpg', caption: 'Image 3' },
-		{ url: '/placeholder-4.jpg', caption: 'Image 4' }
-	];
-
-	function nextSlide() {
-		currentSlide = (currentSlide + 1) % placeholderImages.length;
-	}
-
-	function prevSlide() {
-		currentSlide = currentSlide === 0 ? placeholderImages.length - 1 : currentSlide - 1;
-	}
-
-	function goToSlide(index: number) {
-		currentSlide = index;
-	}
-
-	// Auto-advance carousel
-	onMount(() => {
-		const interval = setInterval(() => {
-			nextSlide();
-		}, 5000);
-		return () => clearInterval(interval);
-	});
+	import SEO from '$lib/components/SEO.svelte';
 </script>
 
-<svelte:head>
-	<title>About Us - Haunt Junkies</title>
-	<meta name="description" content="Learn about Haunt Junkies - passionate fans of horror and haunted attractions traveling the country to review haunts and create our own terrifying experiences." />
-</svelte:head>
+<SEO
+	title="About Us"
+	description="Learn about Haunt Junkies - passionate fans of horror and haunted attractions traveling the country to review haunts and create our own terrifying experiences at McCloud Manor."
+	url="/about"
+	image="/og-about.jpg"
+	type="website"
+/>
 
 <!-- About Us Section -->
-<section class="py-20 bg-gradient-to-b from-black via-gray-900 to-black relative overflow-hidden min-h-screen">
+<section class="pt-32 pb-20 md:pt-32 md:pb-20 relative overflow-hidden" style="min-height: 100vh; min-height: -webkit-fill-available; min-height: 100dvh;">
+	<!-- Background Image -->
+	<div class="absolute inset-0">
+		<img src="/experience-bg.jpg" alt="" role="presentation" class="w-full h-full object-cover" style="object-position: center;" />
+	</div>
+
+	<!-- Dark overlay -->
+	<div class="absolute inset-0 bg-black/60"></div>
+
+	<!-- Smoky animated background -->
+	<div class="absolute inset-0">
+		<!-- Multiple smoke layers for depth -->
+		<div class="absolute inset-0 opacity-20" style="background: radial-gradient(ellipse at 20% 30%, rgba(100,100,100,0.3) 0%, transparent 50%), radial-gradient(ellipse at 80% 70%, rgba(100,100,100,0.3) 0%, transparent 50%), radial-gradient(ellipse at 50% 50%, rgba(80,80,80,0.2) 0%, transparent 60%);"></div>
+		<div class="absolute inset-0 opacity-15" style="background: radial-gradient(ellipse at 60% 40%, rgba(120,120,120,0.4) 0%, transparent 55%), radial-gradient(ellipse at 30% 80%, rgba(90,90,90,0.3) 0%, transparent 50%);"></div>
+
+		<!-- Animated smoke wisps -->
+		<div class="absolute inset-0 animate-pulse" style="animation-duration: 8s; background: radial-gradient(ellipse at 40% 60%, rgba(100,100,100,0.15) 0%, transparent 40%);"></div>
+	</div>
+
+	<!-- Orange glow accents -->
+	<div class="absolute inset-0 opacity-10" style="background: radial-gradient(ellipse at 50% 0%, rgba(252,116,3,0.4) 0%, transparent 50%), radial-gradient(ellipse at 50% 100%, rgba(252,116,3,0.4) 0%, transparent 50%);"></div>
+
 	<!-- Texture overlay -->
 	<div class="absolute inset-0 opacity-5" style="background-image: url('/calendar-bg.png'); background-size: cover;"></div>
-
-	<!-- Animated background effects -->
-	<div class="absolute inset-0 opacity-10">
-		<div class="absolute inset-0" style="background: radial-gradient(circle at 30% 50%, rgba(255,107,0,0.3) 0%, transparent 50%), radial-gradient(circle at 70% 50%, rgba(255,107,0,0.3) 0%, transparent 50%);"></div>
-	</div>
 
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 		<!-- Header -->
@@ -56,61 +47,21 @@
 
 		<!-- Content Grid -->
 		<div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-			<!-- Left: Photo Carousel -->
+			<!-- Left: Photo -->
 			<div class="relative">
-				<!-- Glow effect behind carousel -->
+				<!-- Glow effect behind image -->
 				<div class="absolute -inset-4 bg-gradient-to-r from-haunt-orange/20 via-orange-600/25 to-haunt-orange/20 blur-2xl opacity-50"></div>
 
-				<!-- Carousel Container -->
+				<!-- Image Container -->
 				<div class="relative bg-gradient-to-br from-gray-900/80 via-black/80 to-gray-900/80 rounded-2xl border-4 border-haunt-orange/50 p-4 md:p-6" style="box-shadow: 0 0 40px rgba(255,107,0,0.5), inset 0 0 20px rgba(0,0,0,0.8);">
-					<!-- Carousel -->
-					<div class="relative aspect-[4/3] overflow-hidden rounded-xl">
-						{#each placeholderImages as image, i}
-							<div
-								class="absolute inset-0 transition-opacity duration-500 {i === currentSlide ? 'opacity-100' : 'opacity-0'}"
-							>
-								<div class="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
-									<div class="text-center">
-										<svg class="w-24 h-24 mx-auto mb-4 text-haunt-orange/50" fill="currentColor" viewBox="0 0 20 20">
-											<path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd" />
-										</svg>
-										<p class="text-gray-500 text-lg">Photo Placeholder {i + 1}</p>
-									</div>
-								</div>
-							</div>
-						{/each}
-
-						<!-- Navigation Arrows -->
-						<button
-							onclick={prevSlide}
-							class="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all transform hover:scale-110"
-							aria-label="Previous image"
-						>
-							<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-							</svg>
-						</button>
-
-						<button
-							onclick={nextSlide}
-							class="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-3 rounded-full transition-all transform hover:scale-110"
-							aria-label="Next image"
-						>
-							<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-							</svg>
-						</button>
-					</div>
-
-					<!-- Dots Indicator -->
-					<div class="flex justify-center gap-2 mt-4">
-						{#each placeholderImages as _, i}
-							<button
-								onclick={() => goToSlide(i)}
-								class="w-3 h-3 rounded-full transition-all {i === currentSlide ? 'bg-haunt-orange w-8' : 'bg-gray-600 hover:bg-gray-500'}"
-								aria-label="Go to slide {i + 1}"
-							></button>
-						{/each}
+					<!-- Image -->
+					<div class="relative aspect-[3/4] overflow-hidden rounded-xl">
+						<img
+							src="/hjunkies.jpg"
+							alt="Haunt Junkies Team"
+							class="w-full h-full object-cover"
+							style="object-position: center 15%;"
+						/>
 					</div>
 				</div>
 			</div>
