@@ -171,10 +171,8 @@
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
 			</svg>
 			<div>
-				<h3 class="text-green-400 font-bold">
-					{editingReview ? 'Review Updated Successfully!' : 'Review Created Successfully!'}
-				</h3>
-				<p class="text-green-300 text-sm">{form?.message || 'Your review has been published.'}</p>
+				<h3 class="text-green-400 font-bold">Success!</h3>
+				<p class="text-green-300 text-sm">{form?.message || 'Action completed successfully.'}</p>
 			</div>
 		</div>
 	{/if}
