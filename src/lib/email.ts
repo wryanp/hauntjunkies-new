@@ -397,4 +397,107 @@ export async function sendTicketConfirmation(ticketData: TicketData) {
 	}
 }
 
+interface CommentData {
+	commentId: string;
+	reviewName: string;
+	reviewSlug: string;
+	authorName: string;
+	authorEmail: string;
+	commentText: string;
+	approvalToken: string;
+}
+
+function createCommentNotificationHTML(commentData: CommentData): string {
+	const approvalUrl = `https://hauntjunkies.com/api/comments/approve?token=${commentData.approvalToken}`;
+
+	return `
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>New Comment on Review</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #ffffff; background-color: #1a1a1a; max-width: 600px; margin: 0 auto; padding: 20px;">
+	<h1 style="color: #FC7403; border-bottom: 3px solid #FC7403; padding-bottom: 10px;">New Comment Submitted</h1>
+
+	<h2 style="color: #FC7403; margin-top: 30px;">Review Details</h2>
+	<table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+		<tr>
+			<td style="padding: 8px; background-color: #2a2a2a; color: #cccccc; font-weight: bold; width: 40%;">Review:</td>
+			<td style="padding: 8px; background-color: #333333; color: #ffffff; border: 1px solid #444;">${commentData.reviewName}</td>
+		</tr>
+		<tr>
+			<td style="padding: 8px; background-color: #2a2a2a; color: #cccccc; font-weight: bold;">Review URL:</td>
+			<td style="padding: 8px; background-color: #333333; border: 1px solid #444;">
+				<a href="https://hauntjunkies.com/reviews/${commentData.reviewSlug}" style="color: #FC7403; text-decoration: none;">View Review</a>
+			</td>
+		</tr>
+	</table>
+
+	<h2 style="color: #FC7403; margin-top: 30px;">Comment Details</h2>
+	<table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+		<tr>
+			<td style="padding: 8px; background-color: #2a2a2a; color: #cccccc; font-weight: bold; width: 40%;">Author Name:</td>
+			<td style="padding: 8px; background-color: #333333; color: #ffffff; border: 1px solid #444;">${commentData.authorName}</td>
+		</tr>
+		<tr>
+			<td style="padding: 8px; background-color: #2a2a2a; color: #cccccc; font-weight: bold;">Author Email:</td>
+			<td style="padding: 8px; background-color: #333333; color: #ffffff; border: 1px solid #444;">${commentData.authorEmail}</td>
+		</tr>
+	</table>
+
+	<h2 style="color: #FC7403; margin-top: 30px;">Comment Text</h2>
+	<div style="padding: 15px; background-color: #2a2a2a; border-left: 4px solid #FC7403; margin-bottom: 30px;">
+		<p style="margin: 0; color: #cccccc; white-space: pre-wrap;">${commentData.commentText}</p>
+	</div>
+
+	<div style="margin-top: 30px; padding: 20px; background-color: #2a2a2a; border-radius: 5px; border: 1px solid #FC7403; text-align: center;">
+		<p style="margin: 0 0 15px 0; font-size: 16px; color: #ffffff;">
+			<strong>Quick Actions:</strong>
+		</p>
+		<div style="margin: 15px 0;">
+			<a href="${approvalUrl}" style="display: inline-block; background-color: #FC7403; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-weight: 600; font-size: 16px; margin: 5px;">
+				✅ Approve Comment
+			</a>
+		</div>
+		<p style="margin: 15px 0 0 0; font-size: 14px; color: #cccccc;">
+			Or manage comments in the <a href="https://hauntjunkies.com/admin/comments" style="color: #FC7403; text-decoration: none;">admin panel</a>
+		</p>
+	</div>
+
+	<hr style="margin: 30px 0; border: none; border-top: 1px solid #444;">
+
+	<p style="font-size: 12px; color: #666; text-align: center;">
+		Sent from HauntJunkies Comment System
+	</p>
+</body>
+</html>
+`;
+}
+
+export async function sendCommentNotification(commentData: CommentData) {
+	try {
+		const fromEmail = process.env.NODE_ENV === 'development'
+			? 'Haunt Junkies <onboarding@resend.dev>'
+			: 'Haunt Junkies <noreply@hauntjunkies.com>';
+
+		const result = await resend.emails.send({
+			from: fromEmail,
+			to: 'hauntjunkies@gmail.com',
+			subject: `New Comment on "${commentData.reviewName}"`,
+			html: createCommentNotificationHTML(commentData)
+		});
+
+		if (result.error) {
+			console.error('Comment notification email failed:', result.error);
+			throw new Error(`Email failed: ${result.error.message}`);
+		}
+
+		return { success: true };
+	} catch (error) {
+		console.error('Error sending comment notification:', error);
+		return { success: false, error };
+	}
+}
+
 export { generateConfirmationNumber };

@@ -1,5 +1,8 @@
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import type { LayoutData } from './$types';
 	import Footer from '$lib/components/Footer.svelte';
 
@@ -17,6 +20,77 @@
 		{ href: '/admin/contact', label: 'Messages', icon: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
 		{ href: '/admin/ticket-settings', label: 'Ticket Settings', icon: 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z' }
 	];
+
+	// Auto-logout on inactivity (30 minutes)
+	let inactivityTimeout: NodeJS.Timeout | null = null;
+	const INACTIVITY_LIMIT = 30 * 60 * 1000; // 30 minutes in milliseconds
+
+	async function logout() {
+		if (browser) {
+			try {
+				// Call logout endpoint
+				await fetch('/admin/logout', { method: 'POST' });
+			} catch (e) {
+				console.error('Logout request failed:', e);
+			} finally {
+				// Redirect to login regardless of API result
+				goto('/admin/login');
+			}
+		}
+	}
+
+	function resetInactivityTimer() {
+		// Clear existing timeout
+		if (inactivityTimeout) {
+			clearTimeout(inactivityTimeout);
+		}
+
+		// Set new timeout
+		inactivityTimeout = setTimeout(() => {
+			console.log('Session expired due to inactivity');
+			logout();
+		}, INACTIVITY_LIMIT);
+	}
+
+	function handleActivity() {
+		resetInactivityTimer();
+	}
+
+	onMount(() => {
+		if (!isLoginPage) {
+			// Start inactivity timer
+			resetInactivityTimer();
+
+			// Track user activity
+			const events = ['mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
+			events.forEach(event => {
+				window.addEventListener(event, handleActivity);
+			});
+
+			// Handle browser/tab close or visibility change
+			const handleVisibilityChange = () => {
+				if (document.hidden) {
+					// Tab hidden - keep timer running
+				} else {
+					// Tab visible again - reset timer
+					resetInactivityTimer();
+				}
+			};
+
+			document.addEventListener('visibilitychange', handleVisibilityChange);
+
+			// Cleanup on unmount
+			return () => {
+				if (inactivityTimeout) {
+					clearTimeout(inactivityTimeout);
+				}
+				events.forEach(event => {
+					window.removeEventListener(event, handleActivity);
+				});
+				document.removeEventListener('visibilitychange', handleVisibilityChange);
+			};
+		}
+	});
 
 </script>
 

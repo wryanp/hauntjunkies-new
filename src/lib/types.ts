@@ -8,6 +8,7 @@ export interface Review {
 	zip?: string;
 	year?: number;
 	review_date?: string; // The date the haunt was actually visited
+	caption?: string; // Short caption displayed on cards and "About" section
 	description?: string;
 	review_text?: string; // Can contain placeholders like [REVIEWER_PHOTO:1] for inline images
 	featured: boolean;
@@ -16,6 +17,7 @@ export interface Review {
 	rating_atmosphere?: number;
 	rating_value?: number;
 	cover_image_url?: string;
+	review_image?: string; // Social media thumbnail image for sharing
 	website_url?: string;
 	facebook_url?: string;
 	instagram_url?: string;
@@ -53,6 +55,7 @@ export interface ReviewComment {
 	author_email: string;
 	comment_text: string;
 	approved: boolean;
+	approval_token?: string;
 	created_at: string;
 }
 

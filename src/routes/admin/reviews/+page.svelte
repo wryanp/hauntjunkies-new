@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
-	import { goto } from '$app/navigation';
+	import { goto, invalidateAll } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 	import { createClient } from '@supabase/supabase-js';
@@ -16,10 +16,10 @@
 	let reviewData = $state({
 		title: '',
 		slug: '',
-		location: '',
+		caption: '',
 		description: '',
 		coverImage: '',
-		featured: false,
+		reviewImage: '',
 		overallRating: 5,
 		scareRating: 5,
 		atmosphereRating: 5,
@@ -32,13 +32,13 @@
 			website: '',
 			youtube: ''
 		},
-		address: '',
-		galleryImages: [] as string[]
+		address: ''
 	});
 
 	let submitting = $state(false);
 	let showSuccess = $state(false);
 	let showDeleteConfirm = $state<string | null>(null); // Track review ID for delete confirmation
+	let togglingFeatured = $state<string | null>(null); // Track which review is being toggled
 
 	function generateSlug() {
 		reviewData.slug = reviewData.title
@@ -47,37 +47,17 @@
 			.replace(/(^-|-$)/g, '');
 	}
 
-	function addGalleryImage() {
-		reviewData.galleryImages = [...reviewData.galleryImages, ''];
-	}
-
-	function removeGalleryImage(index: number) {
-		reviewData.galleryImages = reviewData.galleryImages.filter((_, i) => i !== index);
-	}
-
 	// Load review data into form for editing
 	async function editReview(review: any) {
 		editingReview = review.id;
 
-		// Parse location back into "City, State" format
-		const location = review.city && review.state ? `${review.city}, ${review.state}` : review.city || '';
-
-		// Fetch gallery images for this review
-		const { data: galleryImagesData } = await supabase
-			.from('review_images')
-			.select('image_url')
-			.eq('review_id', review.id)
-			.order('display_order', { ascending: true });
-
-		const galleryUrls = galleryImagesData ? galleryImagesData.map((img: any) => img.image_url) : [];
-
 		reviewData = {
 			title: review.name || '',
 			slug: review.slug || '',
-			location,
+			caption: review.caption || '',
 			description: review.description || review.review_text || '',
 			coverImage: review.cover_image_url || '',
-			featured: review.featured || false,
+			reviewImage: review.review_image || '',
 			overallRating: review.rating_overall || 5,
 			scareRating: review.rating_scares || 5,
 			atmosphereRating: review.rating_atmosphere || 5,
@@ -90,8 +70,7 @@
 				website: review.website_url || '',
 				youtube: review.youtube_url || ''
 			},
-			address: review.address || '',
-			galleryImages: galleryUrls
+			address: review.address || ''
 		};
 
 		// Scroll to top of form
@@ -104,10 +83,10 @@
 		reviewData = {
 			title: '',
 			slug: '',
-			location: '',
+			caption: '',
 			description: '',
 			coverImage: '',
-			featured: false,
+			reviewImage: '',
 			overallRating: 5,
 			scareRating: 5,
 			atmosphereRating: 5,
@@ -120,8 +99,7 @@
 				website: '',
 				youtube: ''
 			},
-			address: '',
-			galleryImages: []
+			address: ''
 		};
 	}
 
@@ -134,10 +112,10 @@
 			reviewData = {
 				title: '',
 				slug: '',
-				location: '',
+				caption: '',
 				description: '',
 				coverImage: '',
-				featured: false,
+				reviewImage: '',
 				overallRating: 5,
 				scareRating: 5,
 				atmosphereRating: 5,
@@ -149,8 +127,7 @@
 					tiktok: '',
 					website: ''
 				},
-				address: '',
-				galleryImages: []
+				address: ''
 			};
 
 			// Hide success message after 5 seconds
@@ -225,6 +202,9 @@
 			await update();
 			submitting = false;
 
+			// Scroll to top to show success/error message
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+
 			// If update was successful and we're editing, redirect to the review page
 			if (result.type === 'success' && isEditing && slug) {
 				setTimeout(() => {
@@ -240,11 +220,11 @@
 		{/if}
 		<input type="hidden" name="name" value={reviewData.title} />
 		<input type="hidden" name="slug" value={reviewData.slug} />
-		<input type="hidden" name="location" value={reviewData.location} />
+		<input type="hidden" name="caption" value={reviewData.caption} />
 		<input type="hidden" name="description" value={reviewData.description} />
 		<input type="hidden" name="review_text" value={reviewData.description} />
 		<input type="hidden" name="cover_image_url" value={reviewData.coverImage} />
-		<input type="hidden" name="featured" value={reviewData.featured} />
+		<input type="hidden" name="review_image" value={reviewData.reviewImage} />
 		<input type="hidden" name="rating_overall" value={reviewData.overallRating} />
 		<input type="hidden" name="rating_scares" value={reviewData.scareRating} />
 		<input type="hidden" name="rating_atmosphere" value={reviewData.atmosphereRating} />
@@ -255,7 +235,6 @@
 		<input type="hidden" name="instagram_url" value={reviewData.socialLinks.instagram} />
 		<input type="hidden" name="twitter_url" value={reviewData.socialLinks.tiktok} />
 		<input type="hidden" name="youtube_url" value={reviewData.socialLinks.youtube} />
-		<input type="hidden" name="gallery_images" value={JSON.stringify(reviewData.galleryImages)} />
 
 		<!-- Basic Information -->
 		<div class="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-haunt-orange/30 p-6">
@@ -294,32 +273,19 @@
 					<p class="text-gray-500 text-sm mt-1">Will be used in URL: /reviews/{reviewData.slug || 'your-slug'}</p>
 				</div>
 
-				<!-- Location -->
-				<div>
-					<label for="location" class="block text-white font-semibold mb-2">
-						Location *
+				<!-- Caption -->
+				<div class="md:col-span-2">
+					<label for="caption" class="block text-white font-semibold mb-2">
+						Caption
 					</label>
 					<input
 						type="text"
-						id="location"
-						bind:value={reviewData.location}
-						required
+						id="caption"
+						bind:value={reviewData.caption}
 						class="w-full px-4 py-3 bg-black/50 border-2 border-haunt-orange/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors"
-						placeholder="e.g., Atlanta, GA"
+						placeholder="A brief description of this haunt"
 					/>
-					<p class="text-gray-500 text-sm mt-1">Format: City, State</p>
-				</div>
-
-				<!-- Featured -->
-				<div class="flex items-center">
-					<label class="flex items-center space-x-3 cursor-pointer">
-						<input
-							type="checkbox"
-							bind:checked={reviewData.featured}
-							class="w-5 h-5 rounded border-haunt-orange/30 bg-black/50 text-haunt-orange focus:ring-haunt-orange focus:ring-2"
-						/>
-						<span class="text-white font-semibold">Featured Review</span>
-					</label>
+					<p class="text-gray-500 text-sm mt-1">Short description shown on review cards</p>
 				</div>
 
 				<!-- Description/Review Text -->
@@ -335,7 +301,11 @@
 						class="w-full px-4 py-3 bg-black/50 border-2 border-haunt-orange/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors resize-none"
 						placeholder="Write your detailed review here..."
 					></textarea>
-					<p class="text-gray-500 text-sm mt-1">You can use [REVIEWER_PHOTO:1], [REVIEWER_PHOTO:2], etc. for inline images (add these separately in database)</p>
+					<p class="text-gray-500 text-sm mt-1">
+						Inline images: <code class="bg-gray-800 px-1 py-0.5 rounded">[REVIEWER_PHOTO:1]</code> (database images with captions) or
+						<code class="bg-gray-800 px-1 py-0.5 rounded">[IMAGE:https://url.com/image.jpg]</code> or
+						<code class="bg-gray-800 px-1 py-0.5 rounded">[IMAGE:https://url.com/image.jpg|Caption]</code> (direct URLs)
+					</p>
 				</div>
 			</div>
 		</div>
@@ -375,7 +345,7 @@
 								<img
 									src={reviewData.coverImage}
 									alt="Cover preview"
-									class="w-full h-full object-cover"
+									class="w-full h-full object-contain"
 									onerror={(e) => {
 										const target = e.target as HTMLImageElement;
 										target.style.display = 'none';
@@ -392,66 +362,53 @@
 				{/if}
 			</div>
 
-			<!-- Gallery Images -->
-			<div>
-				<div class="flex items-center justify-between mb-4">
-					<label class="block text-white font-semibold">
-						Gallery Images
-					</label>
-					<button
-						type="button"
-						onclick={addGalleryImage}
-						class="bg-haunt-orange/20 hover:bg-haunt-orange/30 text-haunt-orange px-4 py-2 rounded-lg border border-haunt-orange/50 transition-all"
-					>
-						+ Add Image
-					</button>
+			<!-- Social Media Share Image -->
+			<div class="mb-6">
+				<label for="reviewImage" class="block text-white font-semibold mb-2">
+					Social Media Share Image
+				</label>
+				<input
+					type="url"
+					id="reviewImage"
+					bind:value={reviewData.reviewImage}
+					class="w-full px-4 py-3 bg-black/50 border-2 border-haunt-orange/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors"
+					placeholder="https://example.com/share-image.jpg"
+				/>
+				<div class="flex items-start gap-2 mt-1">
+					<svg class="w-4 h-4 text-haunt-orange mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+						<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+					</svg>
+					<p class="text-gray-500 text-sm">
+						This image appears when the review is shared on social media, text messages, or other platforms. <strong class="text-haunt-orange">Recommended: 1200x630px (Open Graph standard)</strong>. If left blank, the cover image will be used.
+					</p>
 				</div>
 
-				<div class="space-y-4">
-					{#each reviewData.galleryImages as image, index}
-						<div class="bg-black/30 rounded-lg p-4 border border-gray-700">
-							<div class="flex gap-3 mb-3">
-								<input
-									type="url"
-									bind:value={reviewData.galleryImages[index]}
-									class="flex-1 px-4 py-3 bg-black/50 border-2 border-haunt-orange/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors"
-									placeholder="https://example.com/gallery-image.jpg"
+				<!-- Review Image Preview -->
+				{#if reviewData.reviewImage?.trim()}
+					<div class="mt-4 space-y-2">
+						<p class="text-xs text-gray-400 uppercase tracking-wide font-semibold">Preview (Social Share):</p>
+						<div class="w-full max-w-2xl mx-auto overflow-hidden rounded-lg border-2 border-haunt-orange/50 bg-black">
+							<div class="aspect-[1200/630] overflow-hidden relative">
+								<img
+									src={reviewData.reviewImage}
+									alt="Social share preview"
+									class="w-full h-full object-contain"
+									onerror={(e) => {
+										const target = e.target as HTMLImageElement;
+										target.style.display = 'none';
+										const errorDiv = target.parentElement?.querySelector('.error-message') as HTMLElement;
+										if (errorDiv) errorDiv.style.display = 'flex';
+									}}
 								/>
-								<button
-									type="button"
-									onclick={() => removeGalleryImage(index)}
-									class="bg-red-900/20 hover:bg-red-900/30 text-red-400 px-4 py-2 rounded-lg border border-red-500/50 transition-all whitespace-nowrap"
-								>
-									Remove
-								</button>
-							</div>
-							<!-- Image Preview -->
-							{#if reviewData.galleryImages[index]?.trim()}
-								<div class="w-full max-w-md mx-auto overflow-hidden rounded-lg border border-haunt-orange/30 bg-black">
-									<img
-										src={reviewData.galleryImages[index]}
-										alt="Gallery preview {index + 1}"
-										class="w-full h-auto max-h-64 object-contain"
-										onerror={(e) => {
-											const target = e.target as HTMLImageElement;
-											target.style.display = 'none';
-											const errorDiv = target.nextElementSibling as HTMLElement;
-											if (errorDiv) errorDiv.style.display = 'flex';
-										}}
-									/>
-									<div class="hidden w-full h-48 bg-gray-800 items-center justify-center text-gray-400 text-sm">
-										Failed to load image
-									</div>
+								<div class="error-message hidden absolute inset-0 bg-gray-800 items-center justify-center text-gray-400">
+									Failed to load share image
 								</div>
-							{/if}
+							</div>
 						</div>
-					{/each}
-
-					{#if reviewData.galleryImages.length === 0}
-						<p class="text-gray-500 text-sm">No gallery images added yet. Click "+ Add Image" to add image URLs.</p>
-					{/if}
-				</div>
+					</div>
+				{/if}
 			</div>
+
 		</div>
 
 		<!-- Ratings -->
@@ -533,15 +490,17 @@
 				<!-- Address -->
 				<div class="md:col-span-2">
 					<label for="address" class="block text-white font-semibold mb-2">
-						Full Address
+						Full Address *
 					</label>
 					<input
 						type="text"
 						id="address"
 						bind:value={reviewData.address}
+						required
 						class="w-full px-4 py-3 bg-black/50 border-2 border-haunt-orange/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors"
 						placeholder="123 Spooky Lane, Halloween City, ST 12345"
 					/>
+					<p class="text-gray-500 text-sm mt-1">Format: Street, City, State ZIP (City and State will be auto-extracted)</p>
 				</div>
 
 				<!-- Website -->
@@ -687,16 +646,33 @@
 
 						<!-- Featured Toggle -->
 						<div class="mt-4">
-							<form method="POST" action="?/toggleFeatured" use:enhance>
+							<form method="POST" action="?/toggleFeatured" use:enhance={() => {
+								togglingFeatured = review.id;
+								return async ({ result, update }) => {
+									togglingFeatured = null;
+									if (result.type === 'success') {
+										await invalidateAll();
+									}
+									await update();
+								};
+							}}>
 								<input type="hidden" name="id" value={review.id} />
 								<input type="hidden" name="featured" value={review.featured} />
 								<button
 									type="submit"
-									class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg border transition-all text-sm font-semibold {review.featured ? 'bg-haunt-orange/20 hover:bg-haunt-orange/30 text-haunt-orange border-haunt-orange/50' : 'bg-gray-700/20 hover:bg-gray-700/30 text-gray-400 border-gray-600/50'}"
+									disabled={togglingFeatured === review.id}
+									class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg border transition-all text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed {review.featured ? 'bg-haunt-orange/20 hover:bg-haunt-orange/30 text-haunt-orange border-haunt-orange/50' : 'bg-gray-700/20 hover:bg-gray-700/30 text-gray-400 border-gray-600/50'}"
 								>
-									<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-										<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-									</svg>
+									{#if togglingFeatured === review.id}
+										<svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+											<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+											<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+										</svg>
+									{:else}
+										<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+											<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+										</svg>
+									{/if}
 									{review.featured ? 'Unfeature' : 'Feature on Homepage'}
 								</button>
 							</form>

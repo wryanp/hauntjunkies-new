@@ -54,31 +54,43 @@ export const actions: Actions = {
 		// Extract and validate required fields
 		const name = formData.get('name')?.toString().trim();
 		const slug = formData.get('slug')?.toString().trim();
+		const caption = formData.get('caption')?.toString().trim() || '';
 		const description = formData.get('description')?.toString().trim();
-		const location = formData.get('location')?.toString().trim(); // e.g., "Atlanta, GA"
+		const address = formData.get('address')?.toString().trim() || '';
 
 		if (!name || !slug || !description) {
 			return fail(400, { error: 'Name, slug, and description are required' });
 		}
 
-		// Parse location into city and state
+		// Parse city and state from address
+		// Expected format: "Street, City, State ZIP" or "City, State ZIP"
 		let city = '';
 		let state = '';
-		if (location) {
-			const locationParts = location.split(',').map(p => p.trim());
-			if (locationParts.length >= 2) {
-				city = locationParts[0];
-				state = locationParts[1];
-			} else {
-				city = location;
+		if (address) {
+			const addressParts = address.split(',').map(p => p.trim());
+			if (addressParts.length >= 2) {
+				// Last part should contain "State ZIP"
+				const lastPart = addressParts[addressParts.length - 1];
+				// Extract state (first word/letters before ZIP)
+				const stateMatch = lastPart.match(/^([A-Z]{2})/i);
+				if (stateMatch) {
+					state = stateMatch[1].toUpperCase();
+				}
+				// Second to last part is the city
+				city = addressParts[addressParts.length - 2];
+			} else if (addressParts.length === 1) {
+				// If only one part, try to extract state from it
+				const stateMatch = addressParts[0].match(/([A-Z]{2})\s*\d{5}/i);
+				if (stateMatch) {
+					state = stateMatch[1].toUpperCase();
+				}
 			}
 		}
 
 		// Extract other fields
-		const address = formData.get('address')?.toString() || '';
 		const year = new Date().getFullYear(); // Default to current year
 		const review_text = formData.get('review_text')?.toString() || formData.get('description')?.toString() || '';
-		const featured = formData.get('featured') === 'true';
+		const featured = false; // Default to not featured
 
 		// Ratings
 		const rating_overall = parseFloat(formData.get('rating_overall')?.toString() || '0');
@@ -88,6 +100,7 @@ export const actions: Actions = {
 
 		// Images and social links
 		const cover_image_url = formData.get('cover_image_url')?.toString() || '';
+		const review_image = formData.get('review_image')?.toString() || '';
 		const website_url = formData.get('website_url')?.toString() || '';
 		const facebook_url = formData.get('facebook_url')?.toString() || '';
 		const instagram_url = formData.get('instagram_url')?.toString() || '';
@@ -124,6 +137,7 @@ export const actions: Actions = {
 			.insert({
 				name,
 				slug,
+				caption,
 				address,
 				city,
 				state,
@@ -136,6 +150,7 @@ export const actions: Actions = {
 				rating_atmosphere,
 				rating_value,
 				cover_image_url,
+				review_image,
 				website_url,
 				facebook_url,
 				instagram_url,
@@ -201,30 +216,41 @@ export const actions: Actions = {
 		// Extract fields (same as create)
 		const name = formData.get('name')?.toString().trim();
 		const slug = formData.get('slug')?.toString().trim();
+		const caption = formData.get('caption')?.toString().trim() || '';
 		const description = formData.get('description')?.toString().trim();
-		const location = formData.get('location')?.toString().trim();
+		const address = formData.get('address')?.toString().trim() || '';
 
 		if (!name || !slug || !description) {
 			return fail(400, { error: 'Name, slug, and description are required' });
 		}
 
-		// Parse location
+		// Parse city and state from address
+		// Expected format: "Street, City, State ZIP" or "City, State ZIP"
 		let city = '';
 		let state = '';
-		if (location) {
-			const locationParts = location.split(',').map(p => p.trim());
-			if (locationParts.length >= 2) {
-				city = locationParts[0];
-				state = locationParts[1];
-			} else {
-				city = location;
+		if (address) {
+			const addressParts = address.split(',').map(p => p.trim());
+			if (addressParts.length >= 2) {
+				// Last part should contain "State ZIP"
+				const lastPart = addressParts[addressParts.length - 1];
+				// Extract state (first word/letters before ZIP)
+				const stateMatch = lastPart.match(/^([A-Z]{2})/i);
+				if (stateMatch) {
+					state = stateMatch[1].toUpperCase();
+				}
+				// Second to last part is the city
+				city = addressParts[addressParts.length - 2];
+			} else if (addressParts.length === 1) {
+				// If only one part, try to extract state from it
+				const stateMatch = addressParts[0].match(/([A-Z]{2})\s*\d{5}/i);
+				if (stateMatch) {
+					state = stateMatch[1].toUpperCase();
+				}
 			}
 		}
-
-		const address = formData.get('address')?.toString() || '';
 		const year = parseInt(formData.get('year')?.toString() || new Date().getFullYear().toString());
 		const review_text = formData.get('review_text')?.toString() || formData.get('description')?.toString() || '';
-		const featured = formData.get('featured') === 'true';
+		const featured = false; // Default to not featured
 
 		const rating_overall = parseFloat(formData.get('rating_overall')?.toString() || '0');
 		const rating_scares = parseFloat(formData.get('rating_scares')?.toString() || '0');
@@ -232,6 +258,7 @@ export const actions: Actions = {
 		const rating_value = parseFloat(formData.get('rating_value')?.toString() || '0');
 
 		const cover_image_url = formData.get('cover_image_url')?.toString() || '';
+		const review_image = formData.get('review_image')?.toString() || '';
 		const website_url = formData.get('website_url')?.toString() || '';
 		const facebook_url = formData.get('facebook_url')?.toString() || '';
 		const instagram_url = formData.get('instagram_url')?.toString() || '';
@@ -256,6 +283,7 @@ export const actions: Actions = {
 			.update({
 				name,
 				slug,
+				caption,
 				address,
 				city,
 				state,
@@ -268,6 +296,7 @@ export const actions: Actions = {
 				rating_atmosphere,
 				rating_value,
 				cover_image_url,
+				review_image,
 				website_url,
 				facebook_url,
 				instagram_url,

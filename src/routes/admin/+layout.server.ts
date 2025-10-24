@@ -37,15 +37,37 @@ export const load: LayoutServerLoad = async ({ url, cookies }) => {
 
 	// Fallback to simple admin session cookie (for backward compatibility)
 	const adminSession = cookies.get('admin_session');
+	const lastActivity = cookies.get('admin_last_activity');
+
 	if (adminSession) {
 		try {
 			// Try parsing as JSON (new format with token and timestamp)
 			const sessionData = JSON.parse(adminSession);
 			const maxAge = 60 * 60 * 24 * 7 * 1000; // 7 days in milliseconds
+			const inactivityLimit = 30 * 60 * 1000; // 30 minutes in milliseconds
+
+			// Check if session has been inactive for more than 30 minutes
+			if (lastActivity) {
+				const lastActivityTime = parseInt(lastActivity);
+				if (!isNaN(lastActivityTime) && (Date.now() - lastActivityTime) > inactivityLimit) {
+					// Session expired due to inactivity
+					cookies.delete('admin_session', { path: '/' });
+					cookies.delete('admin_last_activity', { path: '/' });
+					throw redirect(303, '/admin/login');
+				}
+			}
 
 			// Validate timestamp - session expires after 7 days
 			if (sessionData.timestamp && sessionData.token &&
 			    (Date.now() - sessionData.timestamp) < maxAge) {
+				// Update last activity timestamp
+				cookies.set('admin_last_activity', Date.now().toString(), {
+					path: '/',
+					httpOnly: true,
+					sameSite: 'lax',
+					maxAge: 60 * 60 * 24 * 7 // 7 days
+				});
+
 				return {
 					session: { user: { email: sessionData.email || 'admin@hauntjunkies.com' } },
 					user: { email: sessionData.email || 'admin@hauntjunkies.com' }
@@ -54,6 +76,14 @@ export const load: LayoutServerLoad = async ({ url, cookies }) => {
 		} catch (e) {
 			// Old format (just "authenticated" string) - for backward compatibility
 			if (adminSession === 'authenticated') {
+				// Update last activity for old format too
+				cookies.set('admin_last_activity', Date.now().toString(), {
+					path: '/',
+					httpOnly: true,
+					sameSite: 'lax',
+					maxAge: 60 * 60 * 24 * 7
+				});
+
 				return {
 					session: { user: { email: 'admin@hauntjunkies.com' } },
 					user: { email: 'admin@hauntjunkies.com' }
@@ -63,6 +93,7 @@ export const load: LayoutServerLoad = async ({ url, cookies }) => {
 
 		// Invalid or expired session - clear the cookie
 		cookies.delete('admin_session', { path: '/' });
+		cookies.delete('admin_last_activity', { path: '/' });
 	}
 
 	// No authentication found, redirect to login

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import type { PageData } from './$types';
 	import type { Review } from '$lib/types';
-	import ViewCounter from '$lib/components/ViewCounter.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 
 	let { data }: { data: PageData } = $props();
@@ -153,7 +152,7 @@
 												<img
 													src={review.cover_image_url}
 													alt={review.name}
-													class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+													class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300"
 												/>
 											</div>
 										{:else}
@@ -194,12 +193,6 @@
 														{/each}
 													</div>
 													<span class="text-gray-400 font-medium">{review.rating_overall.toFixed(1)}</span>
-												</div>
-											{/if}
-											<!-- View Counter -->
-											{#if review.view_count && review.view_count > 0}
-												<div class="mb-3">
-													<ViewCounter viewCount={review.view_count} size="sm" showLabel={false} />
 												</div>
 											{/if}
 											{#if review.description}

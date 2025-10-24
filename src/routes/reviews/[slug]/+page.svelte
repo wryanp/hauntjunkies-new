@@ -2,7 +2,6 @@
 	import { enhance } from '$app/forms';
 	import type { PageData, ActionData } from './$types';
 	import TurnstileWidget from '$lib/components/TurnstileWidget.svelte';
-	import ViewCounter from '$lib/components/ViewCounter.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import StructuredData from '$lib/components/StructuredData.svelte';
 	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
@@ -70,13 +69,21 @@
 	}
 
 	const youtubeEmbedUrl = $derived(data.review.youtube_url ? getYouTubeEmbedUrl(data.review.youtube_url) : null);
+
+	// Detect if twitter_url is actually TikTok or Twitter/X
+	function isTikTokUrl(url: string): boolean {
+		if (!url) return false;
+		return url.toLowerCase().includes('tiktok.com') || url.toLowerCase().includes('tiktok.com');
+	}
+
+	const isTikTok = $derived(data.review.twitter_url ? isTikTokUrl(data.review.twitter_url) : false);
 </script>
 
 <SEO
 	title={data.review.name}
 	description={data.review.description || `Expert review of ${data.review.name}. Ratings for scares, atmosphere, and value. Located in ${data.review.city}, ${data.review.state}. Read our full review and see photos.`}
 	url={`/reviews/${data.review.slug}`}
-	image={data.review.cover_image_url || '/og-review-default.jpg'}
+	image={data.review.review_image || data.review.cover_image_url || '/og-review-default.jpg'}
 	type="article"
 	article={{
 		publishedTime: data.review.created_at,
@@ -96,13 +103,13 @@
 <div class="bg-gradient-to-b from-gray-900 to-black min-h-screen">
 	<!-- Hero Image -->
 	{#if data.review.cover_image_url}
-		<div class="relative h-96 overflow-hidden">
+		<div class="relative h-96 overflow-hidden bg-black">
 			<img
 				src={data.review.cover_image_url}
 				alt={data.review.name}
-				class="w-full h-full object-cover"
+				class="w-full h-full object-contain"
 			/>
-			<div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+			<div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent pointer-events-none"></div>
 		</div>
 	{/if}
 
@@ -138,13 +145,19 @@
 			</div>
 
 			<div class="flex flex-wrap gap-4 items-center text-gray-400 mb-4">
-				{#if data.review.city && data.review.state}
-					<div class="flex items-center gap-1">
+				{#if data.review.address}
+					<a
+						href="https://www.google.com/maps/search/?api=1&query={encodeURIComponent(data.review.address)}"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="flex items-center gap-1 hover:text-haunt-orange transition-colors"
+						title="Open in Maps"
+					>
 						<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
 							<path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
 						</svg>
-						<span>{data.review.city}, {data.review.state}</span>
-					</div>
+						<span>{data.review.address}</span>
+					</a>
 				{/if}
 				{#if data.review.year}
 					<div class="flex items-center gap-1">
@@ -154,10 +167,107 @@
 						<span>{data.review.year}</span>
 					</div>
 				{/if}
-				{#if data.review.view_count && data.review.view_count > 0}
-					<ViewCounter viewCount={data.review.view_count} size="md" showLabel={true} />
-				{/if}
 			</div>
+
+			<!-- Social Links -->
+			{#if data.review.website_url || data.review.facebook_url || data.review.instagram_url || data.review.twitter_url || data.review.youtube_url}
+				<div class="flex flex-wrap gap-3 mb-6">
+					{#if data.review.website_url}
+						<a
+							href={data.review.website_url}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="group relative bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-gray-700 hover:border-haunt-orange px-4 py-2.5 rounded transition-all duration-300 flex items-center gap-2 overflow-hidden"
+							title="Visit Website"
+							aria-label="Visit website"
+							style="box-shadow: 0 0 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);"
+						>
+							<div class="absolute inset-0 bg-gradient-to-r from-haunt-orange/0 via-haunt-orange/10 to-haunt-orange/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+							<svg class="w-5 h-5 text-gray-400 group-hover:text-haunt-orange transition-colors duration-300 relative z-10" fill="currentColor" viewBox="0 0 20 20">
+								<path fill-rule="evenodd" d="M4.083 9h1.946c.089-1.546.383-2.97.837-4.118A6.004 6.004 0 004.083 9zM10 2a8 8 0 100 16 8 8 0 000-16zm0 2c-.076 0-.232.032-.465.262-.238.234-.497.623-.737 1.182-.389.907-.673 2.142-.766 3.556h3.936c-.093-1.414-.377-2.649-.766-3.556-.24-.56-.5-.948-.737-1.182C10.232 4.032 10.076 4 10 4zm3.971 5c-.089-1.546-.383-2.97-.837-4.118A6.004 6.004 0 0115.917 9h-1.946zm-2.003 2H8.032c.093 1.414.377 2.649.766 3.556.24.56.5.948.737 1.182.233.23.389.262.465.262.076 0 .232-.032.465-.262.238-.234.498-.623.737-1.182.389-.907.673-2.142.766-3.556zm1.166 4.118c.454-1.147.748-2.572.837-4.118h1.946a6.004 6.004 0 01-2.783 4.118zm-6.268 0C6.412 13.97 6.118 12.546 6.03 11H4.083a6.004 6.004 0 002.783 4.118z" clip-rule="evenodd" />
+							</svg>
+							<span class="text-sm font-semibold text-gray-300 group-hover:text-white transition-colors duration-300 relative z-10">Website</span>
+						</a>
+					{/if}
+					{#if data.review.facebook_url}
+						<a
+							href={data.review.facebook_url}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="group relative bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-gray-700 hover:border-haunt-orange px-4 py-2.5 rounded transition-all duration-300 flex items-center gap-2 overflow-hidden"
+							title="Visit Facebook"
+							aria-label="Visit Facebook page"
+							style="box-shadow: 0 0 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);"
+						>
+							<div class="absolute inset-0 bg-gradient-to-r from-haunt-orange/0 via-haunt-orange/10 to-haunt-orange/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+							<svg class="w-5 h-5 text-gray-400 group-hover:text-haunt-orange transition-colors duration-300 relative z-10" fill="currentColor" viewBox="0 0 24 24">
+								<path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+							</svg>
+							<span class="text-sm font-semibold text-gray-300 group-hover:text-white transition-colors duration-300 relative z-10">Facebook</span>
+						</a>
+					{/if}
+					{#if data.review.instagram_url}
+						<a
+							href={data.review.instagram_url}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="group relative bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-gray-700 hover:border-haunt-orange px-4 py-2.5 rounded transition-all duration-300 flex items-center gap-2 overflow-hidden"
+							title="Visit Instagram"
+							aria-label="Visit Instagram page"
+							style="box-shadow: 0 0 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);"
+						>
+							<div class="absolute inset-0 bg-gradient-to-r from-haunt-orange/0 via-haunt-orange/10 to-haunt-orange/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+							<svg class="w-5 h-5 text-gray-400 group-hover:text-haunt-orange transition-colors duration-300 relative z-10" fill="currentColor" viewBox="0 0 24 24">
+								<path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+							</svg>
+							<span class="text-sm font-semibold text-gray-300 group-hover:text-white transition-colors duration-300 relative z-10">Instagram</span>
+						</a>
+					{/if}
+					{#if data.review.twitter_url}
+						<a
+							href={data.review.twitter_url}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="group relative bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-gray-700 hover:border-haunt-orange px-4 py-2.5 rounded transition-all duration-300 flex items-center gap-2 overflow-hidden"
+							title={isTikTok ? "Visit TikTok" : "Visit Twitter/X"}
+							aria-label={isTikTok ? "Visit TikTok page" : "Visit Twitter/X page"}
+							style="box-shadow: 0 0 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);"
+						>
+							<div class="absolute inset-0 bg-gradient-to-r from-haunt-orange/0 via-haunt-orange/10 to-haunt-orange/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+							{#if isTikTok}
+								<!-- TikTok Logo -->
+								<svg class="w-5 h-5 text-gray-400 group-hover:text-haunt-orange transition-colors duration-300 relative z-10" fill="currentColor" viewBox="0 0 24 24">
+									<path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+								</svg>
+								<span class="text-sm font-semibold text-gray-300 group-hover:text-white transition-colors duration-300 relative z-10">TikTok</span>
+							{:else}
+								<!-- Twitter/X Logo -->
+								<svg class="w-5 h-5 text-gray-400 group-hover:text-haunt-orange transition-colors duration-300 relative z-10" fill="currentColor" viewBox="0 0 24 24">
+									<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+								</svg>
+								<span class="text-sm font-semibold text-gray-300 group-hover:text-white transition-colors duration-300 relative z-10">Twitter</span>
+							{/if}
+						</a>
+					{/if}
+					{#if data.review.youtube_url}
+						<a
+							href={data.review.youtube_url}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="group relative bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-gray-700 hover:border-haunt-orange px-4 py-2.5 rounded transition-all duration-300 flex items-center gap-2 overflow-hidden"
+							title="Watch on YouTube"
+							aria-label="Watch video on YouTube"
+							style="box-shadow: 0 0 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);"
+						>
+							<div class="absolute inset-0 bg-gradient-to-r from-haunt-orange/0 via-haunt-orange/10 to-haunt-orange/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+							<svg class="w-5 h-5 text-gray-400 group-hover:text-haunt-orange transition-colors duration-300 relative z-10" fill="currentColor" viewBox="0 0 24 24">
+								<path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+							</svg>
+							<span class="text-sm font-semibold text-gray-300 group-hover:text-white transition-colors duration-300 relative z-10">YouTube</span>
+						</a>
+					{/if}
+				</div>
+			{/if}
 
 			<!-- Ratings -->
 			{#if data.review.rating_overall}
@@ -201,82 +311,6 @@
 					</div>
 				</div>
 			{/if}
-
-			<!-- Social Links -->
-			{#if data.review.website_url || data.review.facebook_url || data.review.instagram_url || data.review.twitter_url || data.review.youtube_url}
-				<div class="flex flex-wrap gap-4 mb-6">
-					{#if data.review.website_url}
-						<a
-							href={data.review.website_url}
-							target="_blank"
-							rel="noopener noreferrer"
-							class="group bg-haunt-orange/20 hover:bg-haunt-orange border-2 border-haunt-orange/50 hover:border-haunt-orange p-3 rounded-lg transition-all transform hover:scale-110"
-							title="Visit Website"
-							aria-label="Visit website"
-						>
-							<svg class="w-6 h-6 text-haunt-orange group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 20 20">
-								<path fill-rule="evenodd" d="M4.083 9h1.946c.089-1.546.383-2.97.837-4.118A6.004 6.004 0 004.083 9zM10 2a8 8 0 100 16 8 8 0 000-16zm0 2c-.076 0-.232.032-.465.262-.238.234-.497.623-.737 1.182-.389.907-.673 2.142-.766 3.556h3.936c-.093-1.414-.377-2.649-.766-3.556-.24-.56-.5-.948-.737-1.182C10.232 4.032 10.076 4 10 4zm3.971 5c-.089-1.546-.383-2.97-.837-4.118A6.004 6.004 0 0115.917 9h-1.946zm-2.003 2H8.032c.093 1.414.377 2.649.766 3.556.24.56.5.948.737 1.182.233.23.389.262.465.262.076 0 .232-.032.465-.262.238-.234.498-.623.737-1.182.389-.907.673-2.142.766-3.556zm1.166 4.118c.454-1.147.748-2.572.837-4.118h1.946a6.004 6.004 0 01-2.783 4.118zm-6.268 0C6.412 13.97 6.118 12.546 6.03 11H4.083a6.004 6.004 0 002.783 4.118z" clip-rule="evenodd" />
-							</svg>
-						</a>
-					{/if}
-					{#if data.review.facebook_url}
-						<a
-							href={data.review.facebook_url}
-							target="_blank"
-							rel="noopener noreferrer"
-							class="group bg-haunt-orange/20 hover:bg-haunt-orange border-2 border-haunt-orange/50 hover:border-haunt-orange p-3 rounded-lg transition-all transform hover:scale-110"
-							title="Visit Facebook"
-							aria-label="Visit Facebook page"
-						>
-							<svg class="w-6 h-6 text-haunt-orange group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
-								<path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-							</svg>
-						</a>
-					{/if}
-					{#if data.review.instagram_url}
-						<a
-							href={data.review.instagram_url}
-							target="_blank"
-							rel="noopener noreferrer"
-							class="group bg-haunt-orange/20 hover:bg-haunt-orange border-2 border-haunt-orange/50 hover:border-haunt-orange p-3 rounded-lg transition-all transform hover:scale-110"
-							title="Visit Instagram"
-							aria-label="Visit Instagram page"
-						>
-							<svg class="w-6 h-6 text-haunt-orange group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
-								<path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-							</svg>
-						</a>
-					{/if}
-					{#if data.review.twitter_url}
-						<a
-							href={data.review.twitter_url}
-							target="_blank"
-							rel="noopener noreferrer"
-							class="group bg-haunt-orange/20 hover:bg-haunt-orange border-2 border-haunt-orange/50 hover:border-haunt-orange p-3 rounded-lg transition-all transform hover:scale-110"
-							title="Visit Twitter/X"
-							aria-label="Visit Twitter/X page"
-						>
-							<svg class="w-6 h-6 text-haunt-orange group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
-								<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-							</svg>
-						</a>
-					{/if}
-					{#if data.review.youtube_url}
-						<a
-							href={data.review.youtube_url}
-							target="_blank"
-							rel="noopener noreferrer"
-							class="group bg-haunt-orange/20 hover:bg-haunt-orange border-2 border-haunt-orange/50 hover:border-haunt-orange p-3 rounded-lg transition-all transform hover:scale-110"
-							title="Watch on YouTube"
-							aria-label="Watch video on YouTube"
-						>
-							<svg class="w-6 h-6 text-haunt-orange group-hover:text-white transition-colors" fill="currentColor" viewBox="0 0 24 24">
-								<path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-							</svg>
-						</a>
-					{/if}
-				</div>
-			{/if}
 		</div>
 
 		<!-- YouTube Video -->
@@ -303,74 +337,12 @@
 			</div>
 		{/if}
 
-		<!-- Location Map -->
-		{#if data.review.address}
-			<div class="mb-6">
-				<div class="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
-					<h2 class="text-2xl font-bold text-haunt-orange mb-4 font-creepster flex items-center gap-2">
-						<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-							<path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-						</svg>
-						Location
-					</h2>
-					<p class="text-gray-300 mb-4">{data.review.address}</p>
-					<GoogleMap
-						address={data.review.address}
-						name={data.review.name}
-						height="400px"
-					/>
-					<div class="mt-4">
-						<a
-							href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.review.address)}`}
-							target="_blank"
-							rel="noopener noreferrer"
-							class="inline-flex items-center gap-2 text-haunt-orange hover:text-orange-400 transition-colors"
-						>
-							<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-								<path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
-								<path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
-							</svg>
-							Open in Google Maps
-						</a>
-					</div>
-				</div>
-			</div>
-		{/if}
-
-		<!-- Description -->
-		{#if data.review.description}
-			<div class="bg-gray-800/50 rounded-lg p-6 mb-6 border border-gray-700">
-				<h2 class="text-2xl font-bold text-haunt-orange mb-4 font-creepster">About</h2>
-				<p class="text-gray-300 text-lg leading-relaxed whitespace-pre-line">
-					{data.review.description}
-				</p>
-			</div>
-		{/if}
-
 		<!-- Review Text with Inline Images -->
 		{#if data.review.review_text}
 			<div class="bg-gray-800/50 rounded-lg p-6 mb-6 border border-gray-700">
 				<h2 class="text-2xl font-bold text-haunt-orange mb-4 font-creepster">Our Review</h2>
 				<div class="prose prose-invert max-w-none text-gray-300 leading-relaxed" style="white-space: pre-line;">
 					{@html formattedReviewText}
-				</div>
-			</div>
-		{/if}
-
-		<!-- Gallery -->
-		{#if data.images && data.images.length > 0}
-			<div class="bg-gray-800/50 rounded-lg p-6 mb-6 border border-gray-700">
-				<h2 class="text-2xl font-bold text-haunt-orange mb-4 font-creepster">Gallery</h2>
-				<div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-					{#each data.images as image}
-						<div class="aspect-square overflow-hidden rounded-lg">
-							<img
-								src={image.image_url}
-								alt={image.caption || data.review.name}
-								class="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
-							/>
-						</div>
-					{/each}
 				</div>
 			</div>
 		{/if}

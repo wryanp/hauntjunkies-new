@@ -60,6 +60,15 @@ export const actions: Actions = {
 				sameSite: 'strict',
 				maxAge: 60 * 60 * 24 * 7 // 7 days
 			});
+
+			// Set initial last activity timestamp
+			cookies.set('admin_last_activity', Date.now().toString(), {
+				path: '/',
+				httpOnly: true,
+				sameSite: 'lax',
+				maxAge: 60 * 60 * 24 * 7 // 7 days
+			});
+
 			throw redirect(303, '/admin/dashboard');
 		}
 

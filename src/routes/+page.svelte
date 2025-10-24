@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
 	import QuoteSection from '$lib/components/QuoteSection.svelte';
-	import ViewCounter from '$lib/components/ViewCounter.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 
 	let { data }: { data: PageData } = $props();
@@ -143,17 +142,17 @@
 						<!-- Card content -->
 						<div class="relative bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-2xl overflow-hidden border-2 border-gray-800 group-hover:border-haunt-orange transition-all duration-500 transform group-hover:scale-105" style="box-shadow: 0 0 30px rgba(0,0,0,0.8);">
 							{#if review.cover_image_url}
-								<div class="aspect-video overflow-hidden relative">
+								<div class="aspect-video overflow-hidden relative bg-gray-900">
 									<img
 										src={review.cover_image_url}
 										alt={review.name}
-										class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+										class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700"
 									/>
 									<!-- Gradient overlay on image -->
-									<div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
+									<div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-60 group-hover:opacity-40 transition-opacity pointer-events-none"></div>
 
 									<!-- Orange glow overlay on hover -->
-									<div class="absolute inset-0 bg-haunt-orange/0 group-hover:bg-haunt-orange/20 transition-all duration-500"></div>
+									<div class="absolute inset-0 bg-haunt-orange/0 group-hover:bg-haunt-orange/20 transition-all duration-500 pointer-events-none"></div>
 								</div>
 							{/if}
 
@@ -239,108 +238,6 @@
 		</div>
 	</div>
 </section>
-
-<!-- Popular Reviews Section -->
-{#if data.popularReviews && data.popularReviews.length > 0}
-	<section class="py-16 mobile-landscape:py-10 bg-gradient-to-b from-black to-gray-900 relative overflow-hidden">
-		<!-- Background pattern -->
-		<div class="absolute inset-0 opacity-5" style="background-image: url('/calendar-bg.png'); background-size: cover;"></div>
-
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-			<div class="text-center mb-12">
-				<h2 class="text-4xl md:text-5xl font-extrabold text-white mb-4 flex items-center justify-center gap-4">
-					<svg class="w-10 h-10 text-haunt-orange" fill="currentColor" viewBox="0 0 20 20">
-						<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-					</svg>
-					TRENDING HAUNTS
-				</h2>
-				<p class="text-xl text-gray-300">Most viewed reviews by haunt junkies like you</p>
-			</div>
-
-			<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-				{#each data.popularReviews as review, index}
-					<a
-						href="/reviews/{review.slug}"
-						class="group relative bg-gradient-to-br from-gray-800/80 to-gray-900/80 rounded-xl overflow-hidden hover:from-gray-700/80 hover:to-gray-800/80 transition-all duration-300 border-2 border-gray-700 hover:border-haunt-orange shadow-lg hover:shadow-2xl hover:shadow-haunt-orange/20"
-					>
-						<!-- Rank badge -->
-						<div class="absolute top-4 left-4 z-20">
-							<div class="bg-gradient-to-br from-haunt-orange to-red-600 text-white font-extrabold text-2xl w-12 h-12 rounded-full flex items-center justify-center shadow-lg" style="text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
-								#{index + 1}
-							</div>
-						</div>
-
-						{#if review.cover_image_url}
-							<div class="aspect-video overflow-hidden bg-gray-900 relative">
-								<img
-									src={review.cover_image_url}
-									alt={review.name}
-									class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-								/>
-								<!-- Gradient overlay -->
-								<div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/50 to-transparent"></div>
-							</div>
-						{:else}
-							<div class="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
-								<div class="text-7xl opacity-50">🏚️</div>
-							</div>
-						{/if}
-
-						<div class="p-6">
-							<h3 class="text-2xl font-bold text-white mb-3 group-hover:text-haunt-orange transition-colors line-clamp-2">
-								{review.name}
-							</h3>
-
-							{#if review.city && review.state}
-								<p class="text-gray-400 mb-3 flex items-center gap-2 text-sm">
-									<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-										<path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-									</svg>
-									{review.city}, {review.state}
-								</p>
-							{/if}
-
-							<!-- View counter with emphasis -->
-							{#if review.view_count}
-								<div class="flex items-center justify-between mb-4 bg-gray-900/50 rounded-lg p-3 border border-haunt-orange/30">
-									<ViewCounter viewCount={review.view_count} size="md" showLabel={true} />
-									<svg class="w-5 h-5 text-haunt-orange animate-pulse" fill="currentColor" viewBox="0 0 20 20">
-										<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-									</svg>
-								</div>
-							{/if}
-
-							{#if review.rating_overall}
-								<div class="flex items-center gap-2 mb-4">
-									<div class="flex">
-										{#each Array(5) as _, i}
-											<svg
-												class="w-5 h-5 {i < Math.round(review.rating_overall) ? 'text-haunt-orange' : 'text-gray-600'}"
-												fill="currentColor"
-												viewBox="0 0 20 20"
-											>
-												<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-											</svg>
-										{/each}
-									</div>
-									<span class="text-white font-bold">{review.rating_overall.toFixed(1)}</span>
-								</div>
-							{/if}
-
-							<!-- Read More -->
-							<div class="flex items-center gap-2 text-haunt-orange font-bold text-sm group-hover:gap-3 transition-all">
-								<span class="uppercase tracking-wider">Read Review</span>
-								<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-								</svg>
-							</div>
-						</div>
-					</a>
-				{/each}
-			</div>
-		</div>
-	</section>
-{/if}
 
 <!-- Golden Ghost Awards Section -->
 <section class="py-16 mobile-landscape:py-10 bg-gradient-to-b from-black via-gray-900 to-black relative overflow-hidden">

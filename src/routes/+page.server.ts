@@ -12,7 +12,6 @@ export const load: PageServerLoad = async () => {
 		return {
 			heroMessage: undefined,
 			featuredReviews: [],
-			popularReviews: [],
 			quotes: []
 		};
 	}
@@ -40,17 +39,6 @@ export const load: PageServerLoad = async () => {
 		console.error('Error fetching featured reviews:', error);
 	}
 
-	// Fetch popular reviews (most viewed)
-	const { data: popularReviews, error: popularError } = await supabase
-		.from('reviews')
-		.select('*')
-		.order('view_count', { ascending: false, nullsFirst: false })
-		.limit(3);
-
-	if (popularError) {
-		console.error('Error fetching popular reviews:', popularError);
-	}
-
 	// Fetch active quotes (always fetch quotes even if reviews fail)
 	const { data: quotes, error: quotesError } = await supabase
 		.from('quotes')
@@ -65,7 +53,6 @@ export const load: PageServerLoad = async () => {
 	return {
 		heroMessage,
 		featuredReviews: (featuredReviews as Review[]) || [],
-		popularReviews: (popularReviews as Review[]) || [],
 		quotes: (quotes as Quote[]) || []
 	};
 };

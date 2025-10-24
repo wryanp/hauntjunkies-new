@@ -67,7 +67,7 @@
 		<div class="flex items-center justify-between transition-all duration-300 {scrolled ? (isHauntPage ? 'h-20 mobile-landscape:h-18 sm:h-18 md:h-16' : 'h-20 mobile-landscape:h-18 sm:h-18 md:h-16') : (isHauntPage ? 'h-28 mobile-landscape:h-24 sm:h-24 md:h-20' : 'h-28 mobile-landscape:h-24 sm:h-24 md:h-20')}">
 			<!-- Logo -->
 			<a href={logoHref} class="flex-shrink-0 transform hover:scale-110 transition-transform duration-300" aria-label="Go to {logoAlt} homepage">
-				<img src={logoSrc} alt={logoAlt} class="transition-all duration-300 w-auto drop-shadow-xl {scrolled ? (isHauntPage ? 'h-14 mobile-landscape:h-12 sm:h-16 md:h-16' : 'h-14 mobile-landscape:h-12 sm:h-16 md:h-16') : (isHauntPage ? 'h-20 mobile-landscape:h-16 sm:h-24 md:h-24' : 'h-20 mobile-landscape:h-16 sm:h-24 md:h-24')}" />
+				<img src={logoSrc} alt={logoAlt} draggable="false" class="select-none pointer-events-none transition-all duration-300 w-auto drop-shadow-xl {scrolled ? (isHauntPage ? 'h-14 mobile-landscape:h-12 sm:h-16 md:h-16' : 'h-14 mobile-landscape:h-12 sm:h-16 md:h-16') : (isHauntPage ? 'h-20 mobile-landscape:h-16 sm:h-24 md:h-24' : 'h-20 mobile-landscape:h-16 sm:h-24 md:h-24')}" />
 			</a>
 
 			<!-- Desktop Navigation -->
@@ -85,7 +85,8 @@
 							<img
 								src={link.logoSrc}
 								alt={link.label}
-								class="h-12 w-auto {$page.url.pathname === link.href ? 'opacity-100' : 'opacity-80 hover:opacity-100'} transition-all hover:scale-110 drop-shadow-xl"
+								draggable="false"
+								class="select-none pointer-events-none h-12 w-auto mt-1 {$page.url.pathname === link.href ? 'opacity-100' : 'opacity-80 hover:opacity-100'} transition-all hover:scale-110 drop-shadow-xl"
 							/>
 						{:else}
 							{link.label}
@@ -134,7 +135,8 @@
 							<img
 								src={link.logoSrc}
 								alt={link.label}
-								class="h-10 w-auto {$page.url.pathname === link.href ? 'opacity-100' : 'opacity-80'}"
+								draggable="false"
+								class="select-none pointer-events-none h-10 w-auto {$page.url.pathname === link.href ? 'opacity-100' : 'opacity-80'}"
 							/>
 						{:else}
 							{link.label}

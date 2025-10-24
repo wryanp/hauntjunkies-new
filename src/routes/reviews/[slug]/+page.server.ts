@@ -9,6 +9,8 @@ import { checkRateLimit, getClientIP, formatTimeRemaining } from '$lib/rateLimit
 import { validateEmail, validateText } from '$lib/validation';
 import { verifyTurnstile } from '$lib/captcha';
 import { dev } from '$app/environment';
+import { sendCommentNotification } from '$lib/email';
+import { randomBytes } from 'crypto';
 
 export const load: PageServerLoad = async ({ params, parent }) => {
 	// Get authentication from parent layout
@@ -146,10 +148,10 @@ export const actions: Actions = {
 		const sanitizedName = nameValidation.sanitized!;
 		const sanitizedComment = commentValidation.sanitized!;
 
-		// Get review ID from slug
+		// Get review details
 		const { data: review } = await supabase
 			.from('reviews')
-			.select('id')
+			.select('id, name, slug')
 			.eq('slug', params.slug)
 			.single();
 
@@ -157,20 +159,42 @@ export const actions: Actions = {
 			return fail(404, { error: 'Review not found' });
 		}
 
-		// Insert comment (unapproved by default)
-		const { error: insertError } = await supabase
+		// Generate secure approval token
+		const approvalToken = randomBytes(32).toString('hex');
+
+		// Insert comment (unapproved by default) and get the inserted data
+		const { data: insertedComment, error: insertError } = await supabase
 			.from('review_comments')
 			.insert({
 				review_id: review.id,
 				author_name: sanitizedName,
 				author_email: author_email,
 				comment_text: sanitizedComment,
-				approved: false // Requires admin approval
-			});
+				approved: false, // Requires admin approval
+				approval_token: approvalToken
+			})
+			.select()
+			.single();
 
 		if (insertError) {
 			console.error('Error inserting comment:', insertError);
 			return fail(500, { error: 'Failed to submit comment. Please try again.' });
+		}
+
+		// Send email notification to admin (fire and forget - don't block user)
+		if (insertedComment) {
+			sendCommentNotification({
+				commentId: insertedComment.id,
+				reviewName: review.name,
+				reviewSlug: review.slug,
+				authorName: sanitizedName,
+				authorEmail: author_email,
+				commentText: sanitizedComment,
+				approvalToken: approvalToken
+			}).catch(error => {
+				console.error('Failed to send comment notification email:', error);
+				// Don't fail the request - comment was saved successfully
+			});
 		}
 
 		return { success: true };
