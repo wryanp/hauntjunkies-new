@@ -25,6 +25,13 @@ export interface Review {
 	youtube_url?: string;
 	view_count?: number; // Total number of times this review has been viewed
 	last_viewed_at?: string; // Timestamp of the most recent view
+	// Golden Ghost Award fields
+	award_best_actors_year?: number;
+	award_best_makeup_year?: number;
+	award_best_set_design_year?: number;
+	award_best_story_year?: number;
+	award_scariest_year?: number;
+	award_best_overall_year?: number;
 	created_at: string;
 	updated_at: string;
 }
@@ -135,4 +142,82 @@ export interface Quote {
 	is_active: boolean;
 	display_order: number;
 	created_at: string;
+}
+
+export interface SiteSettings {
+	id: string;
+	setting_key: string;
+	setting_value: {
+		enabled: boolean;
+	};
+	description?: string;
+	updated_at: string;
+	created_at: string;
+}
+
+// Golden Ghost Award Types
+export type AwardCategory =
+	| 'best_actors'
+	| 'best_makeup'
+	| 'best_set_design'
+	| 'best_story'
+	| 'scariest'
+	| 'best_overall';
+
+export interface AwardInfo {
+	label: string;
+	icon: string;
+	description: string;
+	fieldName: keyof Review;
+	imagePath: string;
+}
+
+export const AWARD_CATEGORIES: Record<AwardCategory, AwardInfo> = {
+	best_actors: {
+		label: 'Best Haunt Actors',
+		icon: '🎭',
+		description: 'Outstanding performance and character portrayal',
+		fieldName: 'award_best_actors_year',
+		imagePath: '/Best_Haunt_Actors_Badge.png'
+	},
+	best_makeup: {
+		label: 'Best Haunt Makeup',
+		icon: '💄',
+		description: 'Exceptional makeup and prosthetics artistry',
+		fieldName: 'award_best_makeup_year',
+		imagePath: '/Best_Haunt_Makeup_Badge.png'
+	},
+	best_set_design: {
+		label: 'Best Set Design',
+		icon: '🏛️',
+		description: 'Immersive environments and scenic design',
+		fieldName: 'award_best_set_design_year',
+		imagePath: '/Best_Set_Design_Badge.png'
+	},
+	best_story: {
+		label: 'Best Haunt Story',
+		icon: '📖',
+		description: 'Compelling narrative and storytelling',
+		fieldName: 'award_best_story_year',
+		imagePath: '/Best_Haunt_Story_Badge.png'
+	},
+	scariest: {
+		label: 'Scariest Haunt',
+		icon: '😱',
+		description: 'Most terrifying and intense experience',
+		fieldName: 'award_scariest_year',
+		imagePath: '/Scariest_Haunt_Badge.png'
+	},
+	best_overall: {
+		label: 'Best Overall Haunt',
+		icon: '👑',
+		description: 'The ultimate haunt experience - our highest honor',
+		fieldName: 'award_best_overall_year',
+		imagePath: '/Best_Overall_Haunt_Badge.png'
+	}
+};
+
+export interface AwardData {
+	category: AwardCategory;
+	year: number;
 }

@@ -6,6 +6,8 @@
 	import StructuredData from '$lib/components/StructuredData.svelte';
 	import Breadcrumbs from '$lib/components/Breadcrumbs.svelte';
 	import GoogleMap from '$lib/components/GoogleMap.svelte';
+	import GoldenGhostAwards from '$lib/components/GoldenGhostAwards.svelte';
+	import { hasGoldenGhostAwards } from '$lib/utils/awards';
 	import { dev } from '$app/environment';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -13,6 +15,16 @@
 	let commentFormVisible = $state(false);
 	let submitting = $state(false);
 	let captchaToken = $state(dev ? 'dev-mode' : ''); // Auto-pass in dev mode
+
+	// Calculate total award count
+	let awardCount = $derived(
+		(data.review.award_best_actors_year ? 1 : 0) +
+		(data.review.award_best_makeup_year ? 1 : 0) +
+		(data.review.award_best_set_design_year ? 1 : 0) +
+		(data.review.award_best_story_year ? 1 : 0) +
+		(data.review.award_scariest_year ? 1 : 0) +
+		(data.review.award_best_overall_year ? 1 : 0)
+	);
 
 	// Parse review text and replace image placeholders with actual images
 	// Supports placeholders like [REVIEWER_PHOTO:1], [REVIEWER_PHOTO:2], etc.
@@ -271,20 +283,19 @@
 
 			<!-- Ratings -->
 			{#if data.review.rating_overall}
-				<div class="bg-gray-800/50 rounded-lg p-6 mb-6 border border-gray-700">
+				<div class="bg-gray-800/50 rounded-lg p-6 mb-6 border border-gray-700" style="min-height: 180px;">
 					<h2 class="text-2xl font-bold text-haunt-orange mb-4 font-creepster">Overall Rating</h2>
 					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div>
-							<div class="text-5xl font-bold text-white mb-2">{data.review.rating_overall.toFixed(1)}</div>
-							<div class="flex">
+							<div class="text-5xl font-bold text-white mb-3">{data.review.rating_overall.toFixed(1)}</div>
+							<div class="flex items-center gap-1">
 								{#each Array(5) as _, i}
-									<svg
-										class="w-6 h-6 {i < Math.round(data.review.rating_overall) ? 'text-haunt-orange' : 'text-gray-600'}"
-										fill="currentColor"
-										viewBox="0 0 20 20"
-									>
-										<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-									</svg>
+									<img
+										src="/ghost.png"
+										alt="Rating ghost"
+										class="w-9 h-9 object-contain transition-all {i < Math.round(data.review.rating_overall) ? 'opacity-100 brightness-110' : 'opacity-20 grayscale'}"
+										style="filter: {i < Math.round(data.review.rating_overall) ? 'drop-shadow(0 3px 6px rgba(252, 116, 3, 0.5))' : 'none'};"
+									/>
 								{/each}
 							</div>
 						</div>
@@ -307,6 +318,52 @@
 									<span class="text-white font-medium">{data.review.rating_value.toFixed(1)}</span>
 								</div>
 							{/if}
+						</div>
+					</div>
+				</div>
+			{/if}
+
+			<!-- Golden Ghost Awards -->
+			{#if hasGoldenGhostAwards(data.review)}
+				<div class="bg-gray-800/50 rounded-lg p-4 mb-6 border border-yellow-500/30 relative overflow-hidden" style="box-shadow: 0 0 30px rgba(234, 179, 8, 0.1), inset 0 1px 0 rgba(255, 215, 0, 0.05);">
+					<!-- Decorative corner accents -->
+					<div class="absolute top-0 left-0 w-12 h-12 border-t border-l border-yellow-400/20 rounded-tl-lg"></div>
+					<div class="absolute bottom-0 right-0 w-12 h-12 border-b border-r border-yellow-400/20 rounded-br-lg"></div>
+
+					<!-- Subtle background gradient overlay -->
+					<div class="absolute inset-0 bg-gradient-to-r from-yellow-500/5 via-transparent to-yellow-500/5 pointer-events-none"></div>
+
+					<div class="relative z-10">
+						<h2 class="text-xl font-bold text-yellow-400 mb-2">Golden Ghost Awards</h2>
+						<div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+							<!-- Left: Trophy & Title -->
+							<div>
+								<div class="flex items-center gap-2 mb-1">
+									<img
+										src="/golden-ghost-award.png"
+										alt="Golden Ghost Award"
+										class="w-8 h-8 flex-shrink-0"
+										style="filter: drop-shadow(0 2px 10px rgba(234, 179, 8, 0.3));"
+									/>
+									<div class="text-3xl font-bold bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 bg-clip-text text-transparent">
+										{awardCount}
+									</div>
+								</div>
+								<p class="text-yellow-400/70 text-xs uppercase tracking-wider">
+									Award{awardCount > 1 ? 's' : ''} Won
+								</p>
+							</div>
+
+							<!-- Right: Award Badges -->
+							<div>
+								<GoldenGhostAwards
+									review={data.review}
+									layout="horizontal"
+									size="small"
+									animation="none"
+									showLabel={false}
+								/>
+							</div>
 						</div>
 					</div>
 				</div>

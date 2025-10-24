@@ -23,6 +23,9 @@
 	// Get first available ticket date or fallback
 	const firstAvailableDate = $derived(data.ticketDates?.[0]?.date || `${hauntYear}-10-29`);
 
+	// Check if there are any active/future ticket dates
+	const hasActiveDates = $derived(data.ticketDates && data.ticketDates.length > 0);
+
 	// Get calendar OPEN dates from database or fallback to calculated year
 	const oct29Date = $derived(data.ticketDates?.find(d => d.date.endsWith('-10-29'))?.date || `${hauntYear}-10-29`);
 	const oct30Date = $derived(data.ticketDates?.find(d => d.date.endsWith('-10-30'))?.date || `${hauntYear}-10-30`);
@@ -920,6 +923,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 	</div>
 </section>
 
+{#if hasActiveDates}
 <!-- Directions Section -->
 <section class="py-20 bg-black relative overflow-hidden">
 	<!-- Texture overlay -->
@@ -954,18 +958,14 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 						</svg>
 						<div>
 							<h3 class="text-2xl font-bold text-white mb-2">Address</h3>
-							{#if data.info?.address}
-								<p class="text-lg text-gray-300 whitespace-pre-line">{data.info.address}</p>
-							{:else}
-								<p class="text-lg text-gray-300">2100 Carlysle Park Lane</p>
-								<p class="text-lg text-gray-300">Lawrenceville, GA 30044</p>
-							{/if}
+							<p class="text-lg text-gray-300">2100 Carlysle Park Lane</p>
+							<p class="text-lg text-gray-300">Lawrenceville, GA 30044</p>
 						</div>
 					</div>
 
 					<!-- Get Directions Button -->
 					<a
-						href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(data.info?.address || '2100 Carlysle Park Lane, Lawrenceville, GA 30044')}`}
+						href="https://maps.google.com/maps?q=2100+Carlysle+Park+Lane,+Lawrenceville,+GA+30044"
 						target="_blank"
 						rel="noopener noreferrer"
 						class="group inline-flex items-center gap-3 bg-gradient-to-r from-haunt-red to-red-900 hover:from-red-900 hover:to-haunt-red text-white font-extrabold py-4 px-8 rounded-xl transition-all transform hover:scale-105 shadow-2xl overflow-hidden relative text-lg w-full justify-center"
@@ -1007,7 +1007,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 				<div class="relative bg-gradient-to-br from-gray-900/80 via-black/80 to-gray-900/80 rounded-2xl border-2 border-haunt-red/40 p-2 sm:p-4" style="box-shadow: 0 0 30px rgba(164,18,20,0.3), inset 0 0 20px rgba(0,0,0,0.5);">
 					<div class="relative rounded-xl overflow-hidden w-full h-[500px] sm:h-[400px]" style="filter: invert(90%) hue-rotate(180deg) brightness(95%) contrast(90%);">
 						<GoogleMap
-							address={data.info?.address || '2100 Carlysle Park Lane, Lawrenceville, GA 30044'}
+							address="2100 Carlysle Park Lane, Lawrenceville, GA 30044"
 							name="McCloud Manor"
 							height="100%"
 						/>
@@ -1017,4 +1017,5 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 		</div>
 	</div>
 </section>
+{/if}
 

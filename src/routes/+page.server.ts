@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import type { PageServerLoad } from './$types';
-import type { Review, HeroMessage, Quote } from '$lib/types';
+import type { Review, HeroMessage, Quote, SiteSettings } from '$lib/types';
+import { getMultiAwardWinners } from '$lib/utils/awards';
 
 export const load: PageServerLoad = async () => {
 	// Handle missing Supabase credentials gracefully
@@ -12,7 +13,9 @@ export const load: PageServerLoad = async () => {
 		return {
 			heroMessage: undefined,
 			featuredReviews: [],
-			quotes: []
+			quotes: [],
+			showAwardsHero: false,
+			multiAwardWinners: []
 		};
 	}
 
@@ -50,9 +53,39 @@ export const load: PageServerLoad = async () => {
 		console.error('Error fetching quotes:', quotesError);
 	}
 
+	// Fetch site settings for awards hero toggle
+	const { data: awardsHeroSetting, error: settingsError } = await supabase
+		.from('site_settings')
+		.select('*')
+		.eq('setting_key', 'show_awards_hero')
+		.single();
+
+	if (settingsError) {
+		console.error('Error fetching site settings:', settingsError);
+	}
+
+	const showAwardsHero = awardsHeroSetting?.setting_value?.enabled ?? false;
+
+	// Fetch all reviews to find multi-award winners (only if hero is enabled)
+	let multiAwardWinners: Review[] = [];
+	if (showAwardsHero) {
+		const { data: allReviews, error: reviewsError } = await supabase
+			.from('reviews')
+			.select('*')
+			.order('created_at', { ascending: false });
+
+		if (reviewsError) {
+			console.error('Error fetching reviews for award winners:', reviewsError);
+		} else if (allReviews) {
+			multiAwardWinners = getMultiAwardWinners(allReviews as Review[]);
+		}
+	}
+
 	return {
 		heroMessage,
 		featuredReviews: (featuredReviews as Review[]) || [],
-		quotes: (quotes as Quote[]) || []
+		quotes: (quotes as Quote[]) || [],
+		showAwardsHero,
+		multiAwardWinners
 	};
 };

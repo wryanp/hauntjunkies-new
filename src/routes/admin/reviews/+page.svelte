@@ -6,6 +6,8 @@
 	import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 	import { createClient } from '@supabase/supabase-js';
 	import type { PageData, ActionData } from './$types';
+	import AwardsManager from '$lib/components/AwardsManager.svelte';
+	import { getAwardCount } from '$lib/utils/awards';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
@@ -39,6 +41,9 @@
 	let showSuccess = $state(false);
 	let showDeleteConfirm = $state<string | null>(null); // Track review ID for delete confirmation
 	let togglingFeatured = $state<string | null>(null); // Track which review is being toggled
+	let managingAwards = $state<any>(null); // Track which review's awards are being managed
+	let showForm = $state(false); // Track whether the form should be shown
+	let togglingAwards = $state(false); // Track awards hero toggle state
 
 	function generateSlug() {
 		reviewData.slug = reviewData.title
@@ -50,6 +55,7 @@
 	// Load review data into form for editing
 	async function editReview(review: any) {
 		editingReview = review.id;
+		showForm = true;
 
 		reviewData = {
 			title: review.name || '',
@@ -80,6 +86,7 @@
 	// Cancel editing and reset form
 	function cancelEdit() {
 		editingReview = null;
+		showForm = false;
 		reviewData = {
 			title: '',
 			slug: '',
@@ -190,7 +197,85 @@
 		</div>
 	{/if}
 
+	<!-- New Review Button (shown when form is hidden) -->
+	{#if !showForm}
+		<div class="flex justify-center">
+			<button
+				type="button"
+				onclick={() => showForm = true}
+				class="bg-gradient-to-r from-haunt-orange to-orange-600 hover:from-orange-600 hover:to-haunt-orange text-white font-bold py-4 px-8 rounded-xl transition-all transform hover:scale-105 shadow-lg flex items-center gap-3"
+				style="box-shadow: 0 0 30px rgba(252,116,3,0.4);"
+			>
+				<svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+				</svg>
+				<span class="text-lg">Create New Review</span>
+			</button>
+		</div>
+	{/if}
+
+	<!-- Golden Ghost Awards Hero Toggle -->
+	<div class="mb-8 mt-8 bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-yellow-500/30 p-6 shadow-lg">
+		<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+			<div class="flex items-center gap-4">
+				<img src="/golden-ghost-award.png" alt="Golden Ghost Award" class="w-12 h-12 drop-shadow-xl" />
+				<div class="flex-1">
+					<h2 class="text-xl font-bold text-yellow-400">Awards Hero Section</h2>
+					<p class="text-gray-400 text-sm mt-1">
+						Display multi-award winners prominently on homepage
+					</p>
+					<div class="flex items-center gap-2 text-sm mt-2">
+						<span class="font-semibold text-white">Status:</span>
+						{#if data.showAwardsHero}
+							<span class="text-green-400 whitespace-nowrap">✓ Enabled</span>
+						{:else}
+							<span class="text-gray-500 whitespace-nowrap">Disabled</span>
+						{/if}
+					</div>
+				</div>
+			</div>
+			<form
+				method="POST"
+				action="?/toggleAwardsHero"
+				use:enhance={() => {
+					togglingAwards = true;
+					return async ({ result, update }) => {
+						await update();
+						if (result.type === 'success') {
+							await invalidateAll();
+							// Reload the current page to ensure data is fresh
+							await goto($page.url.pathname, { invalidateAll: true });
+						}
+						togglingAwards = false;
+					};
+				}}
+			>
+				<button
+					type="submit"
+					disabled={togglingAwards}
+					class="px-6 py-3 rounded-lg font-semibold transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none shadow-lg whitespace-nowrap {data.showAwardsHero
+						? 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white'
+						: 'bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-black'}"
+					style="box-shadow: 0 0 20px rgba({data.showAwardsHero ? '220,38,38' : '255,215,0'},0.4);"
+				>
+					{#if togglingAwards}
+						<span class="flex items-center gap-2">
+							<svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+								<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+								<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+							</svg>
+							Updating...
+						</span>
+					{:else}
+						{data.showAwardsHero ? 'Disable Hero Section' : 'Enable Hero Section'}
+					{/if}
+				</button>
+			</form>
+		</div>
+	</div>
+
 	<!-- Form -->
+	{#if showForm}
 	<form method="POST" action={editingReview ? '?/update' : '?/create'} use:enhance={() => {
 		submitting = true;
 		const isEditing = !!editingReview;
@@ -233,80 +318,6 @@
 		<input type="hidden" name="instagram_url" value={reviewData.socialLinks.instagram} />
 		<input type="hidden" name="twitter_url" value={reviewData.socialLinks.tiktok} />
 		<input type="hidden" name="youtube_url" value={reviewData.socialLinks.youtube} />
-
-		<!-- Basic Information -->
-		<div class="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-haunt-orange/30 p-6">
-			<h2 class="text-2xl font-bold text-white mb-6">Basic Information</h2>
-
-			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-				<!-- Title -->
-				<div class="md:col-span-2">
-					<label for="title" class="block text-white font-semibold mb-2">
-						Review Title *
-					</label>
-					<input
-						type="text"
-						id="title"
-						bind:value={reviewData.title}
-						oninput={generateSlug}
-						required
-						class="w-full px-4 py-3 bg-black/50 border-2 border-haunt-orange/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors"
-						placeholder="e.g., Haunted Manor 2024"
-					/>
-				</div>
-
-				<!-- Slug -->
-				<div class="md:col-span-2">
-					<label for="slug" class="block text-white font-semibold mb-2">
-						URL Slug *
-					</label>
-					<input
-						type="text"
-						id="slug"
-						bind:value={reviewData.slug}
-						required
-						class="w-full px-4 py-3 bg-black/50 border-2 border-haunt-orange/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors"
-						placeholder="haunted-manor-2024"
-					/>
-					<p class="text-gray-500 text-sm mt-1">Will be used in URL: /reviews/{reviewData.slug || 'your-slug'}</p>
-				</div>
-
-				<!-- Caption -->
-				<div class="md:col-span-2">
-					<label for="caption" class="block text-white font-semibold mb-2">
-						Caption
-					</label>
-					<input
-						type="text"
-						id="caption"
-						bind:value={reviewData.caption}
-						class="w-full px-4 py-3 bg-black/50 border-2 border-haunt-orange/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors"
-						placeholder="A brief description of this haunt"
-					/>
-					<p class="text-gray-500 text-sm mt-1">Short description shown on review cards</p>
-				</div>
-
-				<!-- Description/Review Text -->
-				<div class="md:col-span-2">
-					<label for="description" class="block text-white font-semibold mb-2">
-						Review Text *
-					</label>
-					<textarea
-						id="description"
-						bind:value={reviewData.description}
-						required
-						rows="10"
-						class="w-full px-4 py-3 bg-black/50 border-2 border-haunt-orange/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors resize-none"
-						placeholder="Write your detailed review here..."
-					></textarea>
-					<p class="text-gray-500 text-sm mt-1">
-						Inline images: <code class="bg-gray-800 px-1 py-0.5 rounded">[REVIEWER_PHOTO:1]</code> (database images with captions) or
-						<code class="bg-gray-800 px-1 py-0.5 rounded">[IMAGE:https://url.com/image.jpg]</code> or
-						<code class="bg-gray-800 px-1 py-0.5 rounded">[IMAGE:https://url.com/image.jpg|Caption]</code> (direct URLs)
-					</p>
-				</div>
-			</div>
-		</div>
 
 		<!-- Images -->
 		<div class="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-haunt-orange/30 p-6">
@@ -409,77 +420,6 @@
 
 		</div>
 
-		<!-- Ratings -->
-		<div class="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-haunt-orange/30 p-6">
-			<h2 class="text-2xl font-bold text-white mb-6">Ratings</h2>
-
-			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-				<!-- Overall Rating -->
-				<div>
-					<label for="overallRating" class="block text-white font-semibold mb-2">
-						Overall Rating: {reviewData.overallRating}/5
-					</label>
-					<input
-						type="range"
-						id="overallRating"
-						bind:value={reviewData.overallRating}
-						min="1"
-						max="5"
-						step="0.5"
-						class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-haunt-orange"
-					/>
-				</div>
-
-				<!-- Scare Rating -->
-				<div>
-					<label for="scareRating" class="block text-white font-semibold mb-2">
-						Scare Factor: {reviewData.scareRating}/5
-					</label>
-					<input
-						type="range"
-						id="scareRating"
-						bind:value={reviewData.scareRating}
-						min="1"
-						max="5"
-						step="0.5"
-						class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-haunt-orange"
-					/>
-				</div>
-
-				<!-- Atmosphere Rating -->
-				<div>
-					<label for="atmosphereRating" class="block text-white font-semibold mb-2">
-						Atmosphere: {reviewData.atmosphereRating}/5
-					</label>
-					<input
-						type="range"
-						id="atmosphereRating"
-						bind:value={reviewData.atmosphereRating}
-						min="1"
-						max="5"
-						step="0.5"
-						class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-haunt-orange"
-					/>
-				</div>
-
-				<!-- Value Rating -->
-				<div>
-					<label for="valueRating" class="block text-white font-semibold mb-2">
-						Value: {reviewData.valueRating}/5
-					</label>
-					<input
-						type="range"
-						id="valueRating"
-						bind:value={reviewData.valueRating}
-						min="1"
-						max="5"
-						step="0.5"
-						class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-haunt-orange"
-					/>
-				</div>
-			</div>
-		</div>
-
 		<!-- Social Media Links & Contact -->
 		<div class="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-haunt-orange/30 p-6">
 			<h2 class="text-2xl font-bold text-white mb-6">Haunt Information</h2>
@@ -574,6 +514,151 @@
 			</div>
 		</div>
 
+		<!-- Basic Information -->
+		<div class="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-haunt-orange/30 p-6">
+			<h2 class="text-2xl font-bold text-white mb-6">Basic Information</h2>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+				<!-- Title -->
+				<div class="md:col-span-2">
+					<label for="title" class="block text-white font-semibold mb-2">
+						Review Title *
+					</label>
+					<input
+						type="text"
+						id="title"
+						bind:value={reviewData.title}
+						oninput={generateSlug}
+						required
+						class="w-full px-4 py-3 bg-black/50 border-2 border-haunt-orange/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors"
+						placeholder="e.g., Haunted Manor 2024"
+					/>
+				</div>
+
+				<!-- Slug -->
+				<div class="md:col-span-2">
+					<label for="slug" class="block text-white font-semibold mb-2">
+						URL Slug *
+					</label>
+					<input
+						type="text"
+						id="slug"
+						bind:value={reviewData.slug}
+						required
+						class="w-full px-4 py-3 bg-black/50 border-2 border-haunt-orange/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors"
+						placeholder="haunted-manor-2024"
+					/>
+					<p class="text-gray-500 text-sm mt-1">Will be used in URL: /reviews/{reviewData.slug || 'your-slug'}</p>
+				</div>
+
+				<!-- Caption -->
+				<div class="md:col-span-2">
+					<label for="caption" class="block text-white font-semibold mb-2">
+						Caption
+					</label>
+					<input
+						type="text"
+						id="caption"
+						bind:value={reviewData.caption}
+						class="w-full px-4 py-3 bg-black/50 border-2 border-haunt-orange/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors"
+						placeholder="A brief description of this haunt"
+					/>
+					<p class="text-gray-500 text-sm mt-1">Short description shown on review cards</p>
+				</div>
+
+				<!-- Description/Review Text -->
+				<div class="md:col-span-2">
+					<label for="description" class="block text-white font-semibold mb-2">
+						Review Text *
+					</label>
+					<textarea
+						id="description"
+						bind:value={reviewData.description}
+						required
+						rows="10"
+						class="w-full px-4 py-3 bg-black/50 border-2 border-haunt-orange/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors resize-none"
+						placeholder="Write your detailed review here..."
+					></textarea>
+					<p class="text-gray-500 text-sm mt-1">
+						Inline images: <code class="bg-gray-800 px-1 py-0.5 rounded">[REVIEWER_PHOTO:1]</code> (database images with captions) or
+						<code class="bg-gray-800 px-1 py-0.5 rounded">[IMAGE:https://url.com/image.jpg]</code> or
+						<code class="bg-gray-800 px-1 py-0.5 rounded">[IMAGE:https://url.com/image.jpg|Caption]</code> (direct URLs)
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- Ratings -->
+		<div class="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-haunt-orange/30 p-6">
+			<h2 class="text-2xl font-bold text-white mb-6">Ratings</h2>
+
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+				<!-- Overall Rating -->
+				<div>
+					<label for="overallRating" class="block text-white font-semibold mb-2">
+						Overall Rating: {reviewData.overallRating}/5
+					</label>
+					<input
+						type="range"
+						id="overallRating"
+						bind:value={reviewData.overallRating}
+						min="1"
+						max="5"
+						step="0.5"
+						class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-haunt-orange"
+					/>
+				</div>
+
+				<!-- Scare Rating -->
+				<div>
+					<label for="scareRating" class="block text-white font-semibold mb-2">
+						Scare Factor: {reviewData.scareRating}/5
+					</label>
+					<input
+						type="range"
+						id="scareRating"
+						bind:value={reviewData.scareRating}
+						min="1"
+						max="5"
+						step="0.5"
+						class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-haunt-orange"
+					/>
+				</div>
+
+				<!-- Atmosphere Rating -->
+				<div>
+					<label for="atmosphereRating" class="block text-white font-semibold mb-2">
+						Atmosphere: {reviewData.atmosphereRating}/5
+					</label>
+					<input
+						type="range"
+						id="atmosphereRating"
+						bind:value={reviewData.atmosphereRating}
+						min="1"
+						max="5"
+						step="0.5"
+						class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-haunt-orange"
+					/>
+				</div>
+
+				<!-- Value Rating -->
+				<div>
+					<label for="valueRating" class="block text-white font-semibold mb-2">
+						Value: {reviewData.valueRating}/5
+					</label>
+					<input
+						type="range"
+						id="valueRating"
+						bind:value={reviewData.valueRating}
+						min="1"
+						max="5"
+						step="0.5"
+						class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-haunt-orange"
+					/>
+				</div>
+			</div>
+		</div>
+
 		<!-- Form Actions -->
 		<div class="flex gap-4">
 			<button
@@ -606,6 +691,7 @@
 			{/if}
 		</div>
 	</form>
+	{/if}
 
 	<!-- Existing Reviews List -->
 	{#if data.reviews && data.reviews.length > 0}
@@ -615,7 +701,9 @@
 				{#each data.reviews as review}
 					<div class="bg-gray-800/50 rounded-lg border border-gray-700 p-4">
 						<div class="flex items-start justify-between mb-2">
-							<h3 class="text-lg font-bold text-white">{review.name}</h3>
+							<h3 class="text-lg font-bold text-white">
+								{review.name}
+							</h3>
 							{#if review.featured}
 								<span class="inline-flex items-center gap-1 bg-haunt-orange/20 text-haunt-orange px-2 py-1 rounded-md text-xs font-semibold">
 									<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
@@ -627,7 +715,10 @@
 						</div>
 						<p class="text-gray-400 text-sm mb-2">{review.city}, {review.state}</p>
 						{#if review.rating_overall}
-							<p class="text-haunt-orange font-semibold">⭐ {review.rating_overall.toFixed(1)}/5</p>
+							<p class="flex items-center gap-2">
+								<img src="/ghost.png" alt="Rating" class="w-5 h-5 object-contain" />
+								<span class="text-haunt-orange font-semibold leading-none">{review.rating_overall.toFixed(1)}/5</span>
+							</p>
 						{/if}
 						<div class="flex gap-2 mt-4 flex-wrap">
 							<a
@@ -676,6 +767,23 @@
 							</form>
 						</div>
 
+						<!-- Awards Button -->
+						<div class="mt-3">
+							<button
+								type="button"
+								onclick={() => managingAwards = review}
+								class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg border transition-all text-sm font-semibold bg-yellow-900/20 hover:bg-yellow-900/30 text-yellow-400 border-yellow-600/50"
+							>
+								<img src="/golden-ghost-award.png" alt="" class="w-4 h-4" />
+								Manage Awards
+								{#if getAwardCount(review) > 0}
+									<span class="bg-yellow-500 text-black text-xs px-2 py-0.5 rounded-full font-bold">
+										{getAwardCount(review)}
+									</span>
+								{/if}
+							</button>
+						</div>
+
 						<!-- Action Buttons -->
 						<div class="flex gap-2 mt-3">
 							<button
@@ -719,3 +827,14 @@
 		</div>
 	{/if}
 </div>
+
+<!-- Awards Manager Modal -->
+{#if managingAwards}
+	<AwardsManager
+		review={managingAwards}
+		onClose={() => {
+			managingAwards = null;
+			invalidateAll();
+		}}
+	/>
+{/if}

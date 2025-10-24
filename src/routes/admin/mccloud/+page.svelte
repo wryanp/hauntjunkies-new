@@ -56,34 +56,6 @@
 				};
 			}}>
 				<div class="space-y-6">
-					<!-- Title -->
-					<div>
-						<label for="title" class="block text-sm font-medium text-gray-300 mb-2">
-							Title
-						</label>
-						<input
-							type="text"
-							id="title"
-							name="title"
-							value={data.info?.title || ''}
-							class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-haunt-red"
-							required
-						/>
-					</div>
-
-					<!-- Description -->
-					<div>
-						<label for="description" class="block text-sm font-medium text-gray-300 mb-2">
-							Description
-						</label>
-						<textarea
-							id="description"
-							name="description"
-							rows="3"
-							class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-haunt-red"
-						>{data.info?.description || ''}</textarea>
-					</div>
-
 					<!-- Story -->
 					<div>
 						<label for="story" class="block text-sm font-medium text-gray-300 mb-2">
@@ -97,86 +69,6 @@
 							placeholder="Leave empty to use default story"
 						>{data.info?.story || ''}</textarea>
 						<p class="text-gray-500 text-sm mt-1">Use \n\n for paragraph breaks</p>
-					</div>
-
-					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-						<!-- Dates -->
-						<div>
-							<label for="dates" class="block text-sm font-medium text-gray-300 mb-2">
-								Dates
-							</label>
-							<input
-								type="text"
-								id="dates"
-								name="dates"
-								value={data.info?.dates || ''}
-								placeholder="October 2025"
-								class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-haunt-red"
-							/>
-						</div>
-
-						<!-- Hours -->
-						<div>
-							<label for="hours" class="block text-sm font-medium text-gray-300 mb-2">
-								Hours
-							</label>
-							<input
-								type="text"
-								id="hours"
-								name="hours"
-								value={data.info?.hours || ''}
-								placeholder="7:00 PM - 11:00 PM"
-								class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-haunt-red"
-							/>
-						</div>
-					</div>
-
-					<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-						<!-- Pricing -->
-						<div>
-							<label for="pricing" class="block text-sm font-medium text-gray-300 mb-2">
-								Pricing
-							</label>
-							<input
-								type="text"
-								id="pricing"
-								name="pricing"
-								value={data.info?.pricing || ''}
-								placeholder="Free admission"
-								class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-haunt-red"
-							/>
-						</div>
-
-						<!-- Address -->
-						<div>
-							<label for="address" class="block text-sm font-medium text-gray-300 mb-2">
-								Address
-							</label>
-							<input
-								type="text"
-								id="address"
-								name="address"
-								value={data.info?.address || ''}
-								placeholder="123 Main St, City, State"
-								class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-haunt-red"
-							/>
-						</div>
-					</div>
-
-					<!-- Video URL -->
-					<div>
-						<label for="videoUrl" class="block text-sm font-medium text-gray-300 mb-2">
-							Background Video URL
-						</label>
-						<input
-							type="url"
-							id="videoUrl"
-							name="videoUrl"
-							value={data.info?.video_url || ''}
-							placeholder="/videos/haunt.mp4"
-							class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-haunt-red"
-						/>
-						<p class="text-gray-500 text-sm mt-1">Path to video file in static folder</p>
 					</div>
 
 					<!-- Submit Button -->

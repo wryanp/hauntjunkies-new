@@ -26,9 +26,10 @@
 			<div>
 				<h3 class="text-haunt-orange text-lg sm:text-xl font-bold mb-4">Quick Links</h3>
 				<ul class="space-y-2 bg-black/40 md:bg-transparent p-3 md:p-0 rounded-lg inline-block md:block text-sm sm:text-base">
-					<li><a href="/about" class="text-gray-400 hover:text-haunt-orange transition-colors">About</a></li>
-				<li><a href="/reviews" class="text-gray-400 hover:text-haunt-orange transition-colors">Reviews</a></li>
+					<li><a href="/reviews" class="text-gray-400 hover:text-haunt-orange transition-colors">Reviews</a></li>
+					<li><a href="/awards" class="text-gray-400 hover:text-haunt-orange transition-colors">Awards</a></li>
 					<li><a href="/shop" class="text-gray-400 hover:text-haunt-orange transition-colors">Shop</a></li>
+					<li><a href="/about" class="text-gray-400 hover:text-haunt-orange transition-colors">About</a></li>
 					<li><a href="/contact" class="text-gray-400 hover:text-haunt-orange transition-colors">Contact</a></li>
 					{#if isAuthenticated}
 						<li><a href="/admin/dashboard" class="text-gray-400 hover:text-haunt-orange transition-colors">Admin</a></li>

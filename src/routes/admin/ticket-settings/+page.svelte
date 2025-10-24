@@ -84,7 +84,7 @@
 	<div class="mb-8">
 		<div class="flex items-center justify-between">
 			<div>
-				<h1 class="text-3xl font-bold text-white mb-2">Ticket Settings</h1>
+				<h1 class="text-3xl font-bold text-white mb-2">Haunt Schedule</h1>
 				<p class="text-gray-400">Manage available dates and ticket capacity</p>
 			</div>
 			<button

@@ -3,6 +3,8 @@
 	import type { PageData } from './$types';
 	import QuoteSection from '$lib/components/QuoteSection.svelte';
 	import SEO from '$lib/components/SEO.svelte';
+	import GoldenGhostAwards from '$lib/components/GoldenGhostAwards.svelte';
+	import { getAwardCount } from '$lib/utils/awards';
 
 	let { data }: { data: PageData } = $props();
 	let showMcCloudLogo = $state(false);
@@ -146,7 +148,7 @@
 									<img
 										src={review.cover_image_url}
 										alt={review.name}
-										class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-700"
+										class="w-full h-full object-contain transition-transform duration-700"
 									/>
 									<!-- Gradient overlay on image -->
 									<div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-60 group-hover:opacity-40 transition-opacity pointer-events-none"></div>
@@ -176,20 +178,19 @@
 								{/if}
 
 								{#if review.rating_overall}
-									<div class="flex items-center gap-3 mb-2 md:mb-4 bg-black/40 rounded-lg px-3 md:px-4 py-2 md:py-3 border border-haunt-orange/30">
-										<div class="flex">
+									<div class="flex items-center gap-3 mb-2 md:mb-4 bg-black/40 rounded-lg px-3 md:px-4 py-2.5 md:py-3 border border-haunt-orange/30">
+										<div class="flex items-center gap-0.5">
 											{#each Array(5) as _, i}
-												<svg
-													class="w-5 h-5 md:w-6 md:h-6 {i < Math.round(review.rating_overall) ? 'text-haunt-orange drop-shadow-lg' : 'text-gray-700'} transition-colors"
-													fill="currentColor"
-													viewBox="0 0 20 20"
-												>
-													<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-												</svg>
+												<img
+													src="/ghost.png"
+													alt="Rating ghost"
+													class="w-7 h-7 md:w-8 md:h-8 object-contain transition-all {i < Math.round(review.rating_overall) ? 'opacity-100 brightness-110' : 'opacity-20 grayscale'}"
+													style="filter: {i < Math.round(review.rating_overall) ? 'drop-shadow(0 2px 4px rgba(252, 116, 3, 0.4))' : 'none'};"
+												/>
 											{/each}
 										</div>
-										<span class="text-xl font-bold text-haunt-orange">{review.rating_overall.toFixed(1)}</span>
-										<span class="text-gray-500 text-sm">/5.0</span>
+										<span class="text-xl font-bold text-haunt-orange leading-none">{review.rating_overall.toFixed(1)}</span>
+										<span class="text-gray-500 text-sm leading-none">/5.0</span>
 									</div>
 								{/if}
 
@@ -238,6 +239,133 @@
 		</div>
 	</div>
 </section>
+
+<!-- Multi-Award Winner Hero Section -->
+{#if data.showAwardsHero && data.multiAwardWinners && data.multiAwardWinners.length > 0}
+	<section class="py-20 bg-gradient-to-b from-black via-gray-950 to-black relative overflow-hidden">
+		<!-- Animated golden particle background -->
+		<div class="absolute inset-0 opacity-30">
+			<div class="absolute inset-0" style="background: radial-gradient(circle at 20% 30%, rgba(255,215,0,0.15) 0%, transparent 40%), radial-gradient(circle at 80% 70%, rgba(255,215,0,0.15) 0%, transparent 40%);"></div>
+		</div>
+
+		<!-- Sparkle effects -->
+		<div class="absolute inset-0 opacity-20">
+			<div class="absolute top-10 left-[10%] w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+			<div class="absolute top-1/4 right-[15%] w-2 h-2 bg-yellow-300 rounded-full animate-pulse" style="animation-delay: 0.3s;"></div>
+			<div class="absolute bottom-1/3 left-[20%] w-2 h-2 bg-yellow-500 rounded-full animate-pulse" style="animation-delay: 0.6s;"></div>
+			<div class="absolute bottom-20 right-[25%] w-3 h-3 bg-yellow-400 rounded-full animate-pulse" style="animation-delay: 0.9s;"></div>
+		</div>
+
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+			<!-- Header -->
+			<div class="text-center mb-16">
+				<div class="inline-flex items-center justify-center gap-4 mb-6">
+					<span class="text-6xl">👑</span>
+					<h2 class="text-5xl md:text-6xl lg:text-7xl font-extrabold" style="background: linear-gradient(135deg, #FFD700 0%, #FFA500 25%, #FFD700 50%, #FFA500 75%, #FFD700 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: 0 0 60px rgba(255,215,0,0.6);">
+						ELITE AWARD WINNERS
+					</h2>
+					<span class="text-6xl">👑</span>
+				</div>
+				<div class="w-64 h-1 bg-gradient-to-r from-transparent via-yellow-500 to-transparent mx-auto mb-8"></div>
+				<p class="text-2xl md:text-3xl text-yellow-100 font-bold max-w-3xl mx-auto mb-3">
+					Haunts with Multiple Golden Ghost Awards
+				</p>
+				<p class="text-lg text-gray-300 max-w-2xl mx-auto">
+					These exceptional haunts have earned multiple prestigious Golden Ghost Awards for their outstanding achievement
+				</p>
+			</div>
+
+			<!-- Award Winners Grid -->
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+				{#each data.multiAwardWinners as review}
+					<a href="/reviews/{review.slug}" class="group relative">
+						<!-- Golden glow effect -->
+						<div class="absolute -inset-2 bg-gradient-to-r from-yellow-600/30 via-yellow-500/40 to-yellow-600/30 rounded-2xl blur-xl opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
+
+						<!-- Card -->
+						<div class="relative bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-2xl overflow-hidden border-2 border-yellow-500/60 group-hover:border-yellow-400 transition-all duration-500" style="box-shadow: 0 0 30px rgba(255,215,0,0.4);">
+							{#if review.cover_image_url}
+								<div class="aspect-video overflow-hidden relative bg-gray-900">
+									<img
+										src={review.cover_image_url}
+										alt={review.name}
+										class="w-full h-full object-contain transition-transform duration-700"
+									/>
+									<!-- Gradient overlay -->
+									<div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent"></div>
+								</div>
+							{:else}
+								<div class="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+									<div class="text-6xl">🏚️</div>
+								</div>
+							{/if}
+
+							<div class="p-6 relative">
+								<!-- Decorative line -->
+								<div class="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
+
+								<h3 class="text-2xl md:text-3xl font-extrabold text-white group-hover:text-yellow-400 transition-colors mb-3">
+									{review.name}
+								</h3>
+
+								{#if review.city && review.state}
+									<div class="flex items-center gap-2 text-gray-400 mb-4">
+										<svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+											<path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+										</svg>
+										<p class="text-sm font-medium">{review.city}, {review.state}</p>
+									</div>
+								{/if}
+
+								<!-- Awards Display -->
+								<div class="mb-4">
+									<GoldenGhostAwards
+										{review}
+										layout="grid"
+										size="medium"
+										animation="none"
+										showLabel={false}
+									/>
+								</div>
+
+								{#if review.description}
+									<p class="text-gray-300 text-sm leading-relaxed line-clamp-2 mb-4">
+										{review.description}
+									</p>
+								{/if}
+
+								<!-- View button -->
+								<div class="flex items-center gap-2 text-yellow-400 font-bold group-hover:gap-4 transition-all">
+									<span class="text-sm uppercase tracking-wider">View Review</span>
+									<svg class="w-5 h-5 transform group-hover:translate-x-2 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+									</svg>
+								</div>
+							</div>
+						</div>
+					</a>
+				{/each}
+			</div>
+
+			<!-- View All Awards CTA -->
+			<div class="text-center mt-16">
+				<a
+					href="/awards"
+					class="group inline-flex items-center gap-3 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-black font-extrabold py-5 px-12 rounded-xl transition-all transform hover:scale-105 shadow-2xl overflow-hidden relative text-xl"
+					style="box-shadow: 0 0 40px rgba(255,215,0,0.6);"
+				>
+					<!-- Animated shimmer -->
+					<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+
+					<span class="relative z-10 tracking-wide">SEE ALL AWARD WINNERS</span>
+					<svg class="w-6 h-6 relative z-10 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+					</svg>
+				</a>
+			</div>
+		</div>
+	</section>
+{/if}
 
 <!-- Golden Ghost Awards Section -->
 <section class="py-16 mobile-landscape:py-10 bg-gradient-to-b from-black via-gray-900 to-black relative overflow-hidden">
