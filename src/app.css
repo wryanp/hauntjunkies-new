@@ -223,17 +223,16 @@
 }
 
 /* Prevent automatic zoom on orientation change - mobile only */
+/* Note: transform on html breaks position: fixed, so we use other methods */
 @media screen and (max-width: 767px) and (orientation: portrait) {
   html {
-    transform: scale(1);
-    transform-origin: 0 0;
+    /* transform removed - it breaks position: fixed elements */
   }
 }
 
 @media screen and (max-width: 767px) and (orientation: landscape) {
   html {
-    transform: scale(1);
-    transform-origin: 0 0;
+    /* transform removed - it breaks position: fixed elements */
   }
 }
 

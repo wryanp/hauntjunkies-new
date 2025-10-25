@@ -28,10 +28,11 @@
 		const button = document.createElement('button');
 		button.setAttribute('aria-label', 'Scroll to top');
 		button.setAttribute('class', 'scroll-top-button');
+
 		button.style.cssText = `
-			position: fixed;
-			bottom: 2rem;
-			right: 2rem;
+			position: fixed !important;
+			bottom: 2rem !important;
+			right: 2rem !important;
 			background: rgba(164, 18, 20, 0.4);
 			color: white;
 			padding: 1rem;
@@ -40,8 +41,15 @@
 			cursor: pointer;
 			box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 			transition: background 0.3s ease, transform 0.3s ease;
-			z-index: 99999;
+			z-index: 99999 !important;
 			display: none;
+			margin: 0 !important;
+			transform: translateZ(0);
+		-webkit-transform: translateZ(0);
+		will-change: transform;
+		-webkit-backface-visibility: hidden;
+		backface-visibility: hidden;
+		pointer-events: auto;
 		`;
 
 		button.innerHTML = `

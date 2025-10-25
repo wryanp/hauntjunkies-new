@@ -64,12 +64,12 @@
 	});
 </script>
 
-<nav class="sticky md:fixed top-0 left-0 right-0 z-50 pt-2 mobile-landscape:pt-1 {scrolled ? 'nav-scrolled' : 'nav-transparent'}" aria-label="Main navigation">
-	<div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-		<div class="flex items-center justify-between transition-all duration-300 {scrolled ? (isHauntPage ? 'h-20 mobile-landscape:h-18 sm:h-18 md:h-16' : 'h-20 mobile-landscape:h-18 sm:h-18 md:h-16') : (isHauntPage ? 'h-28 mobile-landscape:h-24 sm:h-24 md:h-20' : 'h-28 mobile-landscape:h-24 sm:h-24 md:h-20')}">
+<nav class="sticky md:fixed top-0 left-0 right-0 z-50 pt-2 mobile-landscape:pt-1 !bg-transparent md:bg-auto {scrolled ? 'nav-scrolled' : 'nav-transparent'}" aria-label="Main navigation">
+	<div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 !bg-transparent">
+		<div class="flex items-center justify-between transition-all duration-300 !bg-transparent h-20 mobile-landscape:h-20 sm:h-24 {scrolled ? (isHauntPage ? 'md:h-16' : 'md:h-16') : (isHauntPage ? 'md:h-20' : 'md:h-20')}">
 			<!-- Logo -->
 			<a href={logoHref} class="flex-shrink-0 transform hover:scale-110 transition-transform duration-300" aria-label="Go to {logoAlt} homepage">
-				<img src={logoSrc} alt={logoAlt} draggable="false" class="select-none pointer-events-none transition-all duration-300 w-auto drop-shadow-xl {scrolled ? (isHauntPage ? 'h-14 mobile-landscape:h-12 sm:h-16 md:h-16' : 'h-14 mobile-landscape:h-12 sm:h-16 md:h-16') : (isHauntPage ? 'h-20 mobile-landscape:h-16 sm:h-24 md:h-24' : 'h-20 mobile-landscape:h-16 sm:h-24 md:h-24')}" />
+				<img src={logoSrc} alt={logoAlt} draggable="false" class="select-none pointer-events-none transition-all duration-300 w-auto drop-shadow-xl h-16 mobile-landscape:h-14 sm:h-24 {scrolled ? (isHauntPage ? 'md:h-16' : 'md:h-16') : (isHauntPage ? 'md:h-24' : 'md:h-24')}" />
 			</a>
 
 			<!-- Desktop Navigation -->
@@ -167,15 +167,10 @@
 		transition: background 0.3s ease;
 	}
 
-	/* Mobile only: smoother logo transitions, 50% transparent background, and remove padding when scrolled */
+	/* Mobile only: Remove top padding when scrolled */
 	@media (max-width: 767px) {
 		.nav-scrolled {
-			background: rgba(0, 0, 0, 0.5) !important;
 			padding-top: 0 !important;
-		}
-
-		nav img {
-			transition: height 0.3s ease-out, width 0.3s ease-out !important;
 		}
 	}
 </style>

@@ -942,12 +942,12 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 		<!-- Header -->
-		<div class="text-center mb-12">
-			<h2 class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-haunt-red via-red-600 to-haunt-red mb-4 tracking-tight" style="text-shadow: 0 0 40px rgba(164,18,20,0.6);">
+		<div class="text-center mb-6 md:mb-12">
+			<h2 class="text-3xl md:text-6xl lg:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-haunt-red via-red-600 to-haunt-red mb-2 md:mb-4 tracking-tight" style="text-shadow: 0 0 40px rgba(164,18,20,0.6);">
 				FIND US
 			</h2>
-			<div class="w-32 h-1 bg-gradient-to-r from-transparent via-haunt-red to-transparent mx-auto mb-6"></div>
-			<p class="text-2xl text-gray-300 max-w-2xl mx-auto">
+			<div class="w-32 h-1 bg-gradient-to-r from-transparent via-haunt-red to-transparent mx-auto mb-3 md:mb-6"></div>
+			<p class="text-lg md:text-2xl text-gray-300 max-w-2xl mx-auto">
 				McCloud Manor awaits your arrival
 			</p>
 		</div>
@@ -1002,20 +1002,20 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 			</div>
 
 			<!-- Right: Google Maps Embed -->
-			<div class="relative">
+			<div class="relative hidden sm:block">
 				<!-- Glow effect behind map -->
 				<div class="absolute -inset-4 bg-gradient-to-r from-haunt-red/20 via-red-600/25 to-haunt-red/20 blur-2xl opacity-50"></div>
 
 				<!-- Map Container -->
-				<div class="relative bg-gradient-to-br from-gray-900/80 via-black/80 to-gray-900/80 rounded-2xl border-2 border-haunt-red/40 p-2 sm:p-4" style="box-shadow: 0 0 30px rgba(164,18,20,0.3), inset 0 0 20px rgba(0,0,0,0.5);">
+				<div class="relative bg-gradient-to-br from-gray-900/80 via-black/80 to-gray-900/80 rounded-2xl border-2 border-haunt-red/40 p-0 sm:p-4" style="box-shadow: 0 0 30px rgba(164,18,20,0.3), inset 0 0 20px rgba(0,0,0,0.5);">
 					<a
 						href="https://maps.google.com/maps?q=2100+Carlysle+Park+Lane,+Lawrenceville,+GA+30044"
 						target="_blank"
 						rel="noopener noreferrer"
-						class="relative block rounded-xl overflow-hidden w-full h-[500px] sm:h-[400px] group cursor-pointer"
+						class="relative block rounded-xl overflow-hidden w-full aspect-video sm:aspect-auto sm:h-[400px] group cursor-pointer"
 					>
 						<!-- OpenStreetMap Static Map -->
-						<div class="w-full h-full relative">
+						<div class="w-full h-full relative flex items-center justify-center">
 							<img
 								src="/mccloud-map.png"
 									alt="Map showing McCloud Manor at 2100 Carlysle Park Lane"
