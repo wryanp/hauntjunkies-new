@@ -102,13 +102,65 @@
 	}
 
 	const youtubeEmbedUrl = $derived(data.review.youtube_url ? getYouTubeEmbedUrl(data.review.youtube_url) : null);
+
+	// Social sharing
+	const shareUrl = $derived(`https://hauntjunkies.com/reviews/${data.review.slug}`);
+	let showCopyToast = $state(false);
+	let copyToastMessage = $state('');
+
+	function copyLinkToClipboard() {
+		// Try clipboard API first
+		if (navigator.clipboard && navigator.clipboard.writeText) {
+			navigator.clipboard.writeText(shareUrl).then(() => {
+				copyToastMessage = 'Link copied to clipboard!';
+				showCopyToast = true;
+				setTimeout(() => { showCopyToast = false; }, 3000);
+			}).catch((err) => {
+				console.error('Clipboard API failed:', err);
+				fallbackCopyToClipboard();
+			});
+		} else {
+			// Fallback for browsers/contexts where clipboard API is not available
+			fallbackCopyToClipboard();
+		}
+	}
+
+	function fallbackCopyToClipboard() {
+		// Create a temporary text area element
+		const textArea = document.createElement('textarea');
+		textArea.value = shareUrl;
+		textArea.style.position = 'fixed';
+		textArea.style.left = '-999999px';
+		textArea.style.top = '-999999px';
+		document.body.appendChild(textArea);
+		textArea.focus();
+		textArea.select();
+
+		try {
+			const successful = document.execCommand('copy');
+			if (successful) {
+				copyToastMessage = 'Link copied to clipboard!';
+			} else {
+				copyToastMessage = 'Copy failed - please try again';
+			}
+			showCopyToast = true;
+			setTimeout(() => { showCopyToast = false; }, 3000);
+		} catch (err) {
+			console.error('Fallback copy failed:', err);
+			copyToastMessage = 'Copy failed - please try again';
+			showCopyToast = true;
+			setTimeout(() => { showCopyToast = false; }, 3000);
+		}
+
+		document.body.removeChild(textArea);
+	}
 </script>
 
 <SEO
 	title={data.review.name}
 	description={data.review.description || `Expert review of ${data.review.name}. Ratings for scares, atmosphere, and value. Located in ${data.review.city}, ${data.review.state}. Read our full review and see photos.`}
 	url={`/reviews/${data.review.slug}`}
-	image={data.review.review_image || data.review.cover_image_url || '/og-review-default.jpg'}
+	image={data.review.review_image || data.review.cover_image_url || '/og.png'}
 	type="article"
 	article={{
 		publishedTime: data.review.created_at,
@@ -436,6 +488,25 @@
 			</div>
 		{/if}
 
+
+
+		<!-- Share This Review -->
+		<div class="mb-6">
+			<h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Share This Review</h3>
+			<button
+				onclick={copyLinkToClipboard}
+				class="group relative bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-gray-700 hover:border-haunt-orange px-6 py-3 rounded transition-all duration-300 flex items-center justify-center gap-2 overflow-hidden"
+				title="Copy link to share"
+				aria-label="Copy link to share"
+				style="box-shadow: 0 0 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);"
+			>
+				<div class="absolute inset-0 bg-gradient-to-r from-haunt-orange/0 via-haunt-orange/10 to-haunt-orange/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+				<svg class="w-5 h-5 text-haunt-orange transition-colors duration-300 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+				</svg>
+				<span class="text-sm font-semibold text-gray-300 group-hover:text-white transition-colors duration-300 relative z-10">Copy Link to Share</span>
+			</button>
+		</div>
 		<!-- Comments Section -->
 		<div class="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
 			<h2 class="text-2xl font-bold text-haunt-orange uppercase leading-none mb-4">
@@ -570,3 +641,29 @@
 		</div>
 	</div>
 </div>
+
+<!-- Toast Notification -->
+{#if showCopyToast}
+	<div
+		class="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-[9999] px-8 py-5 bg-haunt-orange text-white rounded-xl shadow-2xl flex items-center justify-center gap-3 max-w-[90vw]"
+		style="box-shadow: 0 10px 40px rgba(252, 116, 3, 0.6); animation: slideUp 0.3s ease-out;"
+	>
+		<svg class="w-7 h-7 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+			<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+		</svg>
+		<span class="font-bold text-xl">{copyToastMessage}</span>
+	</div>
+{/if}
+
+<style>
+	@keyframes slideUp {
+		from {
+			opacity: 0;
+			transform: translate(-50%, 20px);
+		}
+		to {
+			opacity: 1;
+			transform: translate(-50%, 0);
+		}
+	}
+</style>

@@ -25,16 +25,22 @@
 		noindex = false
 	}: SEOProps = $props();
 
-	// Get base URL - fallback for local dev
+	// Get base URL for canonical links (can be local in dev)
 	const baseUrl = typeof window !== 'undefined'
 		? window.location.origin
 		: 'https://hauntjunkies.com';
 
+	// Always use production URL for Open Graph/social sharing
+	const productionUrl = 'https://hauntjunkies.com';
+
 	// Construct full URL if relative path provided
 	const fullUrl = url ? (url.startsWith('http') ? url : `${baseUrl}${url}`) : baseUrl;
 
-	// Construct full image URL if relative path provided
-	const fullImageUrl = image.startsWith('http') ? image : `${baseUrl}${image}`;
+	// Construct full image URL if relative path provided - always use production for OG tags
+	const fullImageUrl = image.startsWith('http') ? image : `${productionUrl}${image}`;
+
+	// Social sharing URLs should always use production domain
+	const socialUrl = url ? (url.startsWith('http') ? url : `${productionUrl}${url}`) : productionUrl;
 
 	// Ensure proper meta title format
 	const metaTitle = title.includes('Haunt Junkies') ? title : `${title} | Haunt Junkies`;
@@ -55,7 +61,7 @@
 
 	<!-- Open Graph / Facebook -->
 	<meta property="og:type" content={type} />
-	<meta property="og:url" content={fullUrl} />
+	<meta property="og:url" content={socialUrl} />
 	<meta property="og:title" content={metaTitle} />
 	<meta property="og:description" content={description} />
 	<meta property="og:image" content={fullImageUrl} />
@@ -83,7 +89,7 @@
 
 	<!-- Twitter -->
 	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:url" content={fullUrl} />
+	<meta name="twitter:url" content={socialUrl} />
 	<meta name="twitter:title" content={metaTitle} />
 	<meta name="twitter:description" content={description} />
 	<meta name="twitter:image" content={fullImageUrl} />

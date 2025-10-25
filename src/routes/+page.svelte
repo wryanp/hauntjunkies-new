@@ -258,16 +258,9 @@
 							</div>
 
 							<div class="p-6 flex-1 flex flex-col">
-								<div class="flex items-start justify-between gap-2 mb-2">
-									<h4 class="text-2xl font-bold text-white group-hover:text-haunt-orange transition-colors flex-1">
-										{review.name}
-									</h4>
-									{#if review.review_date}
-										<span class="text-sm text-gray-400 bg-gray-700 px-2 py-1 rounded">
-											{new Date(review.review_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-										</span>
-									{/if}
-								</div>
+								<h4 class="text-2xl font-bold text-white group-hover:text-haunt-orange transition-colors mb-2">
+									{review.name}
+								</h4>
 								{#if review.city && review.state}
 									<p class="text-gray-400 mb-3 flex items-center gap-1">
 										<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -289,7 +282,7 @@
 													<img
 														src="/half-ghost.png"
 														alt="Rating ghost"
-														class="w-7 h-7 object-contain opacity-100 brightness-110 md:hidden"
+														class="w-7 h-7 object-contain opacity-100 brightness-110 md:hidden -mx-1.5"
 														style="filter: drop-shadow(0 2px 4px rgba(252, 116, 3, 0.4));"
 													/>
 													<!-- Desktop: Use clip-path -->

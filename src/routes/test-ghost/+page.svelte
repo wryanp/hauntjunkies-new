@@ -18,7 +18,7 @@
 					<img
 						src="/half-ghost.png"
 						alt="Rating ghost"
-						class="w-14 h-14 object-contain opacity-100 brightness-150 md:hidden"
+						class="w-14 h-14 object-contain opacity-100 brightness-150 md:hidden -mx-2.5"
 						style="filter: drop-shadow(0 4px 8px rgba(252, 116, 3, 0.8)) contrast(1.2);"
 					/>
 					<!-- Desktop: Use clip-path -->

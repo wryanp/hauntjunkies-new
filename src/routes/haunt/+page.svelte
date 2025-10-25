@@ -902,7 +902,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 
 	<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 		<div class="text-center mb-12">
-			<h2 class="glitch-text text-5xl md:text-6xl font-bold text-white mb-4 tracking-wider drop-shadow-2xl">
+			<h2 class="glitch-text text-3xl sm:text-5xl md:text-6xl font-bold text-white mb-4 tracking-wider drop-shadow-2xl">
 				GET YOUR TICKETS
 			</h2>
 			<p class="text-xl text-gray-400 drop-shadow-lg">
