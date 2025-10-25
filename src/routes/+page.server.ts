@@ -35,8 +35,7 @@ export const load: PageServerLoad = async () => {
 		.from('reviews')
 		.select('*')
 		.eq('featured', true)
-		.order('created_at', { ascending: false })
-		.limit(3);
+		.order('created_at', { ascending: false });
 
 	if (error) {
 		console.error('Error fetching featured reviews:', error);

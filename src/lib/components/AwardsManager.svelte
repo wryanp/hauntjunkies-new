@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { goto } from '$app/navigation';
 	import type { Review } from '$lib/types';
 	import { AWARD_CATEGORIES } from '$lib/types';
 	import { getAwards } from '$lib/utils/awards';
@@ -43,9 +44,8 @@
 
 			if (result.type === 'success') {
 				successMessage = 'Awards updated successfully!';
-				setTimeout(() => {
-					onClose();
-				}, 1500);
+				// Redirect to the review page
+				goto(`/reviews/${review.slug}`);
 			} else if (result.type === 'failure') {
 				errorMessage = result.data?.error || 'Failed to update awards';
 			}

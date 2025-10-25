@@ -179,6 +179,6 @@
 		</div>
 
 		<!-- Footer -->
-		<Footer />
+		<Footer isAuthenticated={true} />
 	</div>
 {/if}

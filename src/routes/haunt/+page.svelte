@@ -380,12 +380,14 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 
 		<!-- Buttons -->
 		<div class="flex flex-row gap-3 sm:gap-6 justify-center items-center">
-			<a
-				href="/tickets?date={firstAvailableDate}"
-				class="bg-haunt-red/30 backdrop-blur-sm hover:bg-haunt-red/40 text-white font-bold py-4 px-6 sm:py-6 sm:px-12 rounded-xl transition-all border-2 border-haunt-red text-lg sm:text-xl flex items-center justify-center touch-target"
-			>
-				Get Tickets
-			</a>
+			{#if hasActiveDates}
+				<a
+					href="/tickets?date={firstAvailableDate}"
+					class="bg-haunt-red/30 backdrop-blur-sm hover:bg-haunt-red/40 text-white font-bold py-4 px-6 sm:py-6 sm:px-12 rounded-xl transition-all border-2 border-haunt-red text-lg sm:text-xl flex items-center justify-center touch-target"
+				>
+					Get Tickets
+				</a>
+			{/if}
 			<a
 				href="#about"
 				class="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-bold py-4 px-6 sm:py-6 sm:px-12 rounded-xl transition-all border-2 border-white/30 text-lg sm:text-xl flex items-center justify-center touch-target"
@@ -617,6 +619,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 	</div>
 </section>
 
+{#if hasActiveDates}
 <!-- Schedule Section -->
 <section class="py-16 pb-16 bg-black relative overflow-hidden" style="background-image: url('/calendar-bg.png'); background-size: cover; background-position: center center; background-repeat: no-repeat; background-attachment: scroll; min-height: 100vh;">
 	<!-- Red glow overlay -->
@@ -794,6 +797,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 		</div>
 	</div>
 </section>
+{/if}
 
 <!-- FAQs Section -->
 <section id="faq-section" class="py-20 bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
@@ -837,7 +841,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 		<div class="space-y-4 overflow-hidden transition-all duration-700 ease-in-out {faqExpanded ? 'max-h-[5000px] opacity-100' : 'max-h-0 opacity-0'}">
 			{#each [
 				{ q: 'Does it cost?', a: 'This is a free event but we do accept donations and canned goods which we donate to local Gwinnett county charities.' },
-				{ q: 'Where do I park? Do you charge for parking?', a: 'Parking is free but extremely limited being this is a home haunt! We suggest carpooling if possible or even an Uber/Lyft.' },
+				{ q: 'Where do I park? Do you charge for parking?', a: 'Parking is free but EXTREMELY limited! Please carpool or even Uber/Lyft if possible. Do not park in or block any of our neighbors driveways.' },
 				{ q: 'What are the hours?', a: 'We open at 8pm and will not accept entry after 11pm. Everyone in line before that time will go through.' },
 				{ q: 'Are you open if it rains?', a: 'Yes we are open when it rains but our line is not covered. Plan accordingly.' },
 				{ q: 'Is it scary?', a: 'Don\'t let the location fool you…' },
@@ -884,6 +888,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 	</div>
 </section>
 
+{#if hasActiveDates}
 <!-- Ticket Request Form -->
 <section id="tickets" class="py-20 relative overflow-hidden">
 	<!-- Ticket background image -->
@@ -922,6 +927,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 		</div>
 	</div>
 </section>
+{/if}
 
 {#if hasActiveDates}
 <!-- Directions Section -->
@@ -974,9 +980,6 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 						<!-- Animated shimmer -->
 						<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
 
-						<svg class="w-6 h-6 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-						</svg>
 						<span class="relative z-10 tracking-wide">GET DIRECTIONS</span>
 						<svg class="w-5 h-5 relative z-10 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -992,7 +995,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 						</svg>
 						<div>
 							<h4 class="text-2xl font-bold text-white mb-2">Parking Information</h4>
-							<p class="text-gray-400">Parking is free but EXTREMELY limited! Please carpool or even Uber/Lyft if possible. Do not park in or block our neighbors' driveways.</p>
+							<p class="text-gray-400">Parking is free but EXTREMELY limited! Please carpool or even Uber/Lyft if possible. Do not park in or block any of our neighbors driveways.</p>
 						</div>
 					</div>
 				</div>
@@ -1005,13 +1008,51 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 
 				<!-- Map Container -->
 				<div class="relative bg-gradient-to-br from-gray-900/80 via-black/80 to-gray-900/80 rounded-2xl border-2 border-haunt-red/40 p-2 sm:p-4" style="box-shadow: 0 0 30px rgba(164,18,20,0.3), inset 0 0 20px rgba(0,0,0,0.5);">
-					<div class="relative rounded-xl overflow-hidden w-full h-[500px] sm:h-[400px]" style="filter: invert(90%) hue-rotate(180deg) brightness(95%) contrast(90%);">
-						<GoogleMap
-							address="2100 Carlysle Park Lane, Lawrenceville, GA 30044"
-							name="McCloud Manor"
-							height="100%"
-						/>
-					</div>
+					<a
+						href="https://maps.google.com/maps?q=2100+Carlysle+Park+Lane,+Lawrenceville,+GA+30044"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="relative block rounded-xl overflow-hidden w-full h-[500px] sm:h-[400px] group cursor-pointer"
+					>
+						<!-- OpenStreetMap Static Map -->
+						<div class="w-full h-full relative">
+							<img
+								src="/mccloud-map.png"
+									alt="Map showing McCloud Manor at 2100 Carlysle Park Lane"
+								class="w-full h-full object-cover"
+								/>
+
+							<!-- Fallback if map doesn't load -->
+							<div class="w-full h-full absolute inset-0 bg-gradient-to-br from-gray-800 via-gray-900 to-black hidden flex-col items-center justify-center p-8 text-center">
+								<div class="relative mb-6">
+									<div class="absolute inset-0 blur-xl bg-haunt-red opacity-50 scale-150"></div>
+									<svg class="w-24 h-24 text-haunt-red relative z-10 drop-shadow-2xl" fill="currentColor" viewBox="0 0 20 20">
+										<path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+									</svg>
+								</div>
+								<h3 class="text-2xl md:text-3xl font-bold text-white mb-2 drop-shadow-lg">2100 Carlysle Park Lane</h3>
+								<p class="text-gray-300 text-lg mb-6">Lawrenceville, GA 30044</p>
+								<div class="inline-flex items-center gap-3 bg-haunt-red/20 border-2 border-haunt-red px-6 py-3 rounded-xl">
+									<span class="text-white font-bold text-lg">Click to open in Google Maps</span>
+									<svg class="w-5 h-5 text-haunt-red" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+									</svg>
+								</div>
+							</div>
+						</div>
+
+						<!-- Hover Overlay -->
+						<div class="absolute inset-0 bg-haunt-red/0 group-hover:bg-haunt-red/20 transition-all duration-300 flex items-center justify-center">
+							<div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/90 px-8 py-5 rounded-xl border-2 border-haunt-red">
+								<p class="text-white font-bold text-xl flex items-center gap-3">
+									<span>Click to Open in Google Maps</span>
+									<svg class="w-6 h-6 text-haunt-red" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+									</svg>
+								</p>
+							</div>
+						</div>
+					</a>
 				</div>
 			</div>
 		</div>

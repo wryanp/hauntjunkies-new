@@ -16,6 +16,7 @@
 	const hamburgerBgColor = $derived((isHauntPage || isMcCloudContact) ? 'bg-haunt-red/50 hover:bg-haunt-red/60' : 'bg-haunt-orange/50 hover:bg-haunt-orange/60');
 	const hamburgerBorderColor = $derived((isHauntPage || isMcCloudContact) ? 'border-haunt-red/50' : 'border-haunt-orange/50');
 	const hamburgerShadow = $derived((isHauntPage || isMcCloudContact) ? '0 0 20px rgba(164, 18, 20, 0.3)' : '0 0 20px rgba(252, 116, 3, 0.3)');
+	const hamburgerHoverColor = $derived((isHauntPage || isMcCloudContact) ? 'hover:text-haunt-red' : 'hover:text-haunt-orange');
 
 	// Dynamic hover color for nav links
 	const hoverColor = $derived((isHauntPage || isMcCloudContact) ? 'hover:text-haunt-red/80' : 'hover:text-haunt-orange');
@@ -98,10 +99,9 @@
 
 			<!-- Mobile menu button -->
 			<button
-				class="md:hidden text-white hover:text-haunt-orange p-3 rounded-lg {hamburgerBgColor} border {hamburgerBorderColor} transition-all transform hover:scale-110 active:scale-95"
+				class="md:hidden text-white {hamburgerHoverColor} p-3 transition-all transform hover:scale-110 active:scale-95"
 				onclick={toggleMobileMenu}
 				aria-label="Toggle menu"
-				style="box-shadow: {hamburgerShadow};"
 			>
 				{#if mobileMenuOpen}
 					<!-- Close icon -->

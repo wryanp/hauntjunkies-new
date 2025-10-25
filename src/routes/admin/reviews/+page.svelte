@@ -23,13 +23,11 @@
 		coverImage: '',
 		reviewImage: '',
 		overallRating: 5,
-		scareRating: 5,
-		atmosphereRating: 5,
-		actorRating: 5,
-		valueRating: 5,
+		featured: false,
 		socialLinks: {
 			facebook: '',
 			instagram: '',
+			twitter: '',
 			tiktok: '',
 			website: '',
 			youtube: ''
@@ -65,14 +63,12 @@
 			coverImage: review.cover_image_url || '',
 			reviewImage: review.review_image || '',
 			overallRating: review.rating_overall || 5,
-			scareRating: review.rating_scares || 5,
-			atmosphereRating: review.rating_atmosphere || 5,
-			actorRating: review.rating_actors || 5,
-			valueRating: review.rating_value || 5,
+			featured: review.featured || false,
 			socialLinks: {
 				facebook: review.facebook_url || '',
 				instagram: review.instagram_url || '',
-				tiktok: review.twitter_url || '',
+				twitter: review.twitter_url || '',
+				tiktok: review.tiktok_url || '',
 				website: review.website_url || '',
 				youtube: review.youtube_url || ''
 			},
@@ -95,13 +91,11 @@
 			coverImage: '',
 			reviewImage: '',
 			overallRating: 5,
-			scareRating: 5,
-			atmosphereRating: 5,
-			actorRating: 5,
-			valueRating: 5,
+			featured: false,
 			socialLinks: {
 				facebook: '',
 				instagram: '',
+				twitter: '',
 				tiktok: '',
 				website: '',
 				youtube: ''
@@ -124,15 +118,14 @@
 				coverImage: '',
 				reviewImage: '',
 				overallRating: 5,
-				scareRating: 5,
-				atmosphereRating: 5,
-				actorRating: 5,
-				valueRating: 5,
+				featured: false,
 				socialLinks: {
 					facebook: '',
 					instagram: '',
+					twitter: '',
 					tiktok: '',
-					website: ''
+					website: '',
+					youtube: ''
 				},
 				address: ''
 			};
@@ -154,6 +147,8 @@
 			}
 		}
 	});
+
+	let showCriteriaReminder = $state(true);
 </script>
 
 <svelte:head>
@@ -197,6 +192,86 @@
 		</div>
 	{/if}
 
+	<!-- Review Criteria Reminder -->
+	<div class="mb-6 bg-gradient-to-br from-gray-800/80 to-gray-900/80 backdrop-blur-sm rounded-lg border border-gray-700 overflow-hidden">
+		<button
+			type="button"
+			onclick={() => showCriteriaReminder = !showCriteriaReminder}
+			class="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-800/50 transition-colors"
+		>
+			<div class="flex items-center gap-3">
+				<svg class="w-5 h-5 text-haunt-orange" fill="currentColor" viewBox="0 0 20 20">
+					<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+				</svg>
+				<span class="text-white font-semibold">Review Criteria Reference</span>
+			</div>
+			<svg
+				class="w-5 h-5 text-gray-400 transition-transform {showCriteriaReminder ? 'rotate-180' : ''}"
+				fill="none"
+				viewBox="0 0 24 24"
+				stroke="currentColor"
+			>
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+			</svg>
+		</button>
+
+		{#if showCriteriaReminder}
+			<div class="px-4 pb-4 border-t border-gray-700/50">
+				<p class="text-gray-400 text-sm mb-3 mt-3">Things to consider when writing your review:</p>
+				<div class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-2 text-sm">
+					<div class="flex items-baseline gap-2">
+						<span class="text-haunt-orange">•</span>
+						<span class="text-gray-300">Acting</span>
+					</div>
+					<div class="flex items-baseline gap-2">
+						<span class="text-haunt-orange">•</span>
+						<span class="text-gray-300">Atmosphere/Ambience</span>
+					</div>
+					<div class="flex items-baseline gap-2">
+						<span class="text-haunt-orange">•</span>
+						<span class="text-gray-300">Costuming</span>
+					</div>
+					<div class="flex items-baseline gap-2">
+						<span class="text-haunt-orange">•</span>
+						<span class="text-gray-300">Immersion</span>
+					</div>
+					<div class="flex items-baseline gap-2">
+						<span class="text-haunt-orange">•</span>
+						<span class="text-gray-300">Makeup/Masks</span>
+					</div>
+					<div class="flex items-baseline gap-2">
+						<span class="text-haunt-orange">•</span>
+						<span class="text-gray-300">Queue Line</span>
+					</div>
+					<div class="flex items-baseline gap-2">
+						<span class="text-haunt-orange">•</span>
+						<span class="text-gray-300">Scare Factor</span>
+					</div>
+					<div class="flex items-baseline gap-2">
+						<span class="text-haunt-orange">•</span>
+						<span class="text-gray-300">Set Design</span>
+					</div>
+					<div class="flex items-baseline gap-2">
+						<span class="text-haunt-orange">•</span>
+						<span class="text-gray-300">Special-FX/Animatronics</span>
+					</div>
+					<div class="flex items-baseline gap-2">
+						<span class="text-haunt-orange">•</span>
+						<span class="text-gray-300">Story/Theming</span>
+					</div>
+					<div class="flex items-baseline gap-2">
+						<span class="text-haunt-orange">•</span>
+						<span class="text-gray-300">Value</span>
+					</div>
+					<div class="flex items-baseline gap-2">
+						<span class="text-haunt-orange">•</span>
+						<span class="text-gray-300">Overall Experience</span>
+					</div>
+				</div>
+			</div>
+		{/if}
+	</div>
+
 	<!-- New Review Button (shown when form is hidden) -->
 	{#if !showForm}
 		<div class="flex justify-center">
@@ -212,9 +287,8 @@
 				<span class="text-lg">Create New Review</span>
 			</button>
 		</div>
-	{/if}
 
-	<!-- Golden Ghost Awards Hero Toggle -->
+	<!-- Golden Ghost Awards Hero Toggle (hidden when form is shown) -->
 	<div class="mb-8 mt-8 bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-yellow-500/30 p-6 shadow-lg">
 		<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 			<div class="flex items-center gap-4">
@@ -273,6 +347,7 @@
 			</form>
 		</div>
 	</div>
+	{/if}
 
 	<!-- Form -->
 	{#if showForm}
@@ -285,14 +360,9 @@
 			await update();
 			submitting = false;
 
-			// Scroll to top to show success/error message
-			window.scrollTo({ top: 0, behavior: 'smooth' });
-
-			// If update was successful and we're editing, redirect to the review page
-			if (result.type === 'success' && isEditing && slug) {
-				setTimeout(() => {
-					goto(`/reviews/${slug}`);
-				}, 1000); // Small delay to show success message
+			// If update was successful and we're editing, redirect to the reviews page
+			if (result.type === 'success' && isEditing) {
+				goto('/reviews');
 			}
 		};
 	}} class="space-y-8">
@@ -309,14 +379,13 @@
 		<input type="hidden" name="cover_image_url" value={reviewData.coverImage} />
 		<input type="hidden" name="review_image" value={reviewData.reviewImage} />
 		<input type="hidden" name="rating_overall" value={reviewData.overallRating} />
-		<input type="hidden" name="rating_scares" value={reviewData.scareRating} />
-		<input type="hidden" name="rating_atmosphere" value={reviewData.atmosphereRating} />
-		<input type="hidden" name="rating_value" value={reviewData.valueRating} />
+		<input type="hidden" name="featured" value={reviewData.featured} />
 		<input type="hidden" name="address" value={reviewData.address} />
 		<input type="hidden" name="website_url" value={reviewData.socialLinks.website} />
 		<input type="hidden" name="facebook_url" value={reviewData.socialLinks.facebook} />
 		<input type="hidden" name="instagram_url" value={reviewData.socialLinks.instagram} />
-		<input type="hidden" name="twitter_url" value={reviewData.socialLinks.tiktok} />
+		<input type="hidden" name="twitter_url" value={reviewData.socialLinks.twitter} />
+		<input type="hidden" name="tiktok_url" value={reviewData.socialLinks.tiktok} />
 		<input type="hidden" name="youtube_url" value={reviewData.socialLinks.youtube} />
 
 		<!-- Images -->
@@ -483,10 +552,24 @@
 					/>
 				</div>
 
-				<!-- TikTok / Twitter -->
+				<!-- Twitter -->
+				<div>
+					<label for="twitter" class="block text-white font-semibold mb-2">
+						Twitter / X
+					</label>
+					<input
+						type="url"
+						id="twitter"
+						bind:value={reviewData.socialLinks.twitter}
+						class="w-full px-4 py-3 bg-black/50 border-2 border-haunt-orange/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors"
+						placeholder="https://twitter.com/..."
+					/>
+				</div>
+
+				<!-- TikTok -->
 				<div>
 					<label for="tiktok" class="block text-white font-semibold mb-2">
-						TikTok / Twitter
+						TikTok
 					</label>
 					<input
 						type="url"
@@ -590,111 +673,108 @@
 
 		<!-- Ratings -->
 		<div class="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-haunt-orange/30 p-6">
-			<h2 class="text-2xl font-bold text-white mb-6">Ratings</h2>
+			<h2 class="text-2xl font-bold text-white mb-6">Rating & Display Settings</h2>
 
-			<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-				<!-- Overall Rating -->
-				<div>
-					<label for="overallRating" class="block text-white font-semibold mb-2">
-						Overall Rating: {reviewData.overallRating}/5
-					</label>
-					<input
-						type="range"
-						id="overallRating"
-						bind:value={reviewData.overallRating}
-						min="1"
-						max="5"
-						step="0.5"
-						class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-haunt-orange"
-					/>
-				</div>
+			<!-- Overall Rating -->
+			<div class="mb-6">
+				<label for="overallRating" class="block text-white font-semibold mb-2">
+					Overall Rating: {reviewData.overallRating}/5
+				</label>
+				<input
+					type="range"
+					id="overallRating"
+					bind:value={reviewData.overallRating}
+					min="1"
+					max="5"
+					step="0.5"
+					class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-haunt-orange"
+				/>
+			</div>
 
-				<!-- Scare Rating -->
-				<div>
-					<label for="scareRating" class="block text-white font-semibold mb-2">
-						Scare Factor: {reviewData.scareRating}/5
-					</label>
-					<input
-						type="range"
-						id="scareRating"
-						bind:value={reviewData.scareRating}
-						min="1"
-						max="5"
-						step="0.5"
-						class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-haunt-orange"
-					/>
+			<!-- Featured Toggle -->
+			<div class="flex items-center justify-between p-4 bg-black/30 rounded-lg border border-haunt-orange/20">
+				<div class="flex items-center gap-3">
+					<svg class="w-5 h-5 text-haunt-orange" fill="currentColor" viewBox="0 0 20 20">
+						<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+					</svg>
+					<div>
+						<p class="text-white font-semibold">Feature on Homepage</p>
+						<p class="text-gray-400 text-sm">Display this review prominently on the homepage</p>
+					</div>
 				</div>
-
-				<!-- Atmosphere Rating -->
-				<div>
-					<label for="atmosphereRating" class="block text-white font-semibold mb-2">
-						Atmosphere: {reviewData.atmosphereRating}/5
-					</label>
+				<label class="relative inline-flex items-center cursor-pointer">
 					<input
-						type="range"
-						id="atmosphereRating"
-						bind:value={reviewData.atmosphereRating}
-						min="1"
-						max="5"
-						step="0.5"
-						class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-haunt-orange"
+						type="checkbox"
+						bind:checked={reviewData.featured}
+						class="sr-only peer"
 					/>
-				</div>
-
-				<!-- Value Rating -->
-				<div>
-					<label for="valueRating" class="block text-white font-semibold mb-2">
-						Value: {reviewData.valueRating}/5
-					</label>
-					<input
-						type="range"
-						id="valueRating"
-						bind:value={reviewData.valueRating}
-						min="1"
-						max="5"
-						step="0.5"
-						class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-haunt-orange"
-					/>
-				</div>
+					<div class="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-haunt-orange/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-haunt-orange"></div>
+				</label>
 			</div>
 		</div>
 
 		<!-- Form Actions -->
-		<div class="flex gap-4">
-			<button
-				type="submit"
-				disabled={submitting}
-				class="flex-1 bg-gradient-to-r from-haunt-orange to-orange-600 hover:from-orange-600 hover:to-haunt-orange text-white font-bold py-4 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-				style="box-shadow: 0 0 30px rgba(252,116,3,0.4);"
-			>
-				{#if submitting}
-					{editingReview ? 'Updating Review...' : 'Creating Review...'}
-				{:else}
-					{editingReview ? 'Update Review' : 'Publish Review'}
-				{/if}
-			</button>
+		<div class="flex flex-col gap-4">
 			{#if editingReview}
+				<!-- Manage Awards Button (only for editing) -->
 				<button
 					type="button"
-					onclick={cancelEdit}
-					class="px-6 py-4 bg-black/50 hover:bg-black/70 text-gray-400 hover:text-white font-bold rounded-xl transition-all border border-gray-700"
+					onclick={() => {
+						const review = data.reviews.find(r => r.id === editingReview);
+						if (review) managingAwards = review;
+					}}
+					class="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl border transition-all font-bold bg-yellow-900/20 hover:bg-yellow-900/30 text-yellow-400 border-yellow-600/50"
 				>
-					Cancel Edit
+					<img src="/golden-ghost-award.png" alt="" class="w-5 h-5" />
+					Manage Awards
+					{#if editingReview && data.reviews.find(r => r.id === editingReview)}
+						{@const review = data.reviews.find(r => r.id === editingReview)}
+						{@const count = getAwardCount(review)}
+						{#if count > 0}
+							<span class="bg-yellow-500 text-black text-xs px-2 py-0.5 rounded-full font-bold">
+								{count}
+							</span>
+						{/if}
+					{/if}
 				</button>
-			{:else}
-				<a
-					href="/admin/dashboard"
-					class="px-6 py-4 bg-black/50 hover:bg-black/70 text-gray-400 hover:text-white font-bold rounded-xl transition-all border border-gray-700 text-center"
-				>
-					Cancel
-				</a>
 			{/if}
+
+			<div class="flex gap-4">
+				<button
+					type="submit"
+					disabled={submitting}
+					class="flex-1 bg-gradient-to-r from-haunt-orange to-orange-600 hover:from-orange-600 hover:to-haunt-orange text-white font-bold py-4 px-6 rounded-xl transition-all transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+					style="box-shadow: 0 0 30px rgba(252,116,3,0.4);"
+				>
+					{#if submitting}
+						{editingReview ? 'Updating Review...' : 'Creating Review...'}
+					{:else}
+						{editingReview ? 'Update Review' : 'Publish Review'}
+					{/if}
+				</button>
+				{#if editingReview}
+					<button
+						type="button"
+						onclick={cancelEdit}
+						class="px-6 py-4 bg-black/50 hover:bg-black/70 text-gray-400 hover:text-white font-bold rounded-xl transition-all border border-gray-700"
+					>
+						Cancel Edit
+					</button>
+				{:else}
+					<a
+						href="/admin/dashboard"
+						class="px-6 py-4 bg-black/50 hover:bg-black/70 text-gray-400 hover:text-white font-bold rounded-xl transition-all border border-gray-700 text-center"
+					>
+						Cancel
+					</a>
+				{/if}
+			</div>
 		</div>
 	</form>
 	{/if}
 
 	<!-- Existing Reviews List -->
-	{#if data.reviews && data.reviews.length > 0}
+	{#if !showForm && data.reviews && data.reviews.length > 0}
 		<div class="mt-12">
 			<h2 class="text-2xl font-bold text-white mb-6">Existing Reviews ({data.reviews.length})</h2>
 			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

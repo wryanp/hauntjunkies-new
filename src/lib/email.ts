@@ -55,8 +55,8 @@ function generateCalendarInvite(ticketData: TicketData): string {
 	calendar.createEvent({
 		start: startDateTime,
 		end: endDateTime,
-		summary: 'McCloud Manor - Your Haunt Experience',
-		description: `Your tickets for McCloud Manor!\n\nConfirmation: ${ticketData.confirmationNumber}\nTickets: ${ticketData.tickets}\n\nAddress: 2100 Carlysle Park Lane, Lawrenceville, GA 30044\n\nParking: Free but EXTREMELY limited. Please carpool or use Uber/Lyft.\n\nMore info: https://hauntjunkies.com/haunt#faq`,
+		summary: 'McCloud Manor',
+		description: `Your tickets for McCloud Manor!\n\nTickets: ${ticketData.tickets}\n\nAddress: 2100 Carlysle Park Lane, Lawrenceville, GA 30044\n\nParking is free but EXTREMELY limited! Please carpool or even Uber/Lyft if possible. Do not park in or block any of our neighbors driveways.\n\nMore info: https://hauntjunkies.com/haunt#faq`,
 		location: '2100 Carlysle Park Lane, Lawrenceville, GA 30044',
 		url: 'https://hauntjunkies.com/haunt'
 	});
@@ -192,25 +192,6 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 									</td>
 								</tr>
 							</table>
-
-							${ticketData.specialRequests ? `
-							<div style="margin-top: 20px; padding: 18px 20px; background-color: #f5f5f5; border-left: 3px solid #a41214; border-radius: 4px;">
-								<p style="margin: 0 0 6px 0; color: #a41214; font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Special Requests</p>
-								<p style="margin: 0; color: #666666; font-size: 14px; line-height: 1.6;">${ticketData.specialRequests}</p>
-							</div>
-							` : ''}
-						</td>
-					</tr>
-
-					<!-- Calendar Invite CTA -->
-					<tr>
-						<td class="mobile-padding" style="padding: 0 40px 25px 40px;">
-							<div style="text-align: center; background-color: #f0f8ff; border: 2px dashed #a41214; border-radius: 8px; padding: 24px;">
-								<p style="margin: 0 0 4px 0; font-size: 12px; color: #666666; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">📅 Calendar Invite Attached</p>
-								<p style="margin: 0; font-size: 14px; color: #333333; line-height: 1.5;">
-									A calendar invite (.ics file) is attached to this email. Click it to add this event to your calendar!
-								</p>
-							</div>
 						</td>
 					</tr>
 
@@ -243,7 +224,7 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 									<tr>
 										<td style="padding-bottom: 12px;">
 											<p style="margin: 0; color: #666666; font-size: 14px; line-height: 1.6;">
-												<strong style="color: #000000;">Parking:</strong> Free but EXTREMELY LIMITED. Please carpool or use Uber/Lyft. Do not park in or block neighbors' driveways.
+												<strong style="color: #000000;">Parking:</strong> Parking is free but EXTREMELY limited! Please carpool or even Uber/Lyft if possible. Do not park in or block any of our neighbors driveways.
 											</p>
 										</td>
 									</tr>
@@ -278,6 +259,73 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 			</td>
 		</tr>
 	</table>
+</body>
+</html>
+`;
+}
+
+function createEmailFailureAlertHTML(ticketData: TicketData, errorMessage: string): string {
+	const dateFormatted = formatDate(ticketData.date);
+
+	return `
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Email Delivery Failure</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #ffffff; background-color: #1a1a1a; max-width: 600px; margin: 0 auto; padding: 20px;">
+	<h1 style="color: #ff0000; border-bottom: 3px solid #ff0000; padding-bottom: 10px;">⚠️ URGENT: Email Delivery Failed</h1>
+
+	<div style="padding: 20px; background-color: #330000; border: 2px solid #ff0000; border-radius: 5px; margin: 20px 0;">
+		<p style="margin: 0; color: #ffcccc; font-size: 18px; font-weight: bold;">
+			A customer purchased tickets but their confirmation email failed to send!
+		</p>
+	</div>
+
+	<h2 style="color: #ff0000; margin-top: 30px;">Customer Details</h2>
+	<table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+		<tr>
+			<td style="padding: 8px; background-color: #2a2a2a; color: #cccccc; font-weight: bold; width: 40%;">Guest Name:</td>
+			<td style="padding: 8px; background-color: #333333; color: #ffffff; border: 1px solid #444;">${ticketData.firstName} ${ticketData.lastName}</td>
+		</tr>
+		<tr>
+			<td style="padding: 8px; background-color: #2a2a2a; color: #cccccc; font-weight: bold;">Email:</td>
+			<td style="padding: 8px; background-color: #333333; color: #ffffff; border: 1px solid #444;">${ticketData.email}</td>
+		</tr>
+		<tr>
+			<td style="padding: 8px; background-color: #2a2a2a; color: #cccccc; font-weight: bold;">Date:</td>
+			<td style="padding: 8px; background-color: #333333; color: #ffffff; border: 1px solid #444;">${dateFormatted}</td>
+		</tr>
+		<tr>
+			<td style="padding: 8px; background-color: #2a2a2a; color: #cccccc; font-weight: bold;">Number of Tickets:</td>
+			<td style="padding: 8px; background-color: #333333; color: #ff0000; border: 1px solid #444; font-size: 18px; font-weight: bold;">${ticketData.tickets}</td>
+		</tr>
+		<tr>
+			<td style="padding: 8px; background-color: #2a2a2a; color: #cccccc; font-weight: bold;">Confirmation #:</td>
+			<td style="padding: 8px; background-color: #333333; color: #ffffff; border: 1px solid #444; font-family: monospace;">${ticketData.confirmationNumber}</td>
+		</tr>
+	</table>
+
+	<h2 style="color: #ff0000; margin-top: 30px;">Error Details</h2>
+	<div style="padding: 15px; background-color: #2a2a2a; border-left: 4px solid #ff0000; margin-bottom: 20px; font-family: monospace; color: #ffcccc;">
+		${errorMessage}
+	</div>
+
+	<div style="margin-top: 30px; padding: 20px; background-color: #330000; border-radius: 5px; border: 1px solid #ff0000;">
+		<p style="margin: 0 0 10px 0; font-size: 16px; color: #ffffff; font-weight: bold;">
+			⚠️ ACTION REQUIRED:
+		</p>
+		<p style="margin: 0; color: #ffcccc; font-size: 14px;">
+			Please manually send a confirmation email to <strong>${ticketData.email}</strong> with their ticket details and confirmation number <strong>${ticketData.confirmationNumber}</strong>.
+		</p>
+	</div>
+
+	<hr style="margin: 30px 0; border: none; border-top: 1px solid #444;">
+
+	<p style="font-size: 12px; color: #666; text-align: center;">
+		Sent from HauntJunkies Ticket System - Email Failure Alert
+	</p>
 </body>
 </html>
 `;
@@ -323,13 +371,6 @@ function createAdminEmailHTML(ticketData: TicketData): string {
 		</tr>
 	</table>
 
-	${ticketData.specialRequests ? `
-	<h2 style="color: #cc0000; margin-top: 30px;">Special Requests</h2>
-	<div style="padding: 15px; background-color: #2a2a2a; border-left: 4px solid #cc0000; margin-bottom: 20px;">
-		<p style="margin: 0; color: #cccccc;">${ticketData.specialRequests}</p>
-	</div>
-	` : ''}
-
 	<div style="margin-top: 30px; padding: 15px; background-color: #2a2a2a; border-radius: 5px; border: 1px solid #444;">
 		<p style="margin: 0; font-size: 14px; color: #cccccc;">
 			<strong style="color: #ffffff;">Next Steps:</strong> This request has been automatically confirmed and the customer has received their digital ticket via email.
@@ -373,6 +414,18 @@ export async function sendTicketConfirmation(ticketData: TicketData) {
 		// Check if customer email failed
 		if (customerEmailResult.error) {
 			console.error('Customer email failed:', customerEmailResult.error);
+			// Send urgent alert to admin about email failure
+			try {
+				await resend.emails.send({
+					from: fromEmail,
+					to: 'hauntjunkies@gmail.com',
+					subject: `🚨 URGENT: Ticket Confirmation Email Failed - ${ticketData.email}`,
+					html: createEmailFailureAlertHTML(ticketData, customerEmailResult.error.message)
+				});
+			} catch (alertError) {
+				console.error('Failed to send email failure alert:', alertError);
+			}
+
 			throw new Error(`Customer email failed: ${customerEmailResult.error.message}`);
 		}
 

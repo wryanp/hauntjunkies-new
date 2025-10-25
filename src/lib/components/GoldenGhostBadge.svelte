@@ -24,7 +24,7 @@
 
 	// Size classes
 	const sizeClasses = $derived({
-		small: 'w-64 h-64 md:w-32 md:h-32',
+		small: 'w-48 h-48 md:w-48 md:h-48',
 		medium: 'w-56 h-56 md:w-96 md:h-96',
 		large: 'w-64 h-64 md:w-[28rem] md:h-[28rem]'
 	}[size]);
@@ -48,7 +48,7 @@
 	aria-label="{awardInfo.label} - {year}"
 >
 	<!-- Award Image -->
-	<div class="award-image-container {sizeClasses} relative flex-shrink-0" style="filter: drop-shadow(0 0 4px rgba(251, 191, 36, 0.8)) drop-shadow(0 0 8px rgba(251, 191, 36, 0.4));">
+	<div class="award-image-container {sizeClasses} relative flex-shrink-0" style="filter: drop-shadow(0 0 2px rgba(251, 191, 36, 0.3)) drop-shadow(0 0 4px rgba(251, 191, 36, 0.15));">
 		<img
 			src={awardInfo.imagePath}
 			alt="{awardInfo.label} Award"

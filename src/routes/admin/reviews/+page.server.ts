@@ -113,6 +113,7 @@ export const actions: Actions = {
 		const facebook_url = formData.get('facebook_url')?.toString() || '';
 		const instagram_url = formData.get('instagram_url')?.toString() || '';
 		const twitter_url = formData.get('twitter_url')?.toString() || '';
+		const tiktok_url = formData.get('tiktok_url')?.toString() || '';
 		const youtube_url = formData.get('youtube_url')?.toString() || '';
 
 		// Create Supabase client with service role
@@ -163,6 +164,7 @@ export const actions: Actions = {
 				facebook_url,
 				instagram_url,
 				twitter_url,
+				tiktok_url,
 				youtube_url,
 				view_count: 0
 			})
@@ -271,6 +273,7 @@ export const actions: Actions = {
 		const facebook_url = formData.get('facebook_url')?.toString() || '';
 		const instagram_url = formData.get('instagram_url')?.toString() || '';
 		const twitter_url = formData.get('twitter_url')?.toString() || '';
+		const tiktok_url = formData.get('tiktok_url')?.toString() || '';
 		const youtube_url = formData.get('youtube_url')?.toString() || '';
 
 		const supabase = createServerClient(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
@@ -309,6 +312,7 @@ export const actions: Actions = {
 				facebook_url,
 				instagram_url,
 				twitter_url,
+				tiktok_url,
 				youtube_url
 			})
 			.eq('id', id)

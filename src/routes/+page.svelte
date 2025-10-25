@@ -1,13 +1,67 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import type { PageData } from './$types';
 	import QuoteSection from '$lib/components/QuoteSection.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import GoldenGhostAwards from '$lib/components/GoldenGhostAwards.svelte';
-	import { getAwardCount } from '$lib/utils/awards';
+	import { getAwardCount, hasGoldenGhostAwards } from '$lib/utils/awards';
 
 	let { data }: { data: PageData } = $props();
 	let showMcCloudLogo = $state(false);
+	let scrollContainer: HTMLDivElement;
+	let autoScrollInterval: NodeJS.Timeout | null = null;
+	let isPaused = $state(false);
+
+
+	function scrollLeft() {
+		if (scrollContainer) {
+			const scrollAmount = scrollContainer.clientWidth;
+			scrollContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+		}
+	}
+
+	function scrollRight() {
+		if (scrollContainer) {
+			const scrollAmount = scrollContainer.clientWidth;
+			scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+		}
+	}
+
+	function autoScroll() {
+		if (!scrollContainer || isPaused) return;
+
+		const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+		const currentScroll = scrollContainer.scrollLeft;
+
+		// If at the end, scroll back to the beginning
+		if (currentScroll >= maxScroll - 10) {
+			scrollContainer.scrollTo({ left: 0, behavior: 'smooth' });
+		} else {
+			// Scroll by the container width (3 cards)
+			const scrollAmount = scrollContainer.clientWidth;
+			scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+		}
+	}
+
+	function startAutoScroll() {
+		stopAutoScroll();
+		autoScrollInterval = setInterval(autoScroll, 5000); // Scroll every 5 seconds
+	}
+
+	function stopAutoScroll() {
+		if (autoScrollInterval) {
+			clearInterval(autoScrollInterval);
+			autoScrollInterval = null;
+		}
+	}
+
+	function pauseAutoScroll() {
+		isPaused = true;
+	}
+
+	function resumeAutoScroll() {
+		isPaused = false;
+	}
 
 	onMount(async () => {
 		// Scroll to top when page loads
@@ -91,6 +145,13 @@
 				scale: 1.05,
 			},
 		});
+
+		// Start auto-scrolling for featured reviews
+		startAutoScroll();
+	});
+
+	onDestroy(() => {
+		stopAutoScroll();
 	});
 
 </script>
@@ -104,14 +165,14 @@
 />
 
 <!-- Hero Section with Featured Reviews -->
-<section class="parallax relative md:min-h-screen bg-overlay-dark bg-black">
+<section class="parallax relative md:min-h-screen bg-overlay-dark bg-black overflow-visible">
 	<!-- Background Image -->
 	<div class="absolute inset-0 bg-center bg-no-repeat" style="background-image: url('/bg.jpg'); background-size: cover; background-position: center;"></div>
 
 	<!-- Overlay -->
 	<div class="absolute inset-0 bg-black/40"></div>
 
-	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-32 pb-20">
+	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-32 pb-20 overflow-visible">
 		<!-- Featured Reviews Header -->
 		<div class="text-center mb-12">
 			<div class="relative inline-block">
@@ -132,85 +193,143 @@
 		</div>
 
 		{#if data.featuredReviews && data.featuredReviews.length > 0}
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
-				{#each data.featuredReviews as review}
-					<a
-						href="/reviews/{review.slug}"
-						class="group relative"
+			<div class="relative px-8 md:px-12 overflow-visible">
+				<!-- Navigation Arrows -->
+				{#if data.featuredReviews.length > 3}
+					<button
+						onclick={scrollLeft}
+						class="absolute -left-4 md:-left-8 top-1/2 -translate-y-1/2 z-10 bg-black/80 hover:bg-haunt-orange border-2 border-haunt-orange text-haunt-orange hover:text-white p-4 transition-all transform hover:scale-110 hidden md:flex items-center justify-center"
+						aria-label="Scroll left"
+						style="box-shadow: 0 0 20px rgba(252, 116, 3, 0.5);"
 					>
-						<!-- Card glow effect -->
-						<div class="absolute -inset-1 bg-gradient-to-r from-haunt-orange to-orange-600 rounded-2xl blur opacity-20 group-hover:opacity-60 transition-opacity duration-500"></div>
+						<svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+						</svg>
+					</button>
+					<button
+						onclick={scrollRight}
+						class="absolute -right-4 md:-right-8 top-1/2 -translate-y-1/2 z-10 bg-black/80 hover:bg-haunt-orange border-2 border-haunt-orange text-haunt-orange hover:text-white p-4 transition-all transform hover:scale-110 hidden md:flex items-center justify-center"
+						aria-label="Scroll right"
+						style="box-shadow: 0 0 20px rgba(252, 116, 3, 0.5);"
+					>
+						<svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+						</svg>
+					</button>
+				{/if}
 
-						<!-- Card content -->
-						<div class="relative bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-2xl overflow-hidden border-2 border-gray-800 group-hover:border-haunt-orange transition-all duration-500 transform group-hover:scale-105" style="box-shadow: 0 0 30px rgba(0,0,0,0.8);">
-							{#if review.cover_image_url}
-								<div class="aspect-video overflow-hidden relative bg-gray-900">
-									<img
-										src={review.cover_image_url}
-										alt={review.name}
-										class="w-full h-full object-contain transition-transform duration-700"
-									/>
-									<!-- Gradient overlay on image -->
-									<div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-60 group-hover:opacity-40 transition-opacity pointer-events-none"></div>
-
-									<!-- Orange glow overlay on hover -->
-									<div class="absolute inset-0 bg-haunt-orange/0 group-hover:bg-haunt-orange/20 transition-all duration-500 pointer-events-none"></div>
+				<!-- Scrollable Container -->
+				<div
+					bind:this={scrollContainer}
+					onmouseenter={pauseAutoScroll}
+					onmouseleave={resumeAutoScroll}
+					ontouchstart={pauseAutoScroll}
+					ontouchend={resumeAutoScroll}
+					class="carousel-container flex gap-8 overflow-x-auto overflow-y-visible scroll-smooth py-8 px-6"
+					style="scroll-snap-type: x mandatory;"
+				>
+					{#each data.featuredReviews as review}
+						{@const imageUrl = review.cover_image_url && !review.cover_image_url.includes('placeholder')
+							? review.cover_image_url
+							: 'https://images.unsplash.com/photo-1509248961158-e54f6934749c?w=800&h=450&q=80&fit=crop'}
+						<a
+							href="/reviews/{review.slug}"
+							class="group bg-gray-800/50 rounded-lg overflow-hidden hover:bg-gray-800 transition-all duration-300 relative border border-gray-700 {hasGoldenGhostAwards(review) ? 'hover:border-yellow-500' : 'hover:border-haunt-orange'} transform hover:scale-105 hover:z-10 flex-shrink-0 w-full md:w-[calc((100%-4rem)/3)] flex flex-col"
+							style="scroll-snap-align: center;"
+						>
+							{#if hasGoldenGhostAwards(review)}
+								{@const yearMatch = review.name.match(/(\d{4})/)}
+								{@const displayYear = yearMatch ? yearMatch[1] : new Date().getFullYear().toString()}
+								<div class="bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-600 px-2 py-2 flex items-center justify-center gap-1.5 relative overflow-hidden">
+									<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50"></div>
+									<img src="/golden-ghost-award.png" alt="Golden Ghost Award" class="w-6 h-6 md:w-7 md:h-7 relative z-10 flex-shrink-0" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)) contrast(1.1) brightness(1.05);" />
+									<span class="text-black font-bold text-xs md:text-sm uppercase tracking-tighter relative z-10 whitespace-nowrap">
+										{displayYear} Golden Ghost Award Winner
+									</span>
 								</div>
 							{/if}
 
-							<div class="p-4 md:p-6 relative">
-								<!-- Decorative line at top -->
-								<div class="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-haunt-orange/50 to-transparent"></div>
+							<div class="aspect-video overflow-hidden bg-gray-900">
+								<img
+									src={imageUrl}
+									alt={review.name}
+									class="w-full h-full {review.cover_image_url && !review.cover_image_url.includes('placeholder') ? 'object-contain' : 'object-cover'} transition-transform duration-300"
+								/>
+							</div>
 
-								<h3 class="text-xl md:text-2xl lg:text-3xl font-extrabold text-white group-hover:text-haunt-orange transition-colors mb-2 md:mb-3 leading-tight">
-									{review.name}
-								</h3>
-
+							<div class="p-6 flex-1 flex flex-col">
+								<div class="flex items-start justify-between gap-2 mb-2">
+									<h4 class="text-2xl font-bold text-white group-hover:text-haunt-orange transition-colors flex-1">
+										{review.name}
+									</h4>
+									{#if review.review_date}
+										<span class="text-sm text-gray-400 bg-gray-700 px-2 py-1 rounded">
+											{new Date(review.review_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+										</span>
+									{/if}
+								</div>
 								{#if review.city && review.state}
-									<div class="flex items-center gap-2 text-gray-400 mb-2 md:mb-4">
-										<svg class="w-4 h-4 text-haunt-orange" fill="currentColor" viewBox="0 0 20 20">
+									<p class="text-gray-400 mb-3 flex items-center gap-1">
+										<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
 											<path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
 										</svg>
-										<p class="text-sm font-medium">
-											{review.city}, {review.state}
-										</p>
-									</div>
+										{review.city}, {review.state}
+									</p>
 								{/if}
-
 								{#if review.rating_overall}
-									<div class="flex items-center gap-3 mb-2 md:mb-4 bg-black/40 rounded-lg px-3 md:px-4 py-2.5 md:py-3 border border-haunt-orange/30">
+									<div class="flex items-center gap-3 mb-3">
 										<div class="flex items-center gap-0.5">
 											{#each Array(5) as _, i}
-												<img
-													src="/ghost.png"
-													alt="Rating ghost"
-													class="w-7 h-7 md:w-8 md:h-8 object-contain transition-all {i < Math.round(review.rating_overall) ? 'opacity-100 brightness-110' : 'opacity-20 grayscale'}"
-													style="filter: {i < Math.round(review.rating_overall) ? 'drop-shadow(0 2px 4px rgba(252, 116, 3, 0.4))' : 'none'};"
-												/>
+												{@const rating = review.rating_overall}
+												{@const isHalf = i === Math.floor(rating) && rating % 1 !== 0}
+												{@const isFull = i < Math.floor(rating)}
+
+												{#if isHalf}
+													<!-- Mobile: Use half-ghost image -->
+													<img
+														src="/half-ghost.png"
+														alt="Rating ghost"
+														class="w-7 h-7 object-contain opacity-100 brightness-110 md:hidden"
+														style="filter: drop-shadow(0 2px 4px rgba(252, 116, 3, 0.4));"
+													/>
+													<!-- Desktop: Use clip-path -->
+													<div class="relative w-7 h-7 hidden md:block">
+														<!-- Dim background ghost -->
+														<img
+															src="/ghost.png"
+															alt="Rating ghost"
+															class="absolute inset-0 w-7 h-7 object-contain opacity-20 grayscale"
+														/>
+														<!-- Bright half ghost (clipped to left 50%) -->
+														<img
+															src="/ghost.png"
+															alt="Rating ghost"
+															class="absolute inset-0 w-7 h-7 object-contain opacity-100 brightness-110"
+															style="clip-path: inset(0 50% 0 0); filter: drop-shadow(0 2px 4px rgba(252, 116, 3, 0.4));"
+														/>
+													</div>
+												{:else}
+													<img
+														src="/ghost.png"
+														alt="Rating ghost"
+														class="w-7 h-7 object-contain transition-all {isFull ? 'opacity-100 brightness-110' : 'opacity-20 grayscale'}"
+														style="filter: {isFull ? 'drop-shadow(0 2px 4px rgba(252, 116, 3, 0.4))' : 'none'};"
+													/>
+												{/if}
 											{/each}
 										</div>
-										<span class="text-xl font-bold text-haunt-orange leading-none">{review.rating_overall.toFixed(1)}</span>
-										<span class="text-gray-500 text-sm leading-none">/5.0</span>
+										<span class="text-gray-400 font-medium text-lg leading-none">{review.rating_overall.toFixed(1)}</span>
 									</div>
 								{/if}
-
 								{#if review.description}
-									<p class="text-gray-300 text-sm md:text-base leading-relaxed line-clamp-2 md:line-clamp-3 mb-3 md:mb-4">
+									<p class="text-gray-300 italic line-clamp-3 leading-relaxed pl-3 border-l-2 border-haunt-orange/30 min-h-[4.5rem] mt-auto">
 										{review.description}
 									</p>
 								{/if}
-
-								<!-- Read More indicator -->
-								<div class="flex items-center gap-2 text-haunt-orange font-bold group-hover:gap-4 transition-all">
-									<span class="text-sm uppercase tracking-wider">Read Full Review</span>
-									<svg class="w-5 h-5 transform group-hover:translate-x-2 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-									</svg>
-								</div>
 							</div>
-						</div>
-					</a>
-				{/each}
+						</a>
+					{/each}
+				</div>
 			</div>
 		{:else}
 			<div class="text-center py-16 bg-gradient-to-br from-gray-900/50 to-black/50 rounded-2xl border-2 border-gray-800">
@@ -380,9 +499,9 @@
 	<!-- Animated particles effect -->
 	<div class="absolute inset-0 opacity-10">
 		<div class="absolute top-20 left-10 w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
-		<div class="absolute top-40 right-20 w-3 h-3 bg-yellow-400 rounded-full animate-pulse" style="animation-delay: 0.5s;"></div>
-		<div class="absolute bottom-32 left-1/4 w-2 h-2 bg-yellow-300 rounded-full animate-pulse" style="animation-delay: 1s;"></div>
-		<div class="absolute bottom-20 right-1/3 w-3 h-3 bg-yellow-500 rounded-full animate-pulse" style="animation-delay: 1.5s;"></div>
+		<div class="hidden md:block absolute top-40 right-20 w-3 h-3 bg-yellow-400 rounded-full animate-pulse" style="animation-delay: 0.5s;"></div>
+		<div class="hidden md:block absolute bottom-32 left-1/4 w-2 h-2 bg-yellow-300 rounded-full animate-pulse" style="animation-delay: 1s;"></div>
+		<div class="hidden md:block absolute bottom-20 right-1/3 w-3 h-3 bg-yellow-500 rounded-full animate-pulse" style="animation-delay: 1.5s;"></div>
 	</div>
 
 	<div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 relative z-10">
@@ -575,6 +694,16 @@
 			0 0 20px rgba(255, 255, 255, 0.5),
 			0 0 40px rgba(255, 255, 255, 0.3),
 			0 0 60px rgba(255, 255, 255, 0.2);
+	}
+
+	/* Hide scrollbar for carousel */
+	.carousel-container::-webkit-scrollbar {
+		display: none;
+	}
+
+	.carousel-container {
+		-ms-overflow-style: none;  /* IE and Edge */
+		scrollbar-width: none;  /* Firefox */
 	}
 
 	/* Responsive background for featured reviews section */

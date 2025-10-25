@@ -85,21 +85,27 @@
 	</div>
 
 	<!-- Recent Ticket Reservations -->
-	<div class="mb-8 bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-haunt-orange/30 p-6 shadow-lg">
+	<div class="mb-8 bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-haunt-orange/30 p-6 shadow-lg flex flex-col max-h-[500px]">
 		<div class="flex items-center justify-between mb-4">
 			<h2 class="text-xl font-bold text-white">Recent Ticket Reservations</h2>
 			<a href="/admin/tickets" class="text-haunt-orange hover:text-orange-400 text-sm font-semibold">View All →</a>
 		</div>
-		<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-3 overflow-y-auto pr-2">
 			{#if data.recentActivity.tickets.length > 0}
 				{#each data.recentActivity.tickets as ticket}
 					<div class="bg-black/30 rounded-lg p-4 border border-white/10 hover:border-haunt-orange/30 transition-colors">
 						<div class="flex items-start justify-between mb-2">
 							<div>
-								<h3 class="text-white font-semibold">{ticket.name}</h3>
+								<h3 class="text-white font-semibold">
+									{#if ticket.first_name && ticket.last_name}
+										{ticket.first_name} {ticket.last_name}
+									{:else}
+										{ticket.name || 'Unknown'}
+									{/if}
+								</h3>
 								<p class="text-gray-400 text-sm">{ticket.email}</p>
 							</div>
-							<span class="text-xs bg-purple-900/30 text-purple-400 px-2 py-1 rounded">{ticket.tickets} tickets</span>
+							<span class="text-xs bg-purple-900/30 text-purple-400 px-2 py-1 rounded">{ticket.tickets || ticket.quantity || ticket.number_of_tickets || 0} tickets</span>
 						</div>
 						<p class="text-gray-500 text-xs mt-2">{formatDate(ticket.created_at)}</p>
 					</div>
@@ -113,12 +119,12 @@
 	<!-- Recent Activity -->
 	<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 		<!-- Recent Reviews -->
-		<div class="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-haunt-orange/30 p-6 shadow-lg">
+		<div class="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-haunt-orange/30 p-6 shadow-lg flex flex-col max-h-[350px]">
 			<div class="flex items-center justify-between mb-4">
 				<h2 class="text-xl font-bold text-white">Recent Reviews</h2>
 				<a href="/admin/reviews" class="text-haunt-orange hover:text-orange-400 text-sm font-semibold">View All →</a>
 			</div>
-			<div class="space-y-3">
+			<div class="space-y-3 overflow-y-auto pr-2">
 				{#if data.recentActivity.reviews.length > 0}
 					{#each data.recentActivity.reviews as review}
 						<div class="bg-black/30 rounded-lg p-4 border border-white/10 hover:border-haunt-orange/30 transition-colors">
@@ -133,13 +139,19 @@
 									<span class="text-xs bg-haunt-orange/20 text-haunt-orange px-2 py-1 rounded">Featured</span>
 								{/if}
 							</div>
-							<div class="flex items-center gap-2 mt-2">
+							<div class="flex items-center gap-3 mt-2">
 								<a
 									href="/reviews/{review.slug}"
 									target="_blank"
 									class="text-sm text-haunt-orange hover:underline"
 								>
-									View →
+									View
+								</a>
+								<a
+									href="/admin/reviews?edit={review.id}"
+									class="text-sm text-haunt-orange hover:underline"
+								>
+									Edit
 								</a>
 							</div>
 							<p class="text-gray-500 text-xs mt-2">{formatDate(review.created_at)}</p>
@@ -152,12 +164,12 @@
 		</div>
 
 		<!-- Recent Comments -->
-		<div class="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-haunt-orange/30 p-6 shadow-lg">
+		<div class="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-haunt-orange/30 p-6 shadow-lg flex flex-col max-h-[350px]">
 			<div class="flex items-center justify-between mb-4">
 				<h2 class="text-xl font-bold text-white">Recent Comments</h2>
 				<a href="/admin/comments" class="text-haunt-orange hover:text-orange-400 text-sm font-semibold">View All →</a>
 			</div>
-			<div class="space-y-3">
+			<div class="space-y-3 overflow-y-auto pr-2">
 				{#if data.recentActivity.comments.length > 0}
 					{#each data.recentActivity.comments as comment}
 						<div class="bg-black/30 rounded-lg p-4 border border-white/10 hover:border-haunt-orange/30 transition-colors">

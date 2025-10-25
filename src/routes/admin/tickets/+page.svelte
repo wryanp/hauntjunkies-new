@@ -8,6 +8,8 @@
 	let searchQuery = $state('');
 	let showSuccess = $state(false);
 	let successMessage = $state('');
+	let selectedTickets = $state<Set<string>>(new Set());
+	let bulkDeleting = $state(false);
 
 	// Show success message
 	$effect(() => {
@@ -24,6 +26,9 @@
 	const filteredTickets = $derived.by(() => {
 		let filtered = data.tickets;
 
+		// Filter out tickets without a date (check both date and preferred_date fields)
+		filtered = filtered.filter(t => t.date || t.preferred_date);
+
 		// Filter by status
 		if (filterStatus !== 'all') {
 			filtered = filtered.filter(t => t.status === filterStatus);
@@ -34,10 +39,12 @@
 			const query = searchQuery.toLowerCase();
 			filtered = filtered.filter(
 				t =>
+					t.name?.toLowerCase().includes(query) ||
 					t.first_name?.toLowerCase().includes(query) ||
 					t.last_name?.toLowerCase().includes(query) ||
 					t.email?.toLowerCase().includes(query) ||
 					t.phone?.toLowerCase().includes(query) ||
+					t.date?.includes(query) ||
 					t.preferred_date?.includes(query)
 			);
 		}
@@ -49,7 +56,7 @@
 	const stats = $derived.by(() => {
 		const total = data.tickets.length;
 		const confirmed = data.tickets.filter(t => t.status === 'confirmed').length;
-		const totalTickets = data.tickets.reduce((sum, t) => sum + (t.number_of_tickets || 0), 0);
+		const totalTickets = data.tickets.reduce((sum, t) => sum + (t.tickets || t.quantity || t.number_of_tickets || 0), 0);
 
 		return { total, confirmed, totalTickets };
 	});
@@ -58,7 +65,7 @@
 	const groupedByDate = $derived.by(() => {
 		const groups = new Map<string, typeof data.tickets>();
 		filteredTickets.forEach(ticket => {
-			const date = ticket.preferred_date || 'No date';
+			const date = (ticket.preferred_date || ticket.date)!; // Use preferred_date first, fallback to date
 			if (!groups.has(date)) {
 				groups.set(date, []);
 			}
@@ -68,7 +75,6 @@
 	});
 
 	function formatDate(dateString: string) {
-		if (!dateString || dateString === 'No date') return 'No date specified';
 		const date = new Date(dateString);
 		return date.toLocaleDateString('en-US', {
 			weekday: 'short',
@@ -87,6 +93,66 @@
 			minute: '2-digit'
 		});
 	}
+
+	// Bulk selection helpers
+	const allFilteredIds = $derived(filteredTickets.map(t => t.id));
+	const allSelected = $derived(
+		allFilteredIds.length > 0 && allFilteredIds.every(id => selectedTickets.has(id))
+	);
+
+	function toggleAll() {
+		if (allSelected) {
+			selectedTickets = new Set();
+		} else {
+			selectedTickets = new Set(allFilteredIds);
+		}
+	}
+
+	function toggleTicket(id: string) {
+		const newSet = new Set(selectedTickets);
+		if (newSet.has(id)) {
+			newSet.delete(id);
+		} else {
+			newSet.add(id);
+		}
+		selectedTickets = newSet;
+	}
+
+	async function bulkDelete() {
+		if (selectedTickets.size === 0) return;
+
+		const count = selectedTickets.size;
+		if (!confirm(`Are you sure you want to delete ${count} ticket${count === 1 ? '' : 's'}?`)) {
+			return;
+		}
+
+		bulkDeleting = true;
+
+		try {
+			const response = await fetch('/admin/tickets?/bulkDelete', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+				body: new URLSearchParams({
+					ids: Array.from(selectedTickets).join(',')
+				})
+			});
+
+			if (response.ok) {
+				showSuccess = true;
+				successMessage = `${count} ticket${count === 1 ? '' : 's'} deleted successfully`;
+				selectedTickets = new Set();
+				// Reload page to refresh data
+				window.location.reload();
+			} else {
+				alert('Failed to delete tickets');
+			}
+		} catch (error) {
+			console.error('Bulk delete error:', error);
+			alert('An error occurred while deleting tickets');
+		} finally {
+			bulkDeleting = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -95,9 +161,20 @@
 
 <div class="max-w-[1600px] mx-auto">
 	<!-- Header -->
-	<div class="mb-6 sm:mb-8">
-		<h1 class="text-2xl sm:text-3xl font-bold text-white mb-2">Ticket Requests</h1>
-		<p class="text-gray-400 text-sm sm:text-base">Manage McCloud Manor ticket reservations</p>
+	<div class="mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+		<div>
+			<h1 class="text-2xl sm:text-3xl font-bold text-white mb-2">Ticket Requests</h1>
+			<p class="text-gray-400 text-sm sm:text-base">Manage McCloud Manor ticket reservations</p>
+		</div>
+		<a
+			href="/admin/tickets/export"
+			class="px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold rounded-lg transition-all shadow-lg flex items-center gap-2 justify-center sm:w-auto"
+		>
+			<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+			</svg>
+			<span>Export CSV</span>
+		</a>
 	</div>
 
 	<!-- Success Message -->
@@ -194,6 +271,48 @@
 		</div>
 	</div>
 
+	<!-- Bulk Actions -->
+	{#if selectedTickets.size > 0}
+		<div class="bg-gradient-to-r from-red-900/40 to-red-800/40 backdrop-blur-sm rounded-lg border-2 border-red-500/50 p-4 mb-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+			<div class="flex items-center gap-3">
+				<svg class="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+				</svg>
+				<span class="text-white font-semibold">
+					{selectedTickets.size} ticket{selectedTickets.size === 1 ? '' : 's'} selected
+				</span>
+			</div>
+			<div class="flex gap-2">
+				<button
+					type="button"
+					onclick={() => (selectedTickets = new Set())}
+					class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors"
+				>
+					Clear Selection
+				</button>
+				<button
+					type="button"
+					onclick={bulkDelete}
+					disabled={bulkDeleting}
+					class="px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-semibold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+				>
+					{#if bulkDeleting}
+						<svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+							<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+							<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+						</svg>
+						Deleting...
+					{:else}
+						<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+						</svg>
+						Delete Selected
+					{/if}
+				</button>
+			</div>
+		</div>
+	{/if}
+
 	<!-- Tickets Grouped by Date -->
 	{#if filteredTickets.length === 0}
 		<div class="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-haunt-orange/30 p-8 sm:p-12 text-center">
@@ -203,26 +322,40 @@
 			<p class="text-gray-400 text-base sm:text-lg">No ticket requests found</p>
 		</div>
 	{:else}
+		<!-- Section Title -->
+		<div class="mb-6">
+			<h2 class="text-2xl sm:text-3xl font-bold text-white">Recent Ticket Reservations</h2>
+		</div>
+
 		{#each groupedByDate as [date, tickets]}
 			<div class="mb-6 sm:mb-8">
 				<!-- Date Header -->
 				<div class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
 					<h2 class="text-lg sm:text-xl font-bold text-white">{formatDate(date)}</h2>
 					<span class="px-3 py-1 bg-haunt-orange/20 text-haunt-orange text-xs sm:text-sm font-semibold rounded-full inline-block w-fit">
-						{tickets.length} request{tickets.length !== 1 ? 's' : ''} • {tickets.reduce((sum, t) => sum + (t.number_of_tickets || 0), 0)} tickets
+						{tickets.length} request{tickets.length !== 1 ? 's' : ''} • {tickets.reduce((sum, t) => sum + (t.tickets || t.quantity || t.number_of_tickets || 0), 0)} tickets
 					</span>
 				</div>
 
 				<!-- Tickets Table -->
-				<div class="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-haunt-orange/30 overflow-hidden">
+				<div class="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-haunt-orange/30 overflow-hidden max-h-[500px] flex flex-col">
 					<!-- Mobile scroll hint -->
 					<div class="sm:hidden bg-black/60 px-4 py-2 text-center border-b border-haunt-orange/20">
 						<p class="text-xs text-gray-400">← Scroll horizontally to see all details →</p>
 					</div>
-					<div class="overflow-x-auto scrollbar-thin scrollbar-thumb-haunt-orange/50 scrollbar-track-black/20">
+					<div class="overflow-x-auto overflow-y-auto scrollbar-thin scrollbar-thumb-haunt-orange/50 scrollbar-track-black/20">
 						<table class="w-full min-w-[800px]">
 							<thead class="bg-black/40">
 								<tr class="border-b border-haunt-orange/20">
+									<th class="px-4 py-3 sm:py-4 text-center w-12">
+										<input
+											type="checkbox"
+											checked={allSelected}
+											onchange={toggleAll}
+											class="w-4 h-4 cursor-pointer accent-haunt-orange"
+											title="Select all"
+										/>
+									</th>
 									<th class="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Guest</th>
 									<th class="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Contact</th>
 									<th class="px-4 sm:px-6 py-3 sm:py-4 text-left text-xs font-semibold text-gray-400 uppercase tracking-wider">Time</th>
@@ -235,32 +368,39 @@
 							<tbody class="divide-y divide-haunt-orange/10">
 								{#each tickets as ticket}
 									<tr class="hover:bg-haunt-orange/5 transition-colors">
+										<!-- Checkbox -->
+										<td class="px-4 py-3 sm:py-4 text-center">
+											<input
+												type="checkbox"
+												checked={selectedTickets.has(ticket.id)}
+												onchange={() => toggleTicket(ticket.id)}
+												class="w-4 h-4 cursor-pointer accent-haunt-orange"
+											/>
+										</td>
 										<!-- Guest Name -->
 										<td class="px-4 sm:px-6 py-3 sm:py-4">
-											<div class="font-semibold text-white text-sm sm:text-base">{ticket.first_name} {ticket.last_name}</div>
-											{#if ticket.special_requests}
-												<div class="text-xs sm:text-sm text-gray-400 mt-1">
-													<span class="text-haunt-orange">•</span> {ticket.special_requests}
-												</div>
-											{/if}
+											<div class="font-semibold text-white text-sm sm:text-base">
+												{#if ticket.first_name && ticket.last_name}
+													{ticket.first_name} {ticket.last_name}
+												{:else}
+													{ticket.name || 'Unknown'}
+												{/if}
+											</div>
 										</td>
 
 										<!-- Contact -->
 										<td class="px-4 sm:px-6 py-3 sm:py-4">
-											<div class="text-xs sm:text-sm text-gray-300">{ticket.email}</div>
-											{#if ticket.phone}
-												<div class="text-xs sm:text-sm text-gray-400 mt-1">{ticket.phone}</div>
-											{/if}
+											<div class="text-xs sm:text-sm text-gray-300">{ticket.email || 'No email'}</div>
 										</td>
 
 										<!-- Time -->
 										<td class="px-4 sm:px-6 py-3 sm:py-4">
-											<div class="text-xs sm:text-sm text-gray-300">{ticket.preferred_time || 'Any time'}</div>
+											<div class="text-xs sm:text-sm text-gray-300">Any time</div>
 										</td>
 
 										<!-- Tickets -->
 										<td class="px-4 sm:px-6 py-3 sm:py-4">
-											<div class="text-base sm:text-lg font-bold text-white">{ticket.number_of_tickets}</div>
+											<div class="text-base sm:text-lg font-bold text-white">{ticket.tickets || ticket.quantity || ticket.number_of_tickets || 0}</div>
 										</td>
 
 										<!-- Status -->

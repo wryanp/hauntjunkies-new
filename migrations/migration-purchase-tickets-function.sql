@@ -8,8 +8,6 @@ CREATE OR REPLACE FUNCTION purchase_tickets(
   p_first_name TEXT,
   p_last_name TEXT,
   p_email TEXT,
-  p_phone TEXT,
-  p_special_requests TEXT,
   p_confirmation_number TEXT
 )
 RETURNS JSON
@@ -64,10 +62,8 @@ BEGIN
     first_name,
     last_name,
     email,
-    phone,
     date,
     tickets,
-    special_requests,
     confirmation_number,
     status
   ) VALUES (
@@ -75,10 +71,8 @@ BEGIN
     p_first_name,
     p_last_name,
     p_email,
-    p_phone,
     p_date,
     p_tickets,
-    p_special_requests,
     p_confirmation_number,
     'confirmed'
   )

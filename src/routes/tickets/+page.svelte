@@ -15,8 +15,7 @@
 		lastName: '',
 		email: '',
 		date: '',
-		tickets: 1,
-		specialRequests: ''
+		tickets: 1
 	});
 
 	let submitting = $state(false);

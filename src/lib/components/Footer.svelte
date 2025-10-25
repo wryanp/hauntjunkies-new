@@ -32,6 +32,7 @@
 					<li><a href="/about" class="text-gray-400 hover:text-haunt-orange transition-colors">About</a></li>
 					<li><a href="/contact" class="text-gray-400 hover:text-haunt-orange transition-colors">Contact</a></li>
 					{#if isAuthenticated}
+						<li><a href="/haunt" class="text-gray-400 hover:text-haunt-orange transition-colors">McCloud Manor</a></li>
 						<li><a href="/admin/dashboard" class="text-gray-400 hover:text-haunt-orange transition-colors">Admin</a></li>
 					{/if}
 				</ul>

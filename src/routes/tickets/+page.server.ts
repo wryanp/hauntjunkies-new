@@ -115,10 +115,8 @@ export const actions = {
 		const firstName = formData.get('firstName')?.toString() || '';
 		const lastName = formData.get('lastName')?.toString() || '';
 		const email = formData.get('email')?.toString() || '';
-		const phone = formData.get('phone')?.toString() || '';
 		const date = formData.get('date')?.toString() || '';
 		const ticketsStr = formData.get('tickets')?.toString() || '';
-		const specialRequests = formData.get('specialRequests')?.toString() || '';
 
 		// PRIORITY 1: Validate date first (needed to check availability)
 		const dateValidation = validateDate(date);
@@ -155,7 +153,22 @@ export const actions = {
 			return fail(400, { error: 'This date is no longer available' });
 		}
 
-		// Count already confirmed tickets for this date
+		// Check for duplicate purchase - prevent same email from booking same date multiple times
+	const { data: existingTicket } = await supabaseAdmin
+		.from('ticket_requests')
+		.select('id, tickets')
+		.eq('email', email)
+		.eq('date', date)
+		.eq('status', 'confirmed')
+		.maybeSingle();
+
+	if (existingTicket) {
+		return fail(400, {
+			error: 'You already have tickets for this date. Check your email for your confirmation, or contact us at hauntjunkies@gmail.com if you need to modify your reservation.'
+		});
+	}
+
+	// Count already confirmed tickets for this date
 		const { data: requests } = await supabaseAdmin
 			.from('ticket_requests')
 			.select('tickets')
@@ -208,26 +221,9 @@ export const actions = {
 			return fail(400, { error: emailValidation.error });
 		}
 
-		// Validate phone (optional)
-		const phoneValidation = validatePhone(phone);
-		if (!phoneValidation.valid) {
-			return fail(400, { error: phoneValidation.error });
-		}
-
-		// Validate special requests (optional)
-		const specialRequestsValidation = validateText(specialRequests, {
-			fieldName: 'Special requests',
-			maxLength: 1000,
-			required: false
-		});
-		if (!specialRequestsValidation.valid) {
-			return fail(400, { error: specialRequestsValidation.error });
-		}
-
 		// Use sanitized values
 		const sanitizedFirstName = firstNameValidation.sanitized!;
 		const sanitizedLastName = lastNameValidation.sanitized!;
-		const sanitizedSpecialRequests = specialRequestsValidation.sanitized || null;
 
 		// Generate confirmation number
 		const confirmationNumber = generateConfirmationNumber();
@@ -240,8 +236,6 @@ export const actions = {
 			p_first_name: sanitizedFirstName,
 			p_last_name: sanitizedLastName,
 			p_email: email,
-			p_phone: phone || null,
-			p_special_requests: sanitizedSpecialRequests,
 			p_confirmation_number: confirmationNumber
 		});
 
@@ -266,8 +260,7 @@ export const actions = {
 			date,
 			startTime: dateInfo.start_time,
 			endTime: dateInfo.end_time,
-			tickets,
-			specialRequests: sanitizedSpecialRequests || undefined
+			tickets
 		});
 
 		if (!emailResult.success) {
@@ -283,8 +276,7 @@ export const actions = {
 				lastName: sanitizedLastName,
 				email,
 				date,
-				tickets,
-				specialRequests: sanitizedSpecialRequests
+				tickets
 			}
 		};
 	}

@@ -27,8 +27,12 @@
 	<!-- Content -->
 	<div class="relative z-10 w-full max-w-md px-4 sm:px-6 pt-24 sm:pt-32 pb-20">
 		<!-- Header -->
-		<div class="text-center mb-12 sm:mb-16">
-			<h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-haunt-orange via-orange-500 to-haunt-orange mb-4 tracking-tight" style="text-shadow: 0 0 40px rgba(255,107,0,0.6);">
+		<div class="text-center mb-8">
+			<!-- Logo -->
+			<div class="mb-4">
+				<img src="/logo-url.png" alt="Haunt Junkies" class="max-h-32 sm:max-h-40 md:max-h-48 w-auto mx-auto object-contain" />
+			</div>
+			<h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-haunt-orange via-orange-500 to-haunt-orange tracking-tight" style="text-shadow: 0 0 40px rgba(255,107,0,0.6);">
 				ADMIN LOGIN
 			</h1>
 		</div>
@@ -69,7 +73,6 @@
 						name="email"
 						required
 						class="w-full px-4 py-3 bg-black/50 border-2 border-haunt-orange/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors"
-						placeholder="admin@hauntjunkies.com"
 					/>
 				</div>
 
@@ -84,7 +87,6 @@
 						name="password"
 						required
 						class="w-full px-4 py-3 bg-black/50 border-2 border-haunt-orange/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors"
-						placeholder="••••••••"
 					/>
 				</div>
 

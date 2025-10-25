@@ -23,7 +23,7 @@
 
 	// Layout classes
 	const layoutClasses = $derived({
-		horizontal: 'flex flex-row flex-wrap justify-center gap-1',
+		horizontal: 'flex flex-row flex-nowrap justify-center -space-x-14 md:-space-x-12',
 		vertical: 'flex flex-col items-center gap-0',
 		grid: 'grid grid-cols-2 md:grid-cols-3 gap-6'
 	}[layout]);

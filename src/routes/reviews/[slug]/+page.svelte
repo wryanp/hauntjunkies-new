@@ -26,13 +26,32 @@
 		(data.review.award_best_overall_year ? 1 : 0)
 	);
 
+	// Extract year from review title (e.g., "Netherworld Haunted House 2024" -> "2024")
+	let reviewYear = $derived.by(() => {
+		const match = data.review.name.match(/(\d{4})/);
+		return match ? match[1] : new Date().getFullYear().toString();
+	});
+
 	// Parse review text and replace image placeholders with actual images
-	// Supports placeholders like [REVIEWER_PHOTO:1], [REVIEWER_PHOTO:2], etc.
+	// Supports placeholders like [REVIEWER_PHOTO:1], [IMAGE:URL], etc.
 	function parseReviewText(text: string | undefined): string {
 		if (!text) return '';
 
-		// Replace [REVIEWER_PHOTO:N] with actual images
-		return text.replace(/\[REVIEWER_PHOTO:(\d+)\]/g, (match, photoIndex) => {
+		// First, replace [IMAGE:URL] with actual images
+		let parsed = text.replace(/\[IMAGE:(https?:\/\/[^\]]+)\]/g, (match, imageUrl) => {
+			return `
+				<div class="my-8 mx-auto max-w-2xl">
+					<img
+						src="${imageUrl}"
+						alt="Review image"
+						class="w-full rounded-lg border-2 border-haunt-orange/30 shadow-xl"
+					/>
+				</div>
+			`;
+		});
+
+		// Then, replace [REVIEWER_PHOTO:N] with actual images
+		parsed = parsed.replace(/\[REVIEWER_PHOTO:(\d+)\]/g, (match, photoIndex) => {
 			const index = parseInt(photoIndex) - 1; // Convert to 0-based index
 			const photo = data.reviewerPhotos?.[index];
 
@@ -55,6 +74,8 @@
 				</div>
 			`;
 		});
+
+		return parsed;
 	}
 
 	const formattedReviewText = $derived(parseReviewText(data.review.review_text));
@@ -81,14 +102,6 @@
 	}
 
 	const youtubeEmbedUrl = $derived(data.review.youtube_url ? getYouTubeEmbedUrl(data.review.youtube_url) : null);
-
-	// Detect if twitter_url is actually TikTok or Twitter/X
-	function isTikTokUrl(url: string): boolean {
-		if (!url) return false;
-		return url.toLowerCase().includes('tiktok.com') || url.toLowerCase().includes('tiktok.com');
-	}
-
-	const isTikTok = $derived(data.review.twitter_url ? isTikTokUrl(data.review.twitter_url) : false);
 </script>
 
 <SEO
@@ -125,7 +138,7 @@
 		</div>
 	{/if}
 
-	<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 {data.review.cover_image_url ? '-mt-32' : 'pt-12'} pb-20 relative">
+	<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-20 relative">
 		<!-- Breadcrumbs -->
 		<Breadcrumbs
 			items={[
@@ -133,6 +146,19 @@
 				{ label: data.review.name, href: `/reviews/${data.review.slug}` }
 			]}
 		/>
+
+		<!-- Back to Reviews Button -->
+		<div class="mb-6">
+			<a
+				href="/reviews"
+				class="inline-flex items-center gap-2 text-haunt-orange hover:text-orange-400 transition-colors"
+			>
+				<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+				</svg>
+				Back to Reviews
+			</a>
+		</div>
 
 		<!-- Review Header -->
 		<div class="mb-8">
@@ -189,7 +215,7 @@
 							href={data.review.website_url}
 							target="_blank"
 							rel="noopener noreferrer"
-							class="group relative bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-gray-700 hover:border-haunt-orange px-4 py-2.5 rounded transition-all duration-300 flex items-center gap-2 overflow-hidden"
+							class="group relative bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-gray-700 hover:border-haunt-orange px-4 py-2.5 rounded transition-all duration-300 flex items-center justify-center gap-2 overflow-hidden w-[calc((100%-1.5rem)/3)] md:w-auto"
 							title="Visit Website"
 							aria-label="Visit website"
 							style="box-shadow: 0 0 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);"
@@ -206,13 +232,13 @@
 							href={data.review.facebook_url}
 							target="_blank"
 							rel="noopener noreferrer"
-							class="group relative bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-gray-700 hover:border-haunt-orange px-4 py-2.5 rounded transition-all duration-300 flex items-center gap-2 overflow-hidden"
+							class="group relative bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-gray-700 hover:border-haunt-orange px-4 py-2.5 rounded transition-all duration-300 flex items-center justify-center gap-2 overflow-hidden w-[calc((100%-1.5rem)/3)] md:w-auto"
 							title="Visit Facebook"
 							aria-label="Visit Facebook page"
 							style="box-shadow: 0 0 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);"
 						>
 							<div class="absolute inset-0 bg-gradient-to-r from-haunt-orange/0 via-haunt-orange/10 to-haunt-orange/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-							<svg class="w-5 h-5 text-gray-400 group-hover:text-haunt-orange transition-colors duration-300 relative z-10" fill="currentColor" viewBox="0 0 24 24">
+							<svg class="w-5 h-5 text-[#1877F2] transition-colors duration-300 relative z-10" fill="currentColor" viewBox="0 0 24 24">
 								<path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
 							</svg>
 							<span class="text-sm font-semibold text-gray-300 group-hover:text-white transition-colors duration-300 relative z-10">Facebook</span>
@@ -223,13 +249,13 @@
 							href={data.review.instagram_url}
 							target="_blank"
 							rel="noopener noreferrer"
-							class="group relative bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-gray-700 hover:border-haunt-orange px-4 py-2.5 rounded transition-all duration-300 flex items-center gap-2 overflow-hidden"
+							class="group relative bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-gray-700 hover:border-haunt-orange px-4 py-2.5 rounded transition-all duration-300 flex items-center justify-center gap-2 overflow-hidden w-[calc((100%-1.5rem)/3)] md:w-auto"
 							title="Visit Instagram"
 							aria-label="Visit Instagram page"
 							style="box-shadow: 0 0 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);"
 						>
 							<div class="absolute inset-0 bg-gradient-to-r from-haunt-orange/0 via-haunt-orange/10 to-haunt-orange/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-							<svg class="w-5 h-5 text-gray-400 group-hover:text-haunt-orange transition-colors duration-300 relative z-10" fill="currentColor" viewBox="0 0 24 24">
+							<svg class="w-5 h-5 text-[#E4405F] transition-colors duration-300 relative z-10" fill="currentColor" viewBox="0 0 24 24">
 								<path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
 							</svg>
 							<span class="text-sm font-semibold text-gray-300 group-hover:text-white transition-colors duration-300 relative z-10">Instagram</span>
@@ -240,25 +266,33 @@
 							href={data.review.twitter_url}
 							target="_blank"
 							rel="noopener noreferrer"
-							class="group relative bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-gray-700 hover:border-haunt-orange px-4 py-2.5 rounded transition-all duration-300 flex items-center gap-2 overflow-hidden"
-							title={isTikTok ? "Visit TikTok" : "Visit Twitter/X"}
-							aria-label={isTikTok ? "Visit TikTok page" : "Visit Twitter/X page"}
+							class="group relative bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-gray-700 hover:border-haunt-orange px-4 py-2.5 rounded transition-all duration-300 flex items-center justify-center gap-2 overflow-hidden w-[calc((100%-1.5rem)/3)] md:w-auto"
+							title="Visit Twitter/X"
+							aria-label="Visit Twitter/X page"
 							style="box-shadow: 0 0 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);"
 						>
 							<div class="absolute inset-0 bg-gradient-to-r from-haunt-orange/0 via-haunt-orange/10 to-haunt-orange/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-							{#if isTikTok}
-								<!-- TikTok Logo -->
-								<svg class="w-5 h-5 text-gray-400 group-hover:text-haunt-orange transition-colors duration-300 relative z-10" fill="currentColor" viewBox="0 0 24 24">
-									<path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
-								</svg>
-								<span class="text-sm font-semibold text-gray-300 group-hover:text-white transition-colors duration-300 relative z-10">TikTok</span>
-							{:else}
-								<!-- Twitter/X Logo -->
-								<svg class="w-5 h-5 text-gray-400 group-hover:text-haunt-orange transition-colors duration-300 relative z-10" fill="currentColor" viewBox="0 0 24 24">
-									<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-								</svg>
-								<span class="text-sm font-semibold text-gray-300 group-hover:text-white transition-colors duration-300 relative z-10">Twitter</span>
-							{/if}
+							<svg class="w-5 h-5 text-white transition-colors duration-300 relative z-10" fill="currentColor" viewBox="0 0 24 24">
+								<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+							</svg>
+							<span class="text-sm font-semibold text-gray-300 group-hover:text-white transition-colors duration-300 relative z-10">Twitter</span>
+						</a>
+					{/if}
+					{#if data.review.tiktok_url}
+						<a
+							href={data.review.tiktok_url}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="group relative bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-gray-700 hover:border-haunt-orange px-4 py-2.5 rounded transition-all duration-300 flex items-center justify-center gap-2 overflow-hidden w-[calc((100%-1.5rem)/3)] md:w-auto"
+							title="Visit TikTok"
+							aria-label="Visit TikTok page"
+							style="box-shadow: 0 0 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);"
+						>
+							<div class="absolute inset-0 bg-gradient-to-r from-haunt-orange/0 via-haunt-orange/10 to-haunt-orange/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+							<svg class="w-5 h-5 text-white transition-colors duration-300 relative z-10" fill="currentColor" viewBox="0 0 24 24">
+								<path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+							</svg>
+							<span class="text-sm font-semibold text-gray-300 group-hover:text-white transition-colors duration-300 relative z-10">TikTok</span>
 						</a>
 					{/if}
 					{#if data.review.youtube_url}
@@ -266,13 +300,13 @@
 							href={data.review.youtube_url}
 							target="_blank"
 							rel="noopener noreferrer"
-							class="group relative bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-gray-700 hover:border-haunt-orange px-4 py-2.5 rounded transition-all duration-300 flex items-center gap-2 overflow-hidden"
+							class="group relative bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-gray-700 hover:border-haunt-orange px-4 py-2.5 rounded transition-all duration-300 flex items-center justify-center gap-2 overflow-hidden w-[calc((100%-1.5rem)/3)] md:w-auto"
 							title="Watch on YouTube"
 							aria-label="Watch video on YouTube"
 							style="box-shadow: 0 0 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);"
 						>
 							<div class="absolute inset-0 bg-gradient-to-r from-haunt-orange/0 via-haunt-orange/10 to-haunt-orange/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-							<svg class="w-5 h-5 text-gray-400 group-hover:text-haunt-orange transition-colors duration-300 relative z-10" fill="currentColor" viewBox="0 0 24 24">
+							<svg class="w-5 h-5 text-[#FF0000] transition-colors duration-300 relative z-10" fill="currentColor" viewBox="0 0 24 24">
 								<path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
 							</svg>
 							<span class="text-sm font-semibold text-gray-300 group-hover:text-white transition-colors duration-300 relative z-10">YouTube</span>
@@ -281,81 +315,79 @@
 				</div>
 			{/if}
 
-			<!-- Ratings -->
-			{#if data.review.rating_overall}
-				<div class="bg-gray-800/50 rounded-lg p-6 mb-6 border border-gray-700" style="min-height: 180px;">
-					<h2 class="text-2xl font-bold text-haunt-orange mb-4 font-creepster">Overall Rating</h2>
-					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-						<div>
-							<div class="text-5xl font-bold text-white mb-3">{data.review.rating_overall.toFixed(1)}</div>
-							<div class="flex items-center gap-1">
-								{#each Array(5) as _, i}
-									<img
-										src="/ghost.png"
-										alt="Rating ghost"
-										class="w-9 h-9 object-contain transition-all {i < Math.round(data.review.rating_overall) ? 'opacity-100 brightness-110' : 'opacity-20 grayscale'}"
-										style="filter: {i < Math.round(data.review.rating_overall) ? 'drop-shadow(0 3px 6px rgba(252, 116, 3, 0.5))' : 'none'};"
-									/>
-								{/each}
+			<!-- Ratings and Awards Side by Side -->
+			<div class="flex flex-col md:flex-row gap-3 mb-6">
+				<!-- Overall Rating -->
+				{#if data.review.rating_overall}
+					<div class="bg-gray-800/50 rounded px-6 pt-3 pb-4 border border-gray-700 flex flex-col items-center h-48 w-full md:w-[400px]">
+						<h2 class="text-2xl font-bold text-haunt-orange uppercase leading-none text-center">Overall Rating</h2>
+						<div class="flex-1 flex items-center justify-center w-full">
+							<div class="flex flex-col items-center gap-3 mt-2 w-full">
+								<div class="flex items-center justify-center gap-2 mt-2 w-full">
+									<div class="text-6xl font-bold text-white leading-none" style="text-shadow: 0 0 20px rgba(252, 116, 3, 0.6), 0 0 40px rgba(252, 116, 3, 0.4);">{data.review.rating_overall.toFixed(1)}</div>
+									</div>
+								<div class="flex items-center justify-center gap-1 w-full">
+									{#each Array(5) as _, i}
+										{@const rating = data.review.rating_overall}
+										{@const isHalf = i === Math.floor(rating) && rating % 1 !== 0}
+										{@const isFull = i < Math.floor(rating)}
+
+										{#if isHalf}
+											<!-- Mobile: Use half-ghost image -->
+											<img
+												src="/half-ghost.png"
+												alt="Rating ghost"
+												class="w-14 h-14 object-contain opacity-100 brightness-150 md:hidden"
+												style="filter: drop-shadow(0 4px 8px rgba(252, 116, 3, 0.8)) contrast(1.2);"
+											/>
+											<!-- Desktop: Use clip-path -->
+											<div class="relative w-14 h-14 hidden md:block">
+												<!-- Dim background ghost -->
+												<img
+													src="/ghost.png"
+													alt="Rating ghost"
+													class="absolute inset-0 w-14 h-14 object-contain opacity-30 grayscale"
+												/>
+												<!-- Bright half ghost (clipped to left 50%) -->
+												<img
+													src="/ghost.png"
+													alt="Rating ghost"
+													class="absolute inset-0 w-14 h-14 object-contain opacity-100 brightness-150"
+													style="clip-path: inset(0 50% 0 0); filter: drop-shadow(0 4px 8px rgba(252, 116, 3, 0.8)) contrast(1.2);"
+												/>
+											</div>
+										{:else}
+											<img
+												src="/ghost.png"
+												alt="Rating ghost"
+												class="w-14 h-14 object-contain transition-all {isFull ? 'opacity-100 brightness-110' : 'opacity-20 grayscale'}"
+												style="filter: {isFull ? 'drop-shadow(0 3px 6px rgba(252, 116, 3, 0.5))' : 'none'};"
+											/>
+										{/if}
+									{/each}
+								</div>
 							</div>
-						</div>
-						<div class="space-y-2">
-							{#if data.review.rating_scares}
-								<div class="flex justify-between">
-									<span class="text-gray-400">Scares</span>
-									<span class="text-white font-medium">{data.review.rating_scares.toFixed(1)}</span>
-								</div>
-							{/if}
-							{#if data.review.rating_atmosphere}
-								<div class="flex justify-between">
-									<span class="text-gray-400">Atmosphere</span>
-									<span class="text-white font-medium">{data.review.rating_atmosphere.toFixed(1)}</span>
-								</div>
-							{/if}
-							{#if data.review.rating_value}
-								<div class="flex justify-between">
-									<span class="text-gray-400">Value</span>
-									<span class="text-white font-medium">{data.review.rating_value.toFixed(1)}</span>
-								</div>
-							{/if}
 						</div>
 					</div>
-				</div>
-			{/if}
+				{/if}
 
-			<!-- Golden Ghost Awards -->
-			{#if hasGoldenGhostAwards(data.review)}
-				<div class="bg-gray-800/50 rounded-lg p-4 mb-6 border border-yellow-500/30 relative overflow-hidden" style="box-shadow: 0 0 30px rgba(234, 179, 8, 0.1), inset 0 1px 0 rgba(255, 215, 0, 0.05);">
-					<!-- Decorative corner accents -->
-					<div class="absolute top-0 left-0 w-12 h-12 border-t border-l border-yellow-400/20 rounded-tl-lg"></div>
-					<div class="absolute bottom-0 right-0 w-12 h-12 border-b border-r border-yellow-400/20 rounded-br-lg"></div>
-
-					<!-- Subtle background gradient overlay -->
-					<div class="absolute inset-0 bg-gradient-to-r from-yellow-500/5 via-transparent to-yellow-500/5 pointer-events-none"></div>
-
-					<div class="relative z-10">
-						<h2 class="text-xl font-bold text-yellow-400 mb-2">Golden Ghost Awards</h2>
-						<div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-							<!-- Left: Trophy & Title -->
-							<div>
-								<div class="flex items-center gap-2 mb-1">
-									<img
-										src="/golden-ghost-award.png"
-										alt="Golden Ghost Award"
-										class="w-8 h-8 flex-shrink-0"
-										style="filter: drop-shadow(0 2px 10px rgba(234, 179, 8, 0.3));"
-									/>
-									<div class="text-3xl font-bold bg-gradient-to-r from-yellow-300 via-yellow-400 to-yellow-500 bg-clip-text text-transparent">
-										{awardCount}
-									</div>
-								</div>
-								<p class="text-yellow-400/70 text-xs uppercase tracking-wider">
-									Award{awardCount > 1 ? 's' : ''} Won
-								</p>
-							</div>
-
-							<!-- Right: Award Badges -->
-							<div>
+				<!-- Golden Ghost Awards -->
+				{#if hasGoldenGhostAwards(data.review)}
+					<div class="bg-gray-800/50 rounded px-2 md:px-6 pt-3 pb-4 border border-yellow-500/30 relative overflow-hidden flex flex-col items-center h-48 w-full md:w-auto md:flex-1" style="box-shadow: 0 0 20px rgba(234, 179, 8, 0.1);">
+						<div class="absolute inset-0 bg-gradient-to-r from-yellow-500/5 via-transparent to-yellow-500/5 pointer-events-none"></div>
+						<div class="flex-1 flex flex-col items-center justify-center relative z-10 gap-1 md:gap-4">
+							<h2 class="font-bold text-yellow-400 uppercase leading-none text-center whitespace-nowrap" style="font-size: 1.300rem;">{reviewYear} Golden Ghost Award Winner</h2>
+							<div class="text-base w-full flex justify-center -mt-6 md:-mt-8 ml-2 md:ml-0" style="transform: scale(1);" class:md:scale={true}>
+								<style>
+									.md\:scale {
+										transform: scale(1);
+									}
+									@media (min-width: 768px) {
+										.md\:scale {
+											transform: scale(1.5);
+										}
+									}
+								</style>
 								<GoldenGhostAwards
 									review={data.review}
 									layout="horizontal"
@@ -366,8 +398,8 @@
 							</div>
 						</div>
 					</div>
-				</div>
-			{/if}
+				{/if}
+			</div>
 		</div>
 
 		<!-- YouTube Video -->
@@ -397,7 +429,7 @@
 		<!-- Review Text with Inline Images -->
 		{#if data.review.review_text}
 			<div class="bg-gray-800/50 rounded-lg p-6 mb-6 border border-gray-700">
-				<h2 class="text-2xl font-bold text-haunt-orange mb-4 font-creepster">Our Review</h2>
+				<h2 class="text-2xl font-bold text-haunt-orange uppercase leading-none mb-4">{data.review.name} Review</h2>
 				<div class="prose prose-invert max-w-none text-gray-300 leading-relaxed" style="white-space: pre-line;">
 					{@html formattedReviewText}
 				</div>
@@ -406,7 +438,7 @@
 
 		<!-- Comments Section -->
 		<div class="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
-			<h2 class="text-2xl font-bold text-haunt-orange mb-4 font-creepster">
+			<h2 class="text-2xl font-bold text-haunt-orange uppercase leading-none mb-4">
 				Comments ({data.comments.length})
 			</h2>
 
