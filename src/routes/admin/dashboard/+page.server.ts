@@ -46,7 +46,7 @@ export const load: PageServerLoad = async ({ cookies }) => {
 		supabase.from('reviews').select('*').order('created_at', { ascending: false }).limit(5),
 		supabase
 			.from('review_comments')
-			.select('*, reviews(title)')
+			.select('*, reviews(name)')
 			.order('created_at', { ascending: false })
 			.limit(5),
 		supabase.from('ticket_requests').select('*').order('created_at', { ascending: false }).limit(5)

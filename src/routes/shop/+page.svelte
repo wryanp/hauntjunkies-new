@@ -12,7 +12,7 @@
 	title="Shop - Coming Soon"
 	description="Haunt Junkies merchandise shop coming soon! Stay tuned for exclusive horror-themed apparel and collectibles."
 	url="/shop"
-	image="/og-shop.jpg"
+	image="/og.png"
 	type="website"
 	noindex={true}
 />

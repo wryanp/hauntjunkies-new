@@ -88,7 +88,7 @@
 	title="Reserve Tickets - McCloud Manor"
 	description="Reserve tickets for McCloud Manor, a terrifying haunted attraction by Haunt Junkies. Check availability, select your date, and secure your spot for an unforgettable horror experience in Atlanta."
 	url="/tickets"
-	image="/og-tickets.jpg"
+	image="/og.png"
 	type="website"
 />
 
@@ -276,7 +276,8 @@
 							</h2>
 
 							{#if selectedDateInfo()}
-								{@const maxTickets = Math.min(selectedDateInfo().max_tickets_per_request, remainingTickets())}
+								{@const dateInfo = selectedDateInfo()}
+								{@const maxTickets = Math.min(dateInfo.max_tickets_per_request, remainingTickets())}
 								<div class="mb-4">
 									<label for="tickets" class="block text-white font-semibold mb-3 text-lg">
 										Select your party size

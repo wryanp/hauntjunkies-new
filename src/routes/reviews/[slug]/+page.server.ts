@@ -74,7 +74,7 @@ export const actions: Actions = {
 	comment: async ({ request, params, cookies }) => {
 		// Rate limiting - 3 comments per hour per IP
 		const clientIP = getClientIP(request);
-		const rateLimit = checkRateLimit(clientIP, {
+		const rateLimit = await checkRateLimit(clientIP, {
 			identifier: 'comment-submission',
 			maxRequests: 3,
 			windowMs: 60 * 60 * 1000 // 1 hour
@@ -91,7 +91,8 @@ export const actions: Actions = {
 		const captchaToken = formData.get('cf-turnstile-response')?.toString() || '';
 
 		// Verify CAPTCHA (skip in development mode)
-		if (!dev) {
+		// SECURITY: Use NODE_ENV instead of dev flag to prevent accidental bypass in production
+		if (process.env.NODE_ENV === 'production') {
 			const captchaResult = await verifyTurnstile(captchaToken, TURNSTILE_SECRET_KEY);
 			if (!captchaResult.success) {
 				return fail(400, { error: captchaResult.error || 'Please complete the CAPTCHA verification' });
@@ -146,6 +147,7 @@ export const actions: Actions = {
 
 		// Use sanitized values
 		const sanitizedName = nameValidation.sanitized!;
+		const sanitizedEmail = emailValidation.sanitized!;
 		const sanitizedComment = commentValidation.sanitized!;
 
 		// Get review details
@@ -162,16 +164,21 @@ export const actions: Actions = {
 		// Generate secure approval token
 		const approvalToken = randomBytes(32).toString('hex');
 
+		// Set approval token expiration (7 days from now)
+		const expirationDate = new Date();
+		expirationDate.setDate(expirationDate.getDate() + 7);
+
 		// Insert comment (unapproved by default) and get the inserted data
 		const { data: insertedComment, error: insertError } = await supabase
 			.from('review_comments')
 			.insert({
 				review_id: review.id,
 				author_name: sanitizedName,
-				author_email: author_email,
+				author_email: sanitizedEmail,
 				comment_text: sanitizedComment,
 				approved: false, // Requires admin approval
-				approval_token: approvalToken
+				approval_token: approvalToken,
+				approval_token_expires_at: expirationDate.toISOString() // Token expires in 7 days
 			})
 			.select()
 			.single();
@@ -188,7 +195,7 @@ export const actions: Actions = {
 				reviewName: review.name,
 				reviewSlug: review.slug,
 				authorName: sanitizedName,
-				authorEmail: author_email,
+				authorEmail: sanitizedEmail,
 				commentText: sanitizedComment,
 				approvalToken: approvalToken
 			}).catch(error => {

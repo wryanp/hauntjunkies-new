@@ -9,6 +9,7 @@
 	import GoldenGhostAwards from '$lib/components/GoldenGhostAwards.svelte';
 	import { hasGoldenGhostAwards } from '$lib/utils/awards';
 	import { dev } from '$app/environment';
+	import DOMPurify from 'isomorphic-dompurify';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
@@ -32,6 +33,16 @@
 		return match ? match[1] : new Date().getFullYear().toString();
 	});
 
+	// Escape HTML attribute values to prevent XSS
+	function escapeHtmlAttr(value: string): string {
+		return value
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;')
+			.replace(/'/g, '&#39;');
+	}
+
 	// Parse review text and replace image placeholders with actual images
 	// Supports placeholders like [REVIEWER_PHOTO:1], [IMAGE:URL], etc.
 	function parseReviewText(text: string | undefined): string {
@@ -39,7 +50,9 @@
 
 		// First, replace [IMAGE:URL] with actual images and remove surrounding newlines
 		let parsed = text.replace(/\n*\[IMAGE:(https?:\/\/[^\]]+)\]\n*/g, (match, imageUrl) => {
-			return `<div class="my-0 mx-auto max-w-2xl" style="margin-top: 1rem !important; margin-bottom: 1rem !important;"><img src="${imageUrl}" alt="Review image" class="w-full rounded-lg border-2 border-haunt-orange/30 shadow-xl" /></div>`;
+			// Escape URL for attribute context - don't use DOMPurify on individual attributes
+			const escapedUrl = escapeHtmlAttr(imageUrl.trim());
+			return `<div class="my-0 mx-auto max-w-2xl" style="margin-top: 1rem !important; margin-bottom: 1rem !important;"><img src="${escapedUrl}" alt="Review image" class="w-full rounded-lg border-2 border-haunt-orange/30 shadow-xl" /></div>`;
 		});
 
 		// Then, replace [REVIEWER_PHOTO:N] with actual images and remove surrounding newlines
@@ -51,17 +64,20 @@
 				return match; // Return placeholder if photo not found
 			}
 
-			// Generate HTML for the image
-			const caption = photo.caption ? `<p class="text-sm text-gray-400 text-center mt-2 italic">${photo.caption}</p>` : '';
-			const altText = photo.alt_text || photo.caption || 'Reviewer photo from the haunt';
+			// Escape values for HTML attribute context
+			const escapedUrl = escapeHtmlAttr(photo.image_url.trim());
+			const escapedAltText = escapeHtmlAttr(photo.alt_text || photo.caption || 'Reviewer photo from the haunt');
 
-			return `<div class="my-0 mx-auto max-w-2xl" style="margin-top: 1rem !important; margin-bottom: 1rem !important;"><img src="${photo.image_url}" alt="${altText}" class="w-full rounded-lg border-2 border-haunt-orange/30 shadow-xl" />${caption}</div>`;
+			// For caption (HTML content), we sanitize with DOMPurify since it goes in element content, not attributes
+			const caption = photo.caption ? `<p class="text-sm text-gray-400 text-center mt-2 italic">${DOMPurify.sanitize(photo.caption)}</p>` : '';
+
+			return `<div class="my-0 mx-auto max-w-2xl" style="margin-top: 1rem !important; margin-bottom: 1rem !important;"><img src="${escapedUrl}" alt="${escapedAltText}" class="w-full rounded-lg border-2 border-haunt-orange/30 shadow-xl" />${caption}</div>`;
 		});
 
 		return parsed;
 	}
 
-	const formattedReviewText = $derived(parseReviewText(data.review.review_text));
+	const formattedReviewText = $derived(DOMPurify.sanitize(parseReviewText(data.review.review_text)));
 
 	// Extract YouTube video ID from URL
 	function getYouTubeEmbedUrl(url: string): string | null {

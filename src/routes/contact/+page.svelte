@@ -26,7 +26,7 @@
 	title="Contact Us"
 	description="Contact Haunt Junkies for haunt reviews, partnerships, or questions about haunted attractions. We'd love to hear from fellow horror enthusiasts and haunt owners."
 	url="/contact"
-	image="/og-contact.jpg"
+	image="/og.png"
 	type="website"
 />
 

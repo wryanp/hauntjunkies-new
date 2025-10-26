@@ -1,42 +1,81 @@
 // Input validation and sanitization utilities
 
 /**
- * Comprehensive email validation
+ * Comprehensive email validation with sanitization
  */
-export function validateEmail(email: string): { valid: boolean; error?: string } {
+export function validateEmail(email: string): { valid: boolean; error?: string; sanitized?: string } {
 	if (!email || typeof email !== 'string') {
 		return { valid: false, error: 'Email is required' };
 	}
 
-	// Remove whitespace
-	email = email.trim();
+	// Remove whitespace and sanitize
+	email = email.trim().toLowerCase();
 
-	// Length check
+	// Length check - RFC 5321
 	if (email.length > 254) {
 		return { valid: false, error: 'Email address is too long' };
 	}
 
-	// RFC 5322 compliant regex (simplified but robust)
-	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+	if (email.length < 3) {
+		return { valid: false, error: 'Email address is too short' };
+	}
+
+	// More strict RFC 5322 compliant regex
+	// Allows: letters, numbers, dots, hyphens, underscores, plus signs in local part
+	// Requires proper domain structure
+	const emailRegex = /^[a-z0-9][a-z0-9._+-]*[a-z0-9]@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/i;
 	if (!emailRegex.test(email)) {
 		return { valid: false, error: 'Invalid email format' };
 	}
 
-	// Check for common issues
+	const [localPart, domain] = email.split('@');
+
+	// Validate local part length (RFC 5321: max 64 chars)
+	if (localPart.length > 64) {
+		return { valid: false, error: 'Email address is invalid' };
+	}
+
+	// Validate domain part length (RFC 5321: max 255 chars)
+	if (domain.length > 255) {
+		return { valid: false, error: 'Email domain is too long' };
+	}
+
+	// Check for consecutive dots
 	if (email.includes('..')) {
 		return { valid: false, error: 'Invalid email format' };
 	}
 
-	if (email.startsWith('.') || email.endsWith('.')) {
+	// Check for dots at start/end of local part
+	if (localPart.startsWith('.') || localPart.endsWith('.')) {
 		return { valid: false, error: 'Invalid email format' };
 	}
 
-	// Check for potential email injection (newlines, null bytes)
-	if (/[\r\n\0]/.test(email)) {
+	// Check for potential email injection (newlines, null bytes, control characters)
+	if (/[\r\n\0\x00-\x1f\x7f]/.test(email)) {
 		return { valid: false, error: 'Invalid characters in email' };
 	}
 
-	return { valid: true };
+	// Additional security: reject emails with suspicious patterns
+	const suspiciousPatterns = [
+		/content-type:/i,
+		/bcc:/i,
+		/cc:/i,
+		/to:/i,
+		/from:/i,
+		/subject:/i,
+		/mime-version:/i
+	];
+
+	for (const pattern of suspiciousPatterns) {
+		if (pattern.test(email)) {
+			return { valid: false, error: 'Invalid email format' };
+		}
+	}
+
+	// Sanitize email (remove any remaining dangerous characters)
+	const sanitized = sanitizeEmail(email);
+
+	return { valid: true, sanitized };
 }
 
 /**

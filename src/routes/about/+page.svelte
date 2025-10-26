@@ -6,7 +6,7 @@
 	title="About Us"
 	description="Learn about Haunt Junkies - passionate fans of horror and haunted attractions traveling the country to review haunts and create our own terrifying experiences at McCloud Manor."
 	url="/about"
-	image="/og-about.jpg"
+	image="/og.png"
 	type="website"
 />
 

@@ -71,7 +71,7 @@
 	title="Haunt Reviews"
 	description="Expert reviews of haunted attractions, Halloween events, and horror experiences. Find the scariest haunts near you with detailed ratings, photos, and insider tips from Haunt Junkies."
 	url="/reviews"
-	image="/og-reviews.jpg"
+	image="/og.png"
 	type="website"
 />
 

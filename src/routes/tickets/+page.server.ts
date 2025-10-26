@@ -71,9 +71,10 @@ export const load: PageServerLoad = async ({ setHeaders, cookies }) => {
 export const actions = {
 	default: async ({ request, cookies }) => {
 		// Rate limiting - 5 ticket purchases per hour per IP (skip in development mode)
-		if (!dev) {
+		// SECURITY: Use NODE_ENV instead of dev flag to prevent accidental bypass in production
+		if (process.env.NODE_ENV === 'production') {
 			const clientIP = getClientIP(request);
-			const rateLimit = checkRateLimit(clientIP, {
+			const rateLimit = await checkRateLimit(clientIP, {
 				identifier: 'ticket-purchase',
 				maxRequests: 5,
 				windowMs: 60 * 60 * 1000 // 1 hour
@@ -91,7 +92,8 @@ export const actions = {
 		const captchaToken = formData.get('cf-turnstile-response')?.toString() || '';
 
 		// Verify CAPTCHA (skip in development mode)
-		if (!dev) {
+		// SECURITY: Use NODE_ENV instead of dev flag to prevent accidental bypass in production
+		if (process.env.NODE_ENV === 'production') {
 			const captchaResult = await verifyTurnstile(captchaToken, TURNSTILE_SECRET_KEY);
 			if (!captchaResult.success) {
 				return fail(400, { error: captchaResult.error || 'Please complete the CAPTCHA verification' });
@@ -137,6 +139,13 @@ export const actions = {
 
 		const tickets = ticketsValidation.value!;
 
+		// PRIORITY 2.5: Validate email (needed for duplicate check)
+		const emailValidation = validateEmail(email);
+		if (!emailValidation.valid) {
+			return fail(400, { error: emailValidation.error });
+		}
+		const sanitizedEmail = emailValidation.sanitized!;
+
 		// PRIORITY 3: Check if tickets are available for this date BEFORE validating other fields
 		// Get the date info and check capacity
 		const { data: dateInfo } = await supabaseAdmin
@@ -157,7 +166,7 @@ export const actions = {
 	const { data: existingTicket } = await supabaseAdmin
 		.from('ticket_requests')
 		.select('id, tickets')
-		.eq('email', email)
+		.eq('email', sanitizedEmail)
 		.eq('date', date)
 		.eq('status', 'confirmed')
 		.maybeSingle();
@@ -215,12 +224,6 @@ export const actions = {
 			return fail(400, { error: lastNameValidation.error });
 		}
 
-		// Validate email (required for tickets)
-		const emailValidation = validateEmail(email);
-		if (!emailValidation.valid) {
-			return fail(400, { error: emailValidation.error });
-		}
-
 		// Use sanitized values
 		const sanitizedFirstName = firstNameValidation.sanitized!;
 		const sanitizedLastName = lastNameValidation.sanitized!;
@@ -235,7 +238,7 @@ export const actions = {
 			p_name: `${sanitizedFirstName} ${sanitizedLastName}`,
 			p_first_name: sanitizedFirstName,
 			p_last_name: sanitizedLastName,
-			p_email: email,
+			p_email: sanitizedEmail,
 			p_confirmation_number: confirmationNumber
 		});
 
@@ -256,7 +259,7 @@ export const actions = {
 			confirmationNumber,
 			firstName: sanitizedFirstName,
 			lastName: sanitizedLastName,
-			email,
+			email: sanitizedEmail,
 			date,
 			startTime: dateInfo.start_time,
 			endTime: dateInfo.end_time,
@@ -274,7 +277,7 @@ export const actions = {
 			ticketDetails: {
 				firstName: sanitizedFirstName,
 				lastName: sanitizedLastName,
-				email,
+				email: sanitizedEmail,
 				date,
 				tickets
 			}

@@ -15,7 +15,7 @@ export const actions: Actions = {
 	default: async ({ request, cookies }) => {
 		// Rate limiting - 3 submissions per hour per IP
 		const clientIP = getClientIP(request);
-		const rateLimit = checkRateLimit(clientIP, {
+		const rateLimit = await checkRateLimit(clientIP, {
 			identifier: 'contact-form',
 			maxRequests: 3,
 			windowMs: 60 * 60 * 1000 // 1 hour
@@ -32,7 +32,8 @@ export const actions: Actions = {
 		const captchaToken = formData.get('cf-turnstile-response')?.toString() || '';
 
 		// Verify CAPTCHA (skip in development mode)
-		if (!dev) {
+		// SECURITY: Use NODE_ENV instead of dev flag to prevent accidental bypass in production
+		if (process.env.NODE_ENV === 'production') {
 			const captchaResult = await verifyTurnstile(captchaToken, TURNSTILE_SECRET_KEY);
 			if (!captchaResult.success) {
 				return fail(400, { error: captchaResult.error || 'Please complete the CAPTCHA verification' });
@@ -98,6 +99,7 @@ export const actions: Actions = {
 
 		// Use sanitized values
 		const sanitizedName = nameValidation.sanitized!;
+		const sanitizedEmail = emailValidation.sanitized!;
 		const sanitizedSubject = subjectValidation.sanitized || 'No Subject';
 		const sanitizedMessage = messageValidation.sanitized!;
 
@@ -105,7 +107,7 @@ export const actions: Actions = {
 			.from('contact_submissions')
 			.insert({
 				name: sanitizedName,
-				email: email,
+				email: sanitizedEmail,
 				subject: sanitizedSubject,
 				message: sanitizedMessage
 			});
@@ -118,7 +120,7 @@ export const actions: Actions = {
 		// Send email notification to admin
 		try {
 			// Sanitize for HTML email (prevent XSS in email clients)
-			const safeEmail = sanitizeHTML(email);
+			const safeEmail = sanitizeHTML(sanitizedEmail);
 			const safeName = sanitizeHTML(sanitizedName);
 			const safeSubject = sanitizeHTML(sanitizedSubject);
 			const safeMessage = sanitizeHTML(sanitizedMessage);
@@ -212,7 +214,7 @@ export const actions: Actions = {
 				to: 'hauntjunkies@gmail.com',
 				subject: `New Contact Form: ${subject}`,
 				html: emailHtml,
-				reply_to: email
+				replyTo: sanitizedEmail
 			});
 		} catch (emailError) {
 			console.error('Error sending contact notification email:', emailError);

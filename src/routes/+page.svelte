@@ -182,7 +182,7 @@
 	title="Haunt Junkies - Your Source for Haunted Attraction Reviews"
 	description="Expert reviews of haunted houses, haunted attractions, and home haunts. Find the best scares near you! Featuring McCloud Manor and top haunts across the country."
 	url="/"
-	image="/og-home.jpg"
+	image="/og.png"
 	type="website"
 />
 

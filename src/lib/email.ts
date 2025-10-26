@@ -1,6 +1,12 @@
 import { Resend } from 'resend';
-import { RESEND_API_KEY } from '$env/static/private';
+import { RESEND_API_KEY, SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
 import ical from 'ical-generator';
+import { createHmac } from 'crypto';
+
+// Validate API key before initializing Resend client
+if (!RESEND_API_KEY || RESEND_API_KEY === 'your_resend_api_key') {
+	throw new Error('RESEND_API_KEY is not configured. Please set it in your .env file.');
+}
 
 const resend = new Resend(RESEND_API_KEY);
 
@@ -460,8 +466,20 @@ interface CommentData {
 	approvalToken: string;
 }
 
+/**
+ * Generate HMAC signature for approval token
+ * Must match the implementation in /api/comments/approve/+server.ts
+ */
+function generateApprovalHmac(token: string): string {
+	const secret = SUPABASE_SERVICE_ROLE_KEY;
+	return createHmac('sha256', secret)
+		.update(token)
+		.digest('hex');
+}
+
 function createCommentNotificationHTML(commentData: CommentData): string {
-	const approvalUrl = `https://hauntjunkies.com/api/comments/approve?token=${commentData.approvalToken}`;
+	const approvalUrl = `https://hauntjunkies.com/api/comments/approve`;
+	const hmac = generateApprovalHmac(commentData.approvalToken);
 
 	return `
 <!DOCTYPE html>
@@ -509,12 +527,20 @@ function createCommentNotificationHTML(commentData: CommentData): string {
 			<strong>Quick Actions:</strong>
 		</p>
 		<div style="margin: 15px 0;">
-			<a href="${approvalUrl}" style="display: inline-block; background-color: #FC7403; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-weight: 600; font-size: 16px; margin: 5px;">
-				✅ Approve Comment
-			</a>
+			<!-- SECURITY: Using POST form instead of GET link to prevent CSRF attacks -->
+			<form action="${approvalUrl}" method="POST" style="display: inline-block;">
+				<input type="hidden" name="token" value="${commentData.approvalToken}" />
+				<input type="hidden" name="hmac" value="${hmac}" />
+				<button type="submit" style="display: inline-block; background-color: #FC7403; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-weight: 600; font-size: 16px; margin: 5px; border: none; cursor: pointer;">
+					✅ Approve Comment
+				</button>
+			</form>
 		</div>
 		<p style="margin: 15px 0 0 0; font-size: 14px; color: #cccccc;">
 			Or manage comments in the <a href="https://hauntjunkies.com/admin/comments" style="color: #FC7403; text-decoration: none;">admin panel</a>
+		</p>
+		<p style="margin: 15px 0 0 0; font-size: 12px; color: #999;">
+			⏰ This approval link expires in 7 days for security.
 		</p>
 	</div>
 

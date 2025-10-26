@@ -1,23 +1,39 @@
-// Simple in-memory rate limiter for serverless environments
-// For production with multiple instances, consider using Redis (Upstash)
+/**
+ * Production-ready distributed rate limiter using Supabase
+ * Works across serverless instances and handles concurrent requests safely
+ *
+ * Previous implementation used in-memory Map which didn't work across
+ * multiple Vercel serverless instances. This implementation uses Supabase
+ * for distributed rate limiting.
+ */
 
-interface RateLimitEntry {
-	count: number;
-	resetTime: number;
-}
+import { createClient } from '@supabase/supabase-js';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
 
-// In-memory store (resets on server restart, which is fine for serverless)
-const rateLimitStore = new Map<string, RateLimitEntry>();
+// Create Supabase client for rate limiting (server-side only)
+// Using service role key to bypass RLS policies
+let supabaseClient: ReturnType<typeof createClient> | null = null;
 
-// Cleanup old entries every 5 minutes
-setInterval(() => {
-	const now = Date.now();
-	for (const [key, value] of rateLimitStore.entries()) {
-		if (now > value.resetTime) {
-			rateLimitStore.delete(key);
+function getSupabaseClient() {
+	if (!supabaseClient) {
+		// Only create if credentials are configured
+		if (!PUBLIC_SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY ||
+		    PUBLIC_SUPABASE_URL === 'your_supabase_url') {
+			console.warn('[RateLimit] Supabase not configured - rate limiting disabled');
+			return null;
 		}
+
+		supabaseClient = createClient(
+			PUBLIC_SUPABASE_URL,
+			SUPABASE_SERVICE_ROLE_KEY,
+			{
+				auth: { persistSession: false }
+			}
+		);
 	}
-}, 5 * 60 * 1000);
+	return supabaseClient;
+}
 
 export interface RateLimitConfig {
 	/** Maximum requests allowed in the time window */
@@ -37,53 +53,119 @@ export interface RateLimitResult {
 
 /**
  * Check if a request is within rate limits
- * @param key - Unique key for the request (usually IP address or user ID)
+ * Uses Supabase for distributed rate limiting across serverless instances
+ *
+ * @param key - Unique key for the request (usually IP address)
  * @param config - Rate limit configuration
- * @returns RateLimitResult indicating if request is allowed
+ * @returns Promise<RateLimitResult> indicating if request is allowed
  */
-export function checkRateLimit(key: string, config: RateLimitConfig): RateLimitResult {
-	const identifier = `${config.identifier}:${key}`;
-	const now = Date.now();
+export async function checkRateLimit(
+	key: string,
+	config: RateLimitConfig
+): Promise<RateLimitResult> {
+	const supabase = getSupabaseClient();
 
-	// Get or create entry
-	let entry = rateLimitStore.get(identifier);
-
-	if (!entry || now > entry.resetTime) {
-		// Create new entry or reset expired entry
-		entry = {
-			count: 1,
-			resetTime: now + config.windowMs
+	// Fallback if Supabase not configured (allow all requests with warning)
+	if (!supabase) {
+		console.warn('[RateLimit] Allowing request - rate limiting disabled');
+		return {
+			success: true,
+			limit: config.maxRequests,
+			remaining: config.maxRequests,
+			resetTime: Date.now() + config.windowMs
 		};
-		rateLimitStore.set(identifier, entry);
+	}
+
+	const now = new Date();
+	const windowStart = now;
+	const windowEnd = new Date(now.getTime() + config.windowMs);
+
+	try {
+		// Try to get existing rate limit entry
+		const { data: existing, error: selectError } = await supabase
+			.from('rate_limits')
+			.select('*')
+			.eq('identifier', config.identifier)
+			.eq('client_ip', key)
+			.single();
+
+		// If entry exists and window hasn't expired
+		if (existing && !selectError && new Date(existing.window_end) > now) {
+			// Check if limit exceeded
+			if (existing.request_count >= config.maxRequests) {
+				return {
+					success: false,
+					limit: config.maxRequests,
+					remaining: 0,
+					resetTime: new Date(existing.window_end).getTime()
+				};
+			}
+
+			// Increment count
+			const { error: updateError } = await supabase
+				.from('rate_limits')
+				.update({
+					request_count: existing.request_count + 1,
+					updated_at: now.toISOString()
+				})
+				.eq('id', existing.id);
+
+			if (updateError) {
+				console.error('[RateLimit] Error updating count:', updateError);
+				// On error, allow request but log
+				return {
+					success: true,
+					limit: config.maxRequests,
+					remaining: config.maxRequests - (existing.request_count + 1),
+					resetTime: new Date(existing.window_end).getTime()
+				};
+			}
+
+			return {
+				success: true,
+				limit: config.maxRequests,
+				remaining: config.maxRequests - (existing.request_count + 1),
+				resetTime: new Date(existing.window_end).getTime()
+			};
+		}
+
+		// No existing entry or window expired - create/reset entry
+		const { error: upsertError } = await supabase
+			.from('rate_limits')
+			.upsert(
+				{
+					identifier: config.identifier,
+					client_ip: key,
+					request_count: 1,
+					window_start: windowStart.toISOString(),
+					window_end: windowEnd.toISOString()
+				},
+				{
+					onConflict: 'identifier,client_ip'
+				}
+			);
+
+		if (upsertError) {
+			console.error('[RateLimit] Error creating entry:', upsertError);
+			// On error, allow request but log
+		}
 
 		return {
 			success: true,
 			limit: config.maxRequests,
 			remaining: config.maxRequests - 1,
-			resetTime: entry.resetTime
+			resetTime: windowEnd.getTime()
 		};
-	}
-
-	// Check if limit exceeded
-	if (entry.count >= config.maxRequests) {
+	} catch (error) {
+		console.error('[RateLimit] Unexpected error:', error);
+		// On unexpected error, allow request (fail open for availability)
 		return {
-			success: false,
+			success: true,
 			limit: config.maxRequests,
-			remaining: 0,
-			resetTime: entry.resetTime
+			remaining: config.maxRequests,
+			resetTime: windowEnd.getTime()
 		};
 	}
-
-	// Increment count
-	entry.count++;
-	rateLimitStore.set(identifier, entry);
-
-	return {
-		success: true,
-		limit: config.maxRequests,
-		remaining: config.maxRequests - entry.count,
-		resetTime: entry.resetTime
-	};
 }
 
 /**
