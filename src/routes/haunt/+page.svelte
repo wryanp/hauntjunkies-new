@@ -791,7 +791,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 			{#each [
 				{ q: 'Does it cost?', a: 'This is a free event but we do accept donations and canned goods which we donate to local Gwinnett county charities.' },
 				{ q: 'Where do I park? Do you charge for parking?', a: 'Parking is free but EXTREMELY limited! Please carpool or even Uber/Lyft if possible. Do not park in or block any of our neighbors driveways.' },
-				{ q: 'What are the hours?', a: 'We open at 8pm and will not accept entry after 11pm. Everyone in line before that time will go through.' },
+				{ q: 'What are the hours?', a: 'We open at 8 PM. Entry closes at 11 PM on Thursdays and Sundays, and 12 AM on Fridays and Saturdays. Anyone in line before closing will be admitted.' },
 				{ q: 'Are you open if it rains?', a: 'Yes we are open when it rains but our line is not covered. Plan accordingly.' },
 				{ q: 'Is it scary?', a: 'Don\'t let the location fool you…' },
 				{ q: 'Are there any age restrictions?', a: 'We leave this up to the parents discretion but do not recommend young children' },
