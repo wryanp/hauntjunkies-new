@@ -20,6 +20,18 @@
 		return data.ticketDates?.some((td: any) => td.date === dateString) || false;
 	}
 
+	// Calculate what day of the week October 1st falls on (0 = Sunday, 6 = Saturday)
+	const octFirstDayOfWeek = $derived.by(() => {
+		const oct1 = new Date(hauntYear, 9, 1); // Month is 0-indexed (9 = October)
+		return oct1.getDay(); // 0-6 (Sun-Sat)
+	});
+
+	// Calculate what day of the week November 1st falls on
+	const novFirstDayOfWeek = $derived.by(() => {
+		const nov1 = new Date(hauntYear, 10, 1); // Month is 0-indexed (10 = November)
+		return nov1.getDay(); // 0-6 (Sun-Sat)
+	});
+
 	// Get first available ticket date or fallback
 	const firstAvailableDate = $derived(data.ticketDates?.[0]?.date || `${hauntYear}-10-29`);
 
@@ -590,95 +602,52 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 						<div class="text-center py-2 text-xs font-bold text-white relative z-10 tracking-wider">SAT</div>
 					</div>
 
-					<!-- Calendar Days -->
+					<!-- Calendar Days - Dynamically generated for any year -->
 					<div class="grid grid-cols-7 relative">
-						<!-- Week 1 -->
-						<div class="bg-transparent border border-red-900/30 p-1 h-14 md:h-16 md:p-3"></div>
-						<div class="bg-transparent border border-red-900/30 p-1 h-14 md:h-16 md:p-3"></div>
-						<div class="bg-transparent border border-red-900/30 p-1 h-14 md:h-16 md:p-3"></div>
-						<div class="bg-transparent border border-red-900/30 p-1 h-14 md:h-16 md:p-3"></div>
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">1</span></div>
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">2</span></div>
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">3</span></div>
+						<!-- Empty cells before Oct 1st (based on what day of week it falls on) -->
+						{#each Array(octFirstDayOfWeek) as _, i}
+							<div class="bg-transparent border border-red-900/30 p-1 h-14 md:h-16 md:p-3"></div>
+						{/each}
 
-						<!-- Week 2 -->
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">4</span></div>
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">5</span></div>
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">6</span></div>
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">7</span></div>
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">8</span></div>
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">9</span></div>
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">10</span></div>
-
-						<!-- Week 3 -->
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">11</span></div>
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">12</span></div>
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">13</span></div>
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">14</span></div>
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">15</span></div>
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">16</span></div>
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">17</span></div>
-
-						<!-- Week 4 -->
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">18</span></div>
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">19</span></div>
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">20</span></div>
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">21</span></div>
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">22</span></div>
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">23</span></div>
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">24</span></div>
-
-						<!-- Week 5 -->
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">25</span></div>
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">26</span></div>
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">27</span></div>
-						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">28</span></div>
-						<!-- Oct 29 - Dynamic based on ticket availability -->
-						{#if hasTickets(hauntYear, 10, 29)}
-							<a href="/tickets?date={oct29Date}" class="block bg-gradient-to-br from-haunt-red/40 via-red-900/30 to-black border-2 border-haunt-red/40 p-1 h-14 md:h-16 relative transform hover:scale-105 transition-all cursor-pointer overflow-hidden" style="box-shadow: 0 0 10px rgba(164,18,20,0.3), inset 0 0 8px rgba(164,18,20,0.2);">
-								<span class="font-extrabold text-white text-xl md:text-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,1)]">29</span>
-								<div class="absolute bottom-0.5 right-0.5 text-haunt-red text-[11px] md:text-[12px] font-bold uppercase tracking-tight bg-black/80 px-1 py-0.5" style="text-shadow: 0 0 4px rgba(164,18,20,0.8); line-height: 1;">OPEN</div>
-							</a>
-						{:else}
-							<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">29</span></div>
-						{/if}
-						<!-- Oct 30 - Dynamic based on ticket availability -->
-						{#if hasTickets(hauntYear, 10, 30)}
-							<a href="/tickets?date={oct30Date}" class="block bg-gradient-to-br from-haunt-red/40 via-red-900/30 to-black border-2 border-haunt-red/40 p-1 h-14 md:h-16 relative transform hover:scale-105 transition-all cursor-pointer overflow-hidden" style="box-shadow: 0 0 10px rgba(164,18,20,0.3), inset 0 0 8px rgba(164,18,20,0.2);">
-								<span class="font-extrabold text-white text-xl md:text-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,1)]">30</span>
-								<div class="absolute bottom-0.5 right-0.5 text-haunt-red text-[11px] md:text-[12px] font-bold uppercase tracking-tight bg-black/80 px-1 py-0.5" style="text-shadow: 0 0 4px rgba(164,18,20,0.8); line-height: 1;">OPEN</div>
-							</a>
-						{:else}
-							<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">30</span></div>
-						{/if}
-						<!-- Oct 31 - Dynamic based on ticket availability -->
-						{#if hasTickets(hauntYear, 10, 31)}
-							<a href="/tickets?date={oct31Date}" class="block bg-gradient-to-br from-haunt-red/40 via-red-900/30 to-black border-2 border-haunt-red/40 p-1 h-14 md:h-16 relative transform hover:scale-105 transition-all cursor-pointer overflow-hidden" style="box-shadow: 0 0 10px rgba(164,18,20,0.3), inset 0 0 8px rgba(164,18,20,0.2);">
-								<span class="font-extrabold text-white text-xl md:text-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,1)]">31</span>
-								<div class="absolute bottom-0.5 right-0.5 text-haunt-red text-[11px] md:text-[12px] font-bold uppercase tracking-tight bg-black/80 px-1 py-0.5" style="text-shadow: 0 0 4px rgba(164,18,20,0.8); line-height: 1;">OPEN</div>
-							</a>
-						{:else}
-							<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">31</span></div>
-						{/if}
+						<!-- All 31 days of October -->
+						{#each Array(31) as _, index}
+							{@const day = index + 1}
+							{@const dayPadded = String(day).padStart(2, '0')}
+							{@const dayDate = data.ticketDates?.find(d => d.date.endsWith('-10-' + dayPadded))?.date}
+							{#if hasTickets(hauntYear, 10, day)}
+								<a href="/tickets?date={dayDate}" class="block bg-gradient-to-br from-haunt-red/40 via-red-900/30 to-black border-2 border-haunt-red/40 p-1 h-14 md:h-16 relative transform hover:scale-105 transition-all cursor-pointer overflow-hidden" style="box-shadow: 0 0 10px rgba(164,18,20,0.3), inset 0 0 8px rgba(164,18,20,0.2);">
+									<span class="font-extrabold text-white text-xl md:text-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,1)]">{day}</span>
+									<div class="absolute bottom-0.5 right-0.5 text-haunt-red text-[11px] md:text-[12px] font-bold uppercase tracking-tight bg-black/80 px-1 py-0.5" style="text-shadow: 0 0 4px rgba(164,18,20,0.8); line-height: 1;">OPEN</div>
+								</a>
+							{:else}
+								<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">{day}</span></div>
+							{/if}
+						{/each}
 					</div>
 
-					<!-- November Row -->
+					<!-- November Row - Dynamically generated -->
 					<div class="grid grid-cols-7 border-t-4 border-haunt-red/80 relative" style="box-shadow: inset 0 4px 8px rgba(164,18,20,0.3);">
-						<!-- Nov 1 - Dynamic based on ticket availability -->
+						<!-- Empty cells before Nov 1st (based on what day of week it falls on) -->
+						{#each Array(novFirstDayOfWeek) as _, i}
+							<div class="bg-transparent border border-red-900/30 p-1 h-14 md:h-16 md:p-3"></div>
+						{/each}
+
+						<!-- Nov 1st with availability check -->
 						{#if hasTickets(hauntYear, 11, 1)}
-							<a href="/tickets?date={nov1Date}" class="block bg-gradient-to-br from-haunt-red/40 via-red-900/30 to-black border-2 border-haunt-red/40 p-1 h-14 md:h-16 relative transform hover:scale-105 transition-all cursor-pointer overflow-hidden" style="box-shadow: 0 0 10px rgba(164,18,20,0.3), inset 0 0 8px rgba(164,18,20,0.2);">
+							<a href="/tickets?date={data.ticketDates?.find(d => d.date.endsWith('-11-01'))?.date}" class="block bg-gradient-to-br from-haunt-red/40 via-red-900/30 to-black border-2 border-haunt-red/40 p-1 h-14 md:h-16 relative transform hover:scale-105 transition-all cursor-pointer overflow-hidden" style="box-shadow: 0 0 10px rgba(164,18,20,0.3), inset 0 0 8px rgba(164,18,20,0.2);">
 								<span class="font-extrabold text-white text-xl md:text-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,1)]">1</span>
 								<div class="absolute bottom-0.5 right-0.5 text-haunt-red text-[11px] md:text-[12px] font-bold uppercase tracking-tight bg-black/80 px-1 py-0.5" style="text-shadow: 0 0 4px rgba(164,18,20,0.8); line-height: 1;">OPEN</div>
 							</a>
 						{:else}
-							<div class="bg-transparent border border-red-900/30 p-1 h-14 md:h-16 md:p-3"></div>
+							<div class="bg-transparent border border-red-900/30 p-1 h-14 md:h-16 md:p-3">
+								<span class="text-base md:text-lg font-extrabold text-gray-400 relative z-10">1</span>
+							</div>
 						{/if}
-						<div class="bg-transparent border border-red-900/30 p-1 h-14 md:h-16 md:p-3"></div>
-						<div class="bg-transparent border border-red-900/30 p-1 h-14 md:h-16 md:p-3"></div>
-						<div class="bg-transparent border border-red-900/30 p-1 h-14 md:h-16 md:p-3"></div>
-						<div class="bg-transparent border border-red-900/30 p-1 h-14 md:h-16 md:p-3"></div>
-						<div class="bg-transparent border border-red-900/30 p-1 h-14 md:h-16 md:p-3"></div>
-						<div class="bg-transparent border border-red-900/30 p-1 h-14 md:h-16 md:p-3"></div>
+
+						<!-- Empty cells after Nov 1st to complete the week -->
+						{#each Array(6 - novFirstDayOfWeek) as _, i}
+							<div class="bg-transparent border border-red-900/30 p-1 h-14 md:h-16 md:p-3"></div>
+						{/each}
 					</div>
 				</div>
 
