@@ -292,7 +292,7 @@
 	<div class="mb-8 mt-8 bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-yellow-500/30 p-6 shadow-lg">
 		<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 			<div class="flex items-center gap-4">
-				<img src="/golden-ghost-award.png" alt="Golden Ghost Award" class="w-12 h-12 drop-shadow-xl" />
+				<img src="/golden-ghost-award.webp" alt="Golden Ghost Award" class="w-12 h-12 drop-shadow-xl" />
 				<div class="flex-1">
 					<h2 class="text-xl font-bold text-yellow-400">Awards Hero Section</h2>
 					<p class="text-gray-400 text-sm mt-1">
@@ -725,7 +725,7 @@
 					}}
 					class="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl border transition-all font-bold bg-yellow-900/20 hover:bg-yellow-900/30 text-yellow-400 border-yellow-600/50"
 				>
-					<img src="/golden-ghost-award.png" alt="" class="w-5 h-5" />
+					<img src="/golden-ghost-award.webp" alt="Golden Ghost Award icon" class="w-5 h-5" />
 					Manage Awards
 					{#if editingReview && data.reviews.find(r => r.id === editingReview)}
 						{@const review = data.reviews.find(r => r.id === editingReview)}
@@ -854,7 +854,7 @@
 								onclick={() => managingAwards = review}
 								class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg border transition-all text-sm font-semibold bg-yellow-900/20 hover:bg-yellow-900/30 text-yellow-400 border-yellow-600/50"
 							>
-								<img src="/golden-ghost-award.png" alt="" class="w-4 h-4" />
+								<img src="/golden-ghost-award.webp" alt="Golden Ghost Award icon" class="w-4 h-4" />
 								Manage Awards
 								{#if getAwardCount(review) > 0}
 									<span class="bg-yellow-500 text-black text-xs px-2 py-0.5 rounded-full font-bold">

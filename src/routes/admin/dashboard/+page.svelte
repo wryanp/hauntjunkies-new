@@ -237,7 +237,7 @@
 			</a>
 			<a href="/admin/animation-test" class="flex flex-col items-center justify-center p-3 sm:p-4 bg-black/30 rounded-lg border border-white/10 hover:border-yellow-500/50 transition-all hover:scale-105 min-h-[80px] sm:min-h-[100px]">
 				<div class="w-6 h-6 sm:w-8 sm:h-8 mb-2 flex items-center justify-center">
-					<img src="/golden-ghost-award.png" alt="" class="w-full h-full object-contain" />
+					<img src="/golden-ghost-award.webp" alt="Golden Ghost Award icon" class="w-full h-full object-contain" />
 				</div>
 				<span class="text-white text-xs sm:text-sm text-center whitespace-nowrap">Animations</span>
 			</a>

@@ -14,7 +14,7 @@
 <section class="pt-32 pb-20 md:pt-32 md:pb-20 relative overflow-hidden" style="min-height: 100vh; min-height: -webkit-fill-available; min-height: 100dvh;">
 	<!-- Background Image -->
 	<div class="absolute inset-0">
-		<img src="/experience-bg.jpg" alt="" role="presentation" class="w-full h-full object-cover" style="object-position: center;" />
+		<img src="/experience-bg.webp" alt="" role="presentation" class="w-full h-full object-cover" style="object-position: center;" />
 	</div>
 
 	<!-- Dark overlay -->

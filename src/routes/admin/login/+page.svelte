@@ -8,6 +8,44 @@
 	$effect(() => {
 		if (form?.error) {
 			window.scrollTo({ top: 0, behavior: 'smooth' });
+
+
+	// Real-time validation errors
+	let emailError = $state('');
+	let passwordError = $state('');
+
+	// Client-side validation functions
+	function validateEmail(value: string): string {
+		if (!value || value.trim().length === 0) {
+			return 'Email is required';
+		}
+		const emailRegex = /^[\s@]+@[^\s@]+\.[^\s@]+$/;
+		if (!emailRegex.test(value)) {
+			return 'Please enter a valid email address';
+		}
+		return '';
+	}
+
+	function validatePassword(value: string): string {
+		if (!value || value.trim().length === 0) {
+			return 'Password is required';
+		}
+		if (value.length < 6) {
+			return 'Password must be at least 6 characters';
+		}
+		return '';
+	}
+
+	// Blur handlers for real-time validation
+	function handleEmailBlur(event: Event) {
+		const input = event.target as HTMLInputElement;
+		emailError = validateEmail(input.value);
+	}
+
+	function handlePasswordBlur(event: Event) {
+		const input = event.target as HTMLInputElement;
+		passwordError = validatePassword(input.value);
+	}
 		}
 	});
 </script>
@@ -72,7 +110,8 @@
 						id="email"
 						name="email"
 						required
-						class="w-full px-4 py-3 bg-black/50 border-2 border-haunt-orange/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors"
+						onblur={handleEmailBlur}
+						class="w-full px-4 py-3 bg-black/50 border-2 rounded-lg {emailError ? "border-red-500" : "border-haunt-orange/30"} text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors"
 					/>
 				</div>
 
@@ -86,7 +125,8 @@
 						id="password"
 						name="password"
 						required
-						class="w-full px-4 py-3 bg-black/50 border-2 border-haunt-orange/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors"
+						onblur={handlePasswordBlur}
+					class="w-full px-4 py-3 bg-black/50 border-2 rounded-lg {passwordError ? "border-red-500" : "border-haunt-orange/30"} text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors"
 					/>
 				</div>
 

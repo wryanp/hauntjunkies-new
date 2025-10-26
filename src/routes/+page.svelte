@@ -205,10 +205,26 @@
 	type="website"
 />
 
+<svelte:head>
+	{@html `<script type="application/ld+json">${JSON.stringify({
+		'@context': 'https://schema.org',
+		'@type': 'Organization',
+		'name': 'Haunt Junkies',
+		'url': 'https://hauntjunkies.com',
+		'logo': 'https://hauntjunkies.com/logo-url.png',
+		'description': 'Expert reviews of haunted attractions, Halloween events, and horror experiences',
+		'sameAs': [
+			'https://www.facebook.com/hauntjunkies',
+			'https://www.instagram.com/hauntjunkies',
+			'https://www.tiktok.com/@hauntjunkies'
+		]
+	})}</` + `script>`}
+</svelte:head>
+
 <!-- Hero Section with Featured Reviews -->
 <section class="parallax relative md:min-h-screen bg-overlay-dark bg-black overflow-visible">
 	<!-- Background Image -->
-	<div class="absolute inset-0 bg-center bg-no-repeat" style="background-image: url('/bg.jpg'); background-size: cover; background-position: center;"></div>
+	<div class="absolute inset-0 bg-center bg-no-repeat" style="background-image: url('/bg.webp'); background-size: cover; background-position: center;"></div>
 
 	<!-- Overlay -->
 	<div class="absolute inset-0 bg-black/40"></div>
@@ -283,7 +299,7 @@
 								{@const displayYear = yearMatch ? yearMatch[1] : new Date().getFullYear().toString()}
 								<div class="bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-600 px-2 py-2 flex items-center justify-center gap-1.5 relative overflow-hidden">
 									<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50"></div>
-									<img src="/golden-ghost-award.png" alt="Golden Ghost Award" class="w-6 h-6 md:w-7 md:h-7 relative z-10 flex-shrink-0" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)) contrast(1.1) brightness(1.05);" />
+									<img src="/golden-ghost-award.webp" alt="Golden Ghost Award" loading="lazy" class="w-6 h-6 md:w-7 md:h-7 relative z-10 flex-shrink-0" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)) contrast(1.1) brightness(1.05);" />
 									<span class="text-black font-bold text-xs md:text-sm uppercase tracking-tighter relative z-10 whitespace-nowrap">
 										{displayYear} Golden Ghost Award Winner
 									</span>
@@ -294,6 +310,7 @@
 								<img
 									src={imageUrl}
 									alt={review.name}
+									loading="lazy"
 									class="w-full h-full {review.cover_image_url && !review.cover_image_url.includes('placeholder') ? 'object-contain' : 'object-cover'} transition-transform duration-300"
 								/>
 							</div>
@@ -604,7 +621,7 @@
 <!-- Instagram Feed Section -->
 <section class="py-16 mobile-landscape:py-10 relative overflow-hidden">
 	<!-- Background Image -->
-	<div class="absolute inset-0 bg-cover bg-center" style="background-image: url('/hauntedgraveyard-bg.jpg');"></div>
+	<div class="absolute inset-0 bg-cover bg-center" style="background-image: url('/hauntedgraveyard-bg.webp');"></div>
 
 	<!-- Dark overlay -->
 	<div class="absolute inset-0 bg-black/70 md:bg-black/60"></div>
@@ -666,7 +683,7 @@
 		<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
 			<!-- McCloud Manor Logo -->
 			<div class="mb-8 mccloud-logo {showMcCloudLogo ? 'animate-fade-in' : 'logo-hidden'}">
-				<img src="/mccloudmanor.png" alt="McCloud Manor" class="h-56 md:h-64 lg:h-72 w-auto mx-auto drop-shadow-2xl" />
+				<img src="/mccloudmanor.png" alt="McCloud Manor" loading="lazy" class="h-56 md:h-64 lg:h-72 w-auto mx-auto drop-shadow-2xl" />
 			</div>
 
 			<p class="text-xl md:text-2xl text-gray-200 mb-8 drop-shadow-lg font-light">

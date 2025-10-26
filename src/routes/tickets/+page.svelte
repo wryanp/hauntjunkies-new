@@ -21,6 +21,12 @@
 	let submitting = $state(false);
 	let captchaToken = $state(dev ? 'dev-mode' : ''); // Auto-pass in dev mode
 
+	// Real-time validation errors
+	let firstNameError = $state('');
+	let lastNameError = $state('');
+	let emailError = $state('');
+
+
 	// Check for pre-selected date from URL parameter
 	onMount(() => {
 		const urlDate = $page.url.searchParams.get('date');
@@ -68,6 +74,61 @@
 			minute: '2-digit',
 			hour12: true
 		});
+	}
+
+
+	// Client-side validation functions
+	function validateFirstName(value: string): string {
+		if (!value || value.trim().length === 0) {
+			return 'First name is required';
+		}
+		if (value.trim().length < 2) {
+			return 'First name must be at least 2 characters';
+		}
+		if (value.length > 100) {
+			return 'First name must be less than 100 characters';
+		}
+		return '';
+	}
+
+	function validateLastName(value: string): string {
+		if (!value || value.trim().length === 0) {
+			return 'Last name is required';
+		}
+		if (value.trim().length < 2) {
+			return 'Last name must be at least 2 characters';
+		}
+		if (value.length > 100) {
+			return 'Last name must be less than 100 characters';
+		}
+		return '';
+	}
+
+	function validateEmail(value: string): string {
+		if (!value || value.trim().length === 0) {
+			return 'Email is required';
+		}
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		if (!emailRegex.test(value)) {
+			return 'Please enter a valid email address';
+		}
+		return '';
+	}
+
+	// Blur handlers for real-time validation
+	function handleFirstNameBlur(event: Event) {
+		const input = event.target as HTMLInputElement;
+		firstNameError = validateFirstName(input.value);
+	}
+
+	function handleLastNameBlur(event: Event) {
+		const input = event.target as HTMLInputElement;
+		lastNameError = validateLastName(input.value);
+	}
+
+	function handleEmailBlur(event: Event) {
+		const input = event.target as HTMLInputElement;
+		emailError = validateEmail(input.value);
 	}
 </script>
 
@@ -382,7 +443,8 @@
 										autocomplete="given-name"
 										bind:value={formData.firstName}
 										required
-										class="w-full px-4 py-3 bg-black/50 border-2 border-haunt-red/30 rounded-lg text-white focus:outline-none focus:border-haunt-red transition-colors"
+										onblur={handleFirstNameBlur}
+									class="w-full px-4 py-3 bg-black/50 border-2 rounded-lg text-white focus:outline-none focus:border-haunt-red transition-colors {firstNameError ? 'border-red-500' : 'border-haunt-red/30'}"
 									/>
 								</div>
 
@@ -397,7 +459,8 @@
 										autocomplete="family-name"
 										bind:value={formData.lastName}
 										required
-										class="w-full px-4 py-3 bg-black/50 border-2 border-haunt-red/30 rounded-lg text-white focus:outline-none focus:border-haunt-red transition-colors"
+										onblur={handleLastNameBlur}
+									class="w-full px-4 py-3 bg-black/50 border-2 rounded-lg text-white focus:outline-none focus:border-haunt-red transition-colors {lastNameError ? 'border-red-500' : 'border-haunt-red/30'}"
 									/>
 								</div>
 							</div>
@@ -413,7 +476,8 @@
 									autocomplete="email"
 									bind:value={formData.email}
 									required
-									class="w-full px-4 py-3 bg-black/50 border-2 border-haunt-red/30 rounded-lg text-white focus:outline-none focus:border-haunt-red transition-colors"
+									onblur={handleEmailBlur}
+									class="w-full px-4 py-3 bg-black/50 border-2 rounded-lg text-white focus:outline-none focus:border-haunt-red transition-colors {emailError ? 'border-red-500' : 'border-haunt-red/30'}"
 								/>
 								<p class="text-gray-400 text-sm mt-2">
 									Your tickets will be sent to this email address

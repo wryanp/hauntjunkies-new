@@ -401,7 +401,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 <!-- About Section -->
 <section id="about" class="py-16 relative overflow-hidden">
 	<!-- Background Image -->
-	<div class="absolute inset-0" style="background-image: url('/experience-bg.jpg'); background-size: cover; background-position: center;"></div>
+	<div class="absolute inset-0" style="background-image: url('/experience-bg.webp'); background-size: cover; background-position: center;"></div>
 
 	<!-- Dark overlay -->
 	<div class="absolute inset-0 bg-black/90"></div>
@@ -456,7 +456,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 <!-- The Story Section -->
 <section id="legend-section" class="py-20 bg-black relative overflow-hidden">
 	<!-- Background Image (same as quote section) -->
-	<div class="absolute inset-0 bg-cover bg-center md:bg-center" style="background-image: url('/legend-bg.jpg');"></div>
+	<div class="absolute inset-0 bg-cover bg-center md:bg-center" style="background-image: url('/legend-bg.webp');"></div>
 
 	<!-- Dark overlay -->
 	<div class="absolute inset-0 bg-black/50 md:bg-black/40"></div>

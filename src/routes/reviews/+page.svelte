@@ -75,6 +75,36 @@
 	type="website"
 />
 
+<svelte:head>
+	{@html `<script type="application/ld+json">${JSON.stringify({
+		'@context': 'https://schema.org',
+		'@type': 'ItemList',
+		'itemListElement': data.reviews.slice(0, 10).map((review, index) => ({
+			'@type': 'ListItem',
+			'position': index + 1,
+			'item': {
+				'@type': 'Review',
+				'@id': `https://hauntjunkies.com/reviews/${review.slug}`,
+				'name': review.name,
+				'reviewRating': review.rating_overall ? {
+					'@type': 'Rating',
+					'ratingValue': review.rating_overall,
+					'bestRating': 5
+				} : undefined,
+				'itemReviewed': {
+					'@type': 'LocalBusiness',
+					'name': review.name,
+					'address': {
+						'@type': 'PostalAddress',
+						'addressLocality': review.city,
+						'addressRegion': review.state
+					}
+				}
+			}
+		}))
+	})}</` + `script>`}
+</svelte:head>
+
 <div class="bg-gradient-to-b from-black via-neutral-900 to-black pt-32 pb-12 md:pt-32 md:pb-12" style="min-height: 100vh; min-height: -webkit-fill-available; min-height: 100dvh;">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 		<!-- Header -->
@@ -156,7 +186,7 @@
 											{@const displayYear = yearMatch ? yearMatch[1] : new Date().getFullYear().toString()}
 											<div class="bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-600 px-2 py-2 flex items-center justify-center gap-1.5 relative overflow-hidden">
 												<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50"></div>
-												<img src="/golden-ghost-award.png" alt="Golden Ghost Award" class="w-6 h-6 md:w-8 md:h-8 relative z-10 flex-shrink-0" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)) contrast(1.1) brightness(1.05);" />
+												<img src="/golden-ghost-award.webp" alt="Golden Ghost Award" loading="lazy" class="w-6 h-6 md:w-8 md:h-8 relative z-10 flex-shrink-0" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)) contrast(1.1) brightness(1.05);" />
 												<span class="text-black font-bold text-xs md:text-sm uppercase tracking-tighter relative z-10 whitespace-nowrap">
 													{displayYear} Golden Ghost Award Winner
 												</span>
@@ -167,6 +197,7 @@
 											<img
 												src={imageUrl}
 												alt={review.name}
+												loading="lazy"
 												class="w-full h-full {review.cover_image_url && !review.cover_image_url.includes('placeholder') ? 'object-contain' : 'object-cover'} transition-transform duration-300"
 											/>
 										</div>

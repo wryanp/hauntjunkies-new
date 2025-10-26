@@ -117,7 +117,7 @@
 				<div class="absolute inset-0 bg-gradient-to-r from-yellow-500/5 via-transparent to-yellow-500/5 pointer-events-none"></div>
 				<div class="relative z-10">
 					<h2 class="text-2xl font-bold text-yellow-400 uppercase leading-none mb-4 flex items-center gap-3">
-					<img src="/golden-ghost-award.png" alt="Golden Ghost Award" class="w-10 h-10 drop-shadow-xl" />
+					<img src="/golden-ghost-award.webp" alt="Golden Ghost Award" class="w-10 h-10 drop-shadow-xl" />
 					What are the Golden Ghost Awards?
 				</h2>
 					<p class="text-gray-300 leading-relaxed mb-4">

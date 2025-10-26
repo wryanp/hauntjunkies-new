@@ -13,6 +13,11 @@
 	let messageLength = $state(0);
 	const MESSAGE_MAX_LENGTH = 5000;
 
+	// Real-time validation errors
+	let nameError = $state('');
+	let emailError = $state('');
+	let messageError = $state('');
+
 	// Detect theme from URL parameter (theme=mccloud for red theme)
 	const isMcCloudTheme = $derived($page.url.searchParams.get('theme') === 'mccloud');
 
@@ -22,6 +27,57 @@
 			window.scrollTo({ top: 0, behavior: 'smooth' });
 		}
 	});
+
+	// Client-side validation functions
+	function validateName(value: string): string {
+		if (!value || value.trim().length === 0) {
+			return 'Name is required';
+		}
+		if (value.trim().length < 2) {
+			return 'Name must be at least 2 characters';
+		}
+		if (value.length > 100) {
+			return 'Name must be less than 100 characters';
+		}
+		return '';
+	}
+
+	function validateEmail(value: string): string {
+		if (!value || value.trim().length === 0) {
+			return 'Email is required';
+		}
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		if (!emailRegex.test(value)) {
+			return 'Please enter a valid email address';
+		}
+		return '';
+	}
+
+	function validateMessage(value: string): string {
+		if (!value || value.trim().length === 0) {
+			return 'Message is required';
+		}
+		if (value.length > MESSAGE_MAX_LENGTH) {
+			return `Message must be less than ${MESSAGE_MAX_LENGTH} characters`;
+		}
+		return '';
+	}
+
+	// Blur handlers for real-time validation
+	function handleNameBlur(event: Event) {
+		const input = event.target as HTMLInputElement;
+		nameError = validateName(input.value);
+	}
+
+	function handleEmailBlur(event: Event) {
+		const input = event.target as HTMLInputElement;
+		emailError = validateEmail(input.value);
+	}
+
+	function handleMessageBlur(event: Event) {
+		const textarea = event.target as HTMLTextAreaElement;
+		messageError = validateMessage(textarea.value);
+	}
 </script>
 
 <SEO
@@ -35,7 +91,7 @@
 <section class="relative pt-32 pb-20 md:pt-32 md:pb-20 overflow-hidden" style="min-height: 100vh; min-height: -webkit-fill-available; min-height: 100dvh;">
 	<!-- Background Image -->
 	<div class="absolute inset-0">
-		<img src="/experience-bg.jpg" alt="" role="presentation" class="w-full h-full object-cover" style="object-position: center;" />
+		<img src="/experience-bg.webp" alt="" role="presentation" class="w-full h-full object-cover" style="object-position: center;" />
 	</div>
 
 	<!-- Dark overlay -->
@@ -108,7 +164,8 @@
 							id="name"
 							name="name"
 							required
-							class="w-full px-4 py-3 rounded-lg bg-black/50 border-2 border-gray-600 text-white focus:outline-none {isMcCloudTheme ? 'focus:border-haunt-red' : 'focus:border-haunt-orange'}"
+							class="w-full px-4 py-3 rounded-lg bg-black/50 border-2 text-white transition-colors {nameError ? 'border-red-500' : 'border-gray-600'} focus:outline-none {isMcCloudTheme ? 'focus:border-haunt-red' : 'focus:border-haunt-orange'}"
+						onblur={handleNameBlur}
 						/>
 					</div>
 					<div>
@@ -118,7 +175,7 @@
 							id="email"
 							name="email"
 							required
-							class="w-full px-4 py-3 rounded-lg bg-black/50 border-2 border-gray-600 text-white focus:outline-none {isMcCloudTheme ? 'focus:border-haunt-red' : 'focus:border-haunt-orange'}"
+							class="w-full px-4 py-3 rounded-lg bg-black/50 border-2 text-white transition-colors {nameError ? 'border-red-500' : 'border-gray-600'} focus:outline-none {isMcCloudTheme ? 'focus:border-haunt-red' : 'focus:border-haunt-orange'}"
 						/>
 					</div>
 				</div>
@@ -129,7 +186,7 @@
 						type="text"
 						id="subject"
 						name="subject"
-						class="w-full px-4 py-3 rounded-lg bg-black/50 border-2 border-gray-600 text-white focus:outline-none {isMcCloudTheme ? 'focus:border-haunt-red' : 'focus:border-haunt-orange'}"
+						class="w-full px-4 py-3 rounded-lg bg-black/50 border-2 text-white transition-colors {nameError ? 'border-red-500' : 'border-gray-600'} focus:outline-none {isMcCloudTheme ? 'focus:border-haunt-red' : 'focus:border-haunt-orange'}"
 					/>
 				</div>
 
@@ -147,8 +204,11 @@
 						rows="6"
 						maxlength={MESSAGE_MAX_LENGTH}
 						oninput={(e) => messageLength = e.currentTarget.value.length}
-						class="w-full px-4 py-3 rounded-lg bg-black/50 border-2 border-gray-600 text-white focus:outline-none {isMcCloudTheme ? 'focus:border-haunt-red' : 'focus:border-haunt-orange'}"
+						class="w-full px-4 py-3 rounded-lg bg-black/50 border-2 text-white transition-colors {nameError ? 'border-red-500' : 'border-gray-600'} focus:outline-none {isMcCloudTheme ? 'focus:border-haunt-red' : 'focus:border-haunt-orange'}"
 					></textarea>
+					{#if messageError}
+						<p class="mt-1 text-sm text-red-400">{messageError}</p>
+					{/if}
 				</div>
 
 				<!-- CAPTCHA Widget (hidden in dev mode) -->

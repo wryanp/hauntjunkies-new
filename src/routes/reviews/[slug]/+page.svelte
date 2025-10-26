@@ -19,6 +19,11 @@
 	let commentLength = $state(0);
 	const COMMENT_MAX_LENGTH = 2000;
 
+	// Real-time validation errors
+	let authorNameError = $state('');
+	let authorEmailError = $state('');
+	let commentTextError = $state('');
+
 	// Calculate total award count
 	let awardCount = $derived(
 		(data.review.award_best_actors_year ? 1 : 0) +
@@ -154,6 +159,54 @@
 		}
 
 		document.body.removeChild(textArea);
+	}
+
+	// Client-side validation functions
+	function validateAuthorName(value: string): string {
+		if (!value || value.trim().length === 0) {
+			return 'Name is required';
+		}
+		if (value.trim().length < 2) {
+			return 'Name must be at least 2 characters';
+		}
+		return '';
+	}
+
+	function validateAuthorEmail(value: string): string {
+		if (!value || value.trim().length === 0) {
+			return 'Email is required';
+		}
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		if (!emailRegex.test(value)) {
+			return 'Please enter a valid email address';
+		}
+		return '';
+	}
+
+	function validateCommentText(value: string): string {
+		if (!value || value.trim().length === 0) {
+			return 'Comment is required';
+		}
+		if (value.length > COMMENT_MAX_LENGTH) {
+			return `Comment must be less than ${COMMENT_MAX_LENGTH} characters`;
+		}
+		return '';
+	}
+
+	// Blur handlers
+	function handleAuthorNameBlur(event: Event) {
+		const input = event.target as HTMLInputElement;
+		authorNameError = validateAuthorName(input.value);
+	}
+
+	function handleAuthorEmailBlur(event: Event) {
+		const input = event.target as HTMLInputElement;
+		authorEmailError = validateAuthorEmail(input.value);
+	}
+
+	function handleCommentTextBlur(event: Event) {
+		const textarea = event.target as HTMLTextAreaElement;
+		commentTextError = validateCommentText(textarea.value);
 	}
 </script>
 
@@ -570,8 +623,11 @@
 								id="author_name"
 								name="author_name"
 								required
-								class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-haunt-orange"
+								class="w-full px-4 py-2 rounded-lg bg-gray-800 border transition-colors {authorNameError ? "border-red-500" : "border-gray-700"} text-white focus:outline-none focus:border-haunt-orange"
 							/>
+							{#if authorNameError}
+								<p class="mt-1 text-sm text-red-400">{authorNameError}</p>
+							{/if}
 						</div>
 						<div>
 							<label for="author_email" class="block text-sm font-medium text-gray-400 mb-2">Email</label>
@@ -580,8 +636,11 @@
 								id="author_email"
 								name="author_email"
 								required
-								class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-haunt-orange"
+								class="w-full px-4 py-2 rounded-lg bg-gray-800 border transition-colors {authorEmailError ? "border-red-500" : "border-gray-700"} text-white focus:outline-none focus:border-haunt-orange"
 							/>
+							{#if authorEmailError}
+								<p class="mt-1 text-sm text-red-400">{authorEmailError}</p>
+							{/if}
 						</div>
 					</div>
 					<div class="mb-4">
@@ -600,6 +659,9 @@
 							oninput={(e) => commentLength = e.currentTarget.value.length}
 							class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-haunt-orange"
 						></textarea>
+						{#if commentTextError}
+							<p class="mt-1 text-sm text-red-400">{commentTextError}</p>
+						{/if}
 					</div>
 
 					<!-- CAPTCHA Widget (hidden in dev mode) -->
