@@ -64,6 +64,7 @@ export interface ReviewComment {
 	comment_text: string;
 	approved: boolean;
 	approval_token?: string;
+	likes_count?: number;
 	created_at: string;
 }
 

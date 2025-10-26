@@ -12,7 +12,7 @@ import { dev } from '$app/environment';
 import { sendCommentNotification } from '$lib/email';
 import { randomBytes } from 'crypto';
 
-export const load: PageServerLoad = async ({ params, parent }) => {
+export const load: PageServerLoad = async ({ params, parent, cookies }) => {
 	// Get authentication from parent layout
 	const { isAuthenticated } = await parent();
 
@@ -61,11 +61,35 @@ export const load: PageServerLoad = async ({ params, parent }) => {
 		.eq('approved', true)
 		.order('created_at', { ascending: false });
 
+	// Get user identifier for like tracking (session cookie)
+	let userIdentifier = cookies.get('comment_likes_session');
+	if (!userIdentifier) {
+		// Create a unique session ID for this user
+		userIdentifier = randomBytes(32).toString('hex');
+		cookies.set('comment_likes_session', userIdentifier, {
+			path: '/',
+			httpOnly: true,
+			sameSite: 'lax',
+			maxAge: 60 * 60 * 24 * 365 // 1 year
+		});
+	}
+
+	// Fetch which comments this user has liked
+	const commentIds = (comments || []).map(c => c.id);
+	const { data: userLikes } = commentIds.length > 0 ? await supabase
+		.from('comment_likes')
+		.select('comment_id')
+		.eq('user_identifier', userIdentifier)
+		.in('comment_id', commentIds) : { data: [] };
+
+	const likedCommentIds = new Set((userLikes || []).map(l => l.comment_id));
+
 	return {
 		review: review as Review,
 		images: (images as ReviewImage[]) || [],
 		reviewerPhotos: (reviewerPhotos as ReviewerPhoto[]) || [],
 		comments: (comments as ReviewComment[]) || [],
+		likedCommentIds: Array.from(likedCommentIds),
 		isAuthenticated
 	};
 };
@@ -204,5 +228,69 @@ export const actions: Actions = {
 		}
 
 		return { success: true };
+	},
+
+	likeComment: async ({ request, cookies }) => {
+		// Get user identifier
+		const userIdentifier = cookies.get('comment_likes_session');
+		if (!userIdentifier) {
+			return fail(400, { error: 'Session not found' });
+		}
+
+		const formData = await request.formData();
+		const commentId = formData.get('commentId')?.toString();
+
+		if (!commentId) {
+			return fail(400, { error: 'Comment ID is required' });
+		}
+
+		// Use service role key for like operations
+		const supabase = createServerClient(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+			cookies: {
+				get: (key) => cookies.get(key),
+				set: (key, value, options) => {
+					cookies.set(key, value, { ...options, path: '/' });
+				},
+				remove: (key, options) => {
+					cookies.delete(key, { ...options, path: '/' });
+				}
+			}
+		});
+
+		// Check if user already liked this comment
+		const { data: existingLike } = await supabase
+			.from('comment_likes')
+			.select('id')
+			.eq('comment_id', commentId)
+			.eq('user_identifier', userIdentifier)
+			.maybeSingle();
+
+		if (existingLike) {
+			// Unlike - remove the like
+			const { error: deleteError } = await supabase
+				.from('comment_likes')
+				.delete()
+				.eq('id', existingLike.id);
+
+			if (deleteError) {
+				return fail(500, { error: 'Failed to unlike comment' });
+			}
+
+			return { success: true, action: 'unliked' };
+		} else {
+			// Like - add the like
+			const { error: insertError } = await supabase
+				.from('comment_likes')
+				.insert({
+					comment_id: commentId,
+					user_identifier: userIdentifier
+				});
+
+			if (insertError) {
+				return fail(500, { error: 'Failed to like comment' });
+			}
+
+			return { success: true, action: 'liked' };
+		}
 	}
 };

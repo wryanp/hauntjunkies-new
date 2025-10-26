@@ -57,9 +57,23 @@ export const load: PageServerLoad = async ({ cookies, parent }) => {
 
 export const actions: Actions = {
 	toggleApproval: async ({ request, cookies }) => {
-		// Verify admin authentication
+		// Verify admin authentication - check for both Supabase session and admin_session cookie
+		const supabaseAuth = createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+			cookies: {
+				get: (key) => cookies.get(key),
+				set: (key, value, options) => {
+					cookies.set(key, value, { ...options, path: '/' });
+				},
+				remove: (key, options) => {
+					cookies.delete(key, { ...options, path: '/' });
+				}
+			}
+		});
+
+		const { data: { session } } = await supabaseAuth.auth.getSession();
 		const adminSession = cookies.get('admin_session');
-		if (!adminSession) {
+
+		if (!session && !adminSession) {
 			return fail(401, { error: 'Unauthorized' });
 		}
 
@@ -100,9 +114,23 @@ export const actions: Actions = {
 	},
 
 	delete: async ({ request, cookies }) => {
-		// Verify admin authentication
+		// Verify admin authentication - check for both Supabase session and admin_session cookie
+		const supabaseAuth = createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+			cookies: {
+				get: (key) => cookies.get(key),
+				set: (key, value, options) => {
+					cookies.set(key, value, { ...options, path: '/' });
+				},
+				remove: (key, options) => {
+					cookies.delete(key, { ...options, path: '/' });
+				}
+			}
+		});
+
+		const { data: { session } } = await supabaseAuth.auth.getSession();
 		const adminSession = cookies.get('admin_session');
-		if (!adminSession) {
+
+		if (!session && !adminSession) {
 			return fail(401, { error: 'Unauthorized' });
 		}
 
