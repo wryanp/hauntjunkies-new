@@ -32,6 +32,32 @@
 		return nov1.getDay(); // 0-6 (Sun-Sat)
 	});
 
+	// Calculate which days of the week the haunt operates based on ticket dates
+	const operatingDays = $derived.by(() => {
+		if (!data.ticketDates || data.ticketDates.length === 0) return new Set();
+
+		const daysOfWeek = new Set<number>();
+		data.ticketDates.forEach((td: any) => {
+			const date = new Date(td.date + 'T00:00:00'); // Force local timezone
+			daysOfWeek.add(date.getDay()); // 0=Sun, 1=Mon, ..., 6=Sat
+		});
+		return daysOfWeek;
+	});
+
+	// Map day numbers to names
+	const dayNames = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+
+	// Default hours configuration (can be customized per day if needed)
+	const hoursConfig: Record<number, string> = {
+		0: '8PM - 11PM', // Sunday
+		1: '8PM - 11PM', // Monday
+		2: '8PM - 11PM', // Tuesday
+		3: '8PM - 11PM', // Wednesday
+		4: '8PM - 11PM', // Thursday
+		5: '8PM - 12AM', // Friday
+		6: '8PM - 12AM', // Saturday
+	};
+
 	// Get first available ticket date or fallback
 	const firstAvailableDate = $derived(data.ticketDates?.[0]?.date || `${hauntYear}-10-29`);
 
@@ -558,7 +584,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 
 {#if hasActiveDates}
 <!-- Schedule Section -->
-<section class="py-16 pb-16 bg-black relative overflow-hidden" style="background-image: url('/calendar-bg.webp'); background-size: cover; background-position: center center; background-repeat: no-repeat; background-attachment: scroll; min-height: 100vh;">
+<section class="py-16 pb-16 bg-black relative overflow-hidden" style="background-image: url('/calendar-bg.webp'); background-size: cover; background-position: center center; background-repeat: no-repeat; background-attachment: scroll;">
 	<!-- Red glow overlay -->
 	<div class="absolute inset-0 bg-gradient-radial from-haunt-red/30 via-haunt-red/10 to-transparent" style="background: radial-gradient(circle at center, rgba(164,18,20,0.4) 0%, rgba(164,18,20,0.2) 40%, transparent 70%);"></div>
 	<!-- Overlay for better text readability -->
@@ -572,7 +598,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 			<div class="w-32 h-1 bg-gradient-to-r from-transparent via-haunt-red to-transparent mx-auto"></div>
 		</div>
 
-		<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:items-start">
+		<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
 			<!-- Calendar (Left - 2 columns) -->
 			<div class="lg:col-span-2">
 				<div class="rounded-none lg:rounded-lg overflow-hidden shadow-2xl border-0 lg:border-4 border-haunt-red/70 relative" style="background-image: url('/schedule-bg.webp'); background-size: cover; background-position: center center; background-repeat: no-repeat; box-shadow: 0 0 40px rgba(164,18,20,0.8), inset 0 0 30px rgba(0,0,0,0.9);">
@@ -676,31 +702,37 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 						<h3 class="text-base md:text-xl font-bold tracking-wider md:tracking-[0.3em] drop-shadow-[0_0_10px_rgba(164,18,20,0.8)] uppercase">HOURS</h3>
 					</div>
 
-					<!-- Hours Content -->
+					<!-- Hours Content - Dynamically generated based on operating days -->
 					<div class="flex flex-col justify-center p-4 md:p-6 space-y-6 md:space-y-6 relative z-10 flex-grow">
-						<!-- Thursday -->
-						<div class="border-b-2 border-haunt-red/50 pb-4 md:pb-4">
-							<div class="text-base md:text-lg font-bold text-haunt-red mb-2 tracking-wider" style="text-shadow: 0 0 10px rgba(164,18,20,0.8);">THURSDAY</div>
-							<div class="text-xl md:text-2xl font-extrabold text-white" style="text-shadow: 0 0 8px rgba(255,255,255,0.5);">8PM - 11PM</div>
-						</div>
-
-						<!-- Friday -->
-						<div class="border-b-2 border-haunt-red/50 pb-4 md:pb-4">
-							<div class="text-base md:text-lg font-bold text-haunt-red mb-2 tracking-wider" style="text-shadow: 0 0 10px rgba(164,18,20,0.8);">FRIDAY</div>
-							<div class="text-xl md:text-2xl font-extrabold text-white" style="text-shadow: 0 0 8px rgba(255,255,255,0.5);">8PM - 12AM</div>
-						</div>
-
-						<!-- Saturday -->
-						<div class="border-b-2 border-haunt-red/50 pb-4 md:pb-4">
-							<div class="text-base md:text-lg font-bold text-haunt-red mb-2 tracking-wider" style="text-shadow: 0 0 10px rgba(164,18,20,0.8);">SATURDAY</div>
-							<div class="text-xl md:text-2xl font-extrabold text-white" style="text-shadow: 0 0 8px rgba(255,255,255,0.5);">8PM - 12AM</div>
-						</div>
-
-						<!-- Sunday -->
-						<div class="pb-0 md:pb-4">
-							<div class="text-base md:text-lg font-bold text-haunt-red mb-2 tracking-wider" style="text-shadow: 0 0 10px rgba(164,18,20,0.8);">SUNDAY</div>
-							<div class="text-xl md:text-2xl font-extrabold text-white" style="text-shadow: 0 0 8px rgba(255,255,255,0.5);">8PM - 11PM</div>
-						</div>
+						{#if operatingDays.size > 0}
+							{#each [0, 1, 2, 3, 4, 5, 6] as dayNum, index}
+								{#if operatingDays.has(dayNum)}
+									{@const isLast = index === 6 || !Array.from({length: 7 - index - 1}, (_, i) => i + index + 1).some(d => operatingDays.has(d))}
+									<div class="{isLast ? 'pb-0 md:pb-4' : 'border-b-2 border-haunt-red/50 pb-4 md:pb-4'}">
+										<div class="text-base md:text-lg font-bold text-haunt-red mb-2 tracking-wider" style="text-shadow: 0 0 10px rgba(164,18,20,0.8);">{dayNames[dayNum]}</div>
+										<div class="text-xl md:text-2xl font-extrabold text-white" style="text-shadow: 0 0 8px rgba(255,255,255,0.5);">{hoursConfig[dayNum]}</div>
+									</div>
+								{/if}
+							{/each}
+						{:else}
+							<!-- Fallback if no dates are set -->
+							<div class="border-b-2 border-haunt-red/50 pb-4 md:pb-4">
+								<div class="text-base md:text-lg font-bold text-haunt-red mb-2 tracking-wider" style="text-shadow: 0 0 10px rgba(164,18,20,0.8);">THURSDAY</div>
+								<div class="text-xl md:text-2xl font-extrabold text-white" style="text-shadow: 0 0 8px rgba(255,255,255,0.5);">8PM - 11PM</div>
+							</div>
+							<div class="border-b-2 border-haunt-red/50 pb-4 md:pb-4">
+								<div class="text-base md:text-lg font-bold text-haunt-red mb-2 tracking-wider" style="text-shadow: 0 0 10px rgba(164,18,20,0.8);">FRIDAY</div>
+								<div class="text-xl md:text-2xl font-extrabold text-white" style="text-shadow: 0 0 8px rgba(255,255,255,0.5);">8PM - 12AM</div>
+							</div>
+							<div class="border-b-2 border-haunt-red/50 pb-4 md:pb-4">
+								<div class="text-base md:text-lg font-bold text-haunt-red mb-2 tracking-wider" style="text-shadow: 0 0 10px rgba(164,18,20,0.8);">SATURDAY</div>
+								<div class="text-xl md:text-2xl font-extrabold text-white" style="text-shadow: 0 0 8px rgba(255,255,255,0.5);">8PM - 12AM</div>
+							</div>
+							<div class="pb-0 md:pb-4">
+								<div class="text-base md:text-lg font-bold text-haunt-red mb-2 tracking-wider" style="text-shadow: 0 0 10px rgba(164,18,20,0.8);">SUNDAY</div>
+								<div class="text-xl md:text-2xl font-extrabold text-white" style="text-shadow: 0 0 8px rgba(255,255,255,0.5);">8PM - 11PM</div>
+							</div>
+						{/if}
 					</div>
 				</div>
 			</div>
