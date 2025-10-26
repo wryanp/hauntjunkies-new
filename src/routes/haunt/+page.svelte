@@ -742,7 +742,8 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 {/if}
 
 <!-- FAQs Section -->
-<section id="faq-section" class="py-20 bg-gradient-to-b from-gray-900 to-black relative overflow-hidden" style="margin-top: -12rem;">
+<section id="faq-section" class="py-20 bg-gradient-to-b from-gray-900 to-black relative overflow-hidden {hasActiveDates ? '' : 'mt-0'}" style={hasActiveDates ? 'margin-top: -12rem;' : ''}>
+	{#if hasActiveDates}
 	<style>
 		@media (min-width: 1024px) {
 			#faq-section {
@@ -750,6 +751,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 			}
 		}
 	</style>
+	{/if}
 	<!-- Background texture overlay -->
 	<div class="texture-overlay"></div>
 
