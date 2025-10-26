@@ -31,9 +31,7 @@ export const load: PageServerLoad = async ({ cookies, parent }) => {
 		.select('*')
 		.order('created_at', { ascending: false });
 
-	if (reviewsError) {
-		console.error('Error fetching reviews:', reviewsError);
-	}
+	// Silently handle review fetch errors - return empty array
 
 	// Get awards hero setting
 	const { data: awardsHeroSetting } = await supabase
@@ -172,7 +170,6 @@ export const actions: Actions = {
 			.single();
 
 		if (insertError) {
-			console.error('Error creating review:', insertError);
 			return fail(500, { error: 'Failed to create review: ' + insertError.message });
 		}
 
@@ -196,7 +193,6 @@ export const actions: Actions = {
 					}
 				}
 			} catch (e) {
-				console.error('Error parsing gallery images:', e);
 				// Don't fail the whole operation if gallery images fail
 			}
 		}
@@ -320,7 +316,6 @@ export const actions: Actions = {
 			.single();
 
 		if (updateError) {
-			console.error('Error updating review:', updateError);
 			return fail(500, { error: 'Failed to update review: ' + updateError.message });
 		}
 
@@ -352,7 +347,6 @@ export const actions: Actions = {
 					}
 				}
 			} catch (e) {
-				console.error('Error updating gallery images:', e);
 				// Don't fail the whole operation if gallery images fail
 			}
 		}
@@ -397,7 +391,6 @@ export const actions: Actions = {
 			.eq('id', id);
 
 		if (deleteError) {
-			console.error('Error deleting review:', deleteError);
 			return fail(500, { error: 'Failed to delete review: ' + deleteError.message });
 		}
 
@@ -441,7 +434,6 @@ export const actions: Actions = {
 			.eq('id', id);
 
 		if (updateError) {
-			console.error('Error toggling featured status:', updateError);
 			return fail(500, { error: 'Failed to update featured status: ' + updateError.message });
 		}
 
@@ -505,7 +497,6 @@ export const actions: Actions = {
 			.eq('id', id);
 
 		if (updateError) {
-			console.error('Error updating awards:', updateError);
 			return fail(500, { error: 'Failed to update awards: ' + updateError.message });
 		}
 
@@ -552,7 +543,6 @@ export const actions: Actions = {
 			.eq('setting_key', 'show_awards_hero');
 
 		if (error) {
-			console.error('Error toggling awards hero:', error);
 			return fail(500, { error: 'Failed to update setting' });
 		}
 

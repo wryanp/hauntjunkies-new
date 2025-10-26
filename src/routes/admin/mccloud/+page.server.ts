@@ -23,9 +23,7 @@ export const load: PageServerLoad = async ({ cookies }) => {
 		.select('*')
 		.single();
 
-	if (error) {
-		console.error('Error fetching McCloud Manor info:', error);
-	}
+	// Silently handle fetch errors
 
 	// Fetch McCloud Manor photos
 	const { data: photos } = await supabase
@@ -53,47 +51,10 @@ export const actions: Actions = {
 			}
 		});
 
-		const formData = await request.formData();
-		const title = formData.get('title') as string;
-		const description = formData.get('description') as string;
-		const story = formData.get('story') as string;
-		const dates = formData.get('dates') as string;
-		const hours = formData.get('hours') as string;
-		const pricing = formData.get('pricing') as string;
-		const address = formData.get('address') as string;
-		const videoUrl = formData.get('videoUrl') as string;
-
-		// Get the single row ID
-		const { data: existingInfo } = await supabase
-			.from('mccloud_info')
-			.select('id')
-			.single();
-
-		if (!existingInfo) {
-			return fail(404, { error: 'McCloud Manor info not found' });
-		}
-
-		const { error } = await supabase
-			.from('mccloud_info')
-			.update({
-				title,
-				description,
-				story,
-				dates,
-				hours,
-				pricing,
-				address,
-				video_url: videoUrl,
-				updated_at: new Date().toISOString()
-			})
-			.eq('id', existingInfo.id);
-
-		if (error) {
-			console.error('Error updating McCloud Manor info:', error);
-			return fail(500, { error: 'Failed to update info' });
-		}
-
-		return { success: true, action: 'updateInfo' };
+		// Note: This action is currently not used since the form was removed.
+		// The story is hardcoded in the frontend and other fields (title, dates, hours, etc.)
+		// should be managed through the database directly or a more complete admin form.
+		return fail(404, { error: 'This action is not currently implemented. Manage fields through database.' });
 	},
 
 	deletePhoto: async ({ request, cookies }) => {
@@ -118,7 +79,6 @@ export const actions: Actions = {
 			.eq('id', photoId);
 
 		if (error) {
-			console.error('Error deleting photo:', error);
 			return fail(500, { error: 'Failed to delete photo' });
 		}
 

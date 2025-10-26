@@ -100,12 +100,6 @@
 						Go to Dashboard
 					</a>
 
-					<button
-						onclick={() => history.back()}
-						class="w-full px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-all duration-300"
-					>
-						Go Back
-					</button>
 
 					{#if status === 401 || status === 403}
 						<a
@@ -169,12 +163,6 @@
 					Return Home
 				</a>
 
-				<button
-					onclick={() => history.back()}
-					class="px-8 py-3 bg-gray-800 hover:bg-gray-700 text-white font-bold rounded-lg transition-all duration-300 border border-gray-600"
-				>
-					Go Back
-				</button>
 			</div>
 
 			<!-- Additional Help -->

@@ -24,33 +24,33 @@ export const GET: RequestHandler = async () => {
 	];
 
 	// Build XML
-	const xml = \`<?xml version="1.0" encoding="UTF-8"?>
+	const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-\${staticPages
+${staticPages
 	.map(
-		(page) => \`  <url>
-    <loc>\${SITE_URL}/\${page.url}</loc>
-    <changefreq>\${page.changefreq}</changefreq>
-    <priority>\${page.priority}</priority>
-  </url>\`
+		(page) => `  <url>
+    <loc>${SITE_URL}/${page.url}</loc>
+    <changefreq>${page.changefreq}</changefreq>
+    <priority>${page.priority}</priority>
+  </url>`
 	)
-	.join('\\n')}
-\${
+	.join('\n')}
+${
 	reviews
 		? reviews
 				.map((review) => {
 					const lastmod = review.updated_at || review.created_at;
-					return \`  <url>
-    <loc>\${SITE_URL}/reviews/\${review.slug}</loc>
-    <lastmod>\${new Date(lastmod).toISOString().split('T')[0]}</lastmod>
+					return `  <url>
+    <loc>${SITE_URL}/reviews/${review.slug}</loc>
+    <lastmod>${new Date(lastmod).toISOString().split('T')[0]}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-  </url>\`;
+  </url>`;
 				})
-				.join('\\n')
+				.join('\n')
 		: ''
 }
-</urlset>\`;
+</urlset>`;
 
 	return new Response(xml, {
 		headers: {

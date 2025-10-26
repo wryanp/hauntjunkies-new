@@ -32,7 +32,7 @@
 				// Call logout endpoint
 				await fetch('/admin/logout', { method: 'POST' });
 			} catch (e) {
-				console.error('Logout request failed:', e);
+				// Silently handle logout errors
 			} finally {
 				// Redirect to login regardless of API result
 				goto('/admin/login');
@@ -48,7 +48,7 @@
 
 		// Set new timeout
 		inactivityTimeout = setTimeout(() => {
-			console.log('Session expired due to inactivity');
+			// Session expired due to inactivity
 			logout();
 		}, INACTIVITY_LIMIT);
 	}

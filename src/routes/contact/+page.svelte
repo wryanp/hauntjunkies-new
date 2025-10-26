@@ -21,10 +21,27 @@
 	// Detect theme from URL parameter (theme=mccloud for red theme)
 	const isMcCloudTheme = $derived($page.url.searchParams.get('theme') === 'mccloud');
 
+	// State for dismissible messages
+	let showSuccessMessage = $state(false);
+	let showErrorMessage = $state(false);
+
 	// Scroll to top when success or error message appears
 	$effect(() => {
-		if (form?.success || form?.error) {
+		if (form?.success) {
+			showSuccessMessage = true;
 			window.scrollTo({ top: 0, behavior: 'smooth' });
+			// Auto-dismiss after 5 seconds
+			setTimeout(() => {
+				showSuccessMessage = false;
+			}, 5000);
+		}
+		if (form?.error) {
+			showErrorMessage = true;
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+			// Auto-dismiss after 5 seconds
+			setTimeout(() => {
+				showErrorMessage = false;
+			}, 5000);
 		}
 	});
 
@@ -91,7 +108,7 @@
 <section class="relative pt-32 pb-20 md:pt-32 md:pb-20 overflow-hidden" style="min-height: 100vh; min-height: -webkit-fill-available; min-height: 100dvh;">
 	<!-- Background Image -->
 	<div class="absolute inset-0">
-		<img src="/experience-bg.webp" alt="" role="presentation" class="w-full h-full object-cover" style="object-position: center;" />
+		<img src="/experience-bg.webp" alt="" role="presentation" loading="lazy" class="w-full h-full object-cover" style="object-position: center;" />
 	</div>
 
 	<!-- Dark overlay -->
@@ -111,7 +128,7 @@
 	<div class="absolute inset-0 opacity-10" style="background: radial-gradient(ellipse at 50% 0%, {isMcCloudTheme ? 'rgba(164,18,20,0.4)' : 'rgba(252,116,3,0.4)'} 0%, transparent 50%), radial-gradient(ellipse at 50% 100%, {isMcCloudTheme ? 'rgba(164,18,20,0.4)' : 'rgba(252,116,3,0.4)'} 0%, transparent 50%);"></div>
 
 	<!-- Texture overlay -->
-	<div class="absolute inset-0 opacity-5" style="background-image: url('/calendar-bg.png'); background-size: cover;"></div>
+	<div class="texture-overlay"></div>
 
 	<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 		<div class="text-center mb-16">
@@ -130,18 +147,38 @@
 
 			<!-- Form Container -->
 			<div class="relative bg-gradient-to-br from-gray-900/80 via-black/80 to-gray-900/80 rounded-2xl border-4 p-8 md:p-12 {isMcCloudTheme ? 'border-haunt-red/50' : 'border-haunt-orange/50'}" style="box-shadow: 0 0 20px {isMcCloudTheme ? 'rgba(164,18,20,0.3)' : 'rgba(255,107,0,0.3)'}, inset 0 0 20px rgba(0,0,0,0.8);">
-			{#if form?.success}
-				<div class="mb-6 p-6 bg-green-900/30 border border-green-700 rounded-lg">
-					<h3 class="text-green-300 font-bold text-xl mb-2">Message Sent!</h3>
+			{#if showSuccessMessage}
+				<div class="mb-6 p-6 bg-green-900/30 border border-green-700 rounded-lg relative">
+					<button
+						onclick={() => showSuccessMessage = false}
+						class="absolute top-2 right-2 text-green-300 hover:text-green-100 transition-colors"
+						aria-label="Dismiss success message"
+					>
+						<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+						</svg>
+					</button>
+					<p class="text-green-300 font-bold text-xl mb-2">Message Sent!</p>
 					<p class="text-green-200">
 						Thank you for contacting us. We'll get back to you as soon as possible.
 					</p>
+					<p class="text-green-300/70 text-sm mt-2">This message will auto-dismiss in 5 seconds</p>
 				</div>
 			{/if}
 
-			{#if form?.error}
-				<div class="mb-6 p-4 bg-red-900/30 border border-red-700 rounded-lg text-red-300">
-					{form.error}
+			{#if showErrorMessage}
+				<div class="mb-6 p-4 bg-red-900/30 border border-red-700 rounded-lg text-red-300 relative">
+					<button
+						onclick={() => showErrorMessage = false}
+						class="absolute top-2 right-2 text-red-300 hover:text-red-100 transition-colors"
+						aria-label="Dismiss error message"
+					>
+						<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+						</svg>
+					</button>
+					{form?.error}
+					<p class="text-red-300/70 text-sm mt-2">This message will auto-dismiss in 5 seconds</p>
 				</div>
 			{/if}
 
@@ -163,10 +200,14 @@
 							type="text"
 							id="name"
 							name="name"
+							autocomplete="name"
 							required
 							class="w-full px-4 py-3 rounded-lg bg-black/50 border-2 text-white transition-colors {nameError ? 'border-red-500' : 'border-gray-600'} focus:outline-none {isMcCloudTheme ? 'focus:border-haunt-red' : 'focus:border-haunt-orange'}"
 						onblur={handleNameBlur}
 						/>
+						{#if nameError}
+							<p class="mt-1 text-sm text-red-400">{nameError}</p>
+						{/if}
 					</div>
 					<div>
 						<label for="email" class="block text-sm font-medium text-gray-400 mb-2">Email *</label>
@@ -174,9 +215,14 @@
 							type="email"
 							id="email"
 							name="email"
+							autocomplete="email"
 							required
-							class="w-full px-4 py-3 rounded-lg bg-black/50 border-2 text-white transition-colors {nameError ? 'border-red-500' : 'border-gray-600'} focus:outline-none {isMcCloudTheme ? 'focus:border-haunt-red' : 'focus:border-haunt-orange'}"
+							class="w-full px-4 py-3 rounded-lg bg-black/50 border-2 text-white transition-colors {emailError ? 'border-red-500' : 'border-gray-600'} focus:outline-none {isMcCloudTheme ? 'focus:border-haunt-red' : 'focus:border-haunt-orange'}"
+						onblur={handleEmailBlur}
 						/>
+						{#if emailError}
+							<p class="mt-1 text-sm text-red-400">{emailError}</p>
+						{/if}
 					</div>
 				</div>
 
@@ -186,7 +232,7 @@
 						type="text"
 						id="subject"
 						name="subject"
-						class="w-full px-4 py-3 rounded-lg bg-black/50 border-2 text-white transition-colors {nameError ? 'border-red-500' : 'border-gray-600'} focus:outline-none {isMcCloudTheme ? 'focus:border-haunt-red' : 'focus:border-haunt-orange'}"
+						class="w-full px-4 py-3 rounded-lg bg-black/50 border-2 border-gray-600 text-white transition-colors focus:outline-none {isMcCloudTheme ? 'focus:border-haunt-red' : 'focus:border-haunt-orange'}"
 					/>
 				</div>
 
@@ -204,7 +250,8 @@
 						rows="6"
 						maxlength={MESSAGE_MAX_LENGTH}
 						oninput={(e) => messageLength = e.currentTarget.value.length}
-						class="w-full px-4 py-3 rounded-lg bg-black/50 border-2 text-white transition-colors {nameError ? 'border-red-500' : 'border-gray-600'} focus:outline-none {isMcCloudTheme ? 'focus:border-haunt-red' : 'focus:border-haunt-orange'}"
+						onblur={handleMessageBlur}
+						class="w-full px-4 py-3 rounded-lg bg-black/50 border-2 text-white transition-colors {messageError ? 'border-red-500' : 'border-gray-600'} focus:outline-none {isMcCloudTheme ? 'focus:border-haunt-red' : 'focus:border-haunt-orange'}"
 					></textarea>
 					{#if messageError}
 						<p class="mt-1 text-sm text-red-400">{messageError}</p>

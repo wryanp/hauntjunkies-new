@@ -36,9 +36,7 @@ export const load: PageServerLoad = async ({ cookies, parent }) => {
 		`)
 		.order('created_at', { ascending: false });
 
-	if (commentsError) {
-		console.error('Error fetching comments:', commentsError);
-	}
+	// Silently handle comments fetch errors
 
 	// Transform data to match expected format
 	const transformedComments = (comments || []).map(comment => ({
@@ -92,7 +90,6 @@ export const actions: Actions = {
 			.eq('id', id);
 
 		if (updateError) {
-			console.error('Error toggling approval:', updateError);
 			return fail(500, { error: 'Failed to update comment: ' + updateError.message });
 		}
 
@@ -135,7 +132,6 @@ export const actions: Actions = {
 			.eq('id', id);
 
 		if (deleteError) {
-			console.error('Error deleting comment:', deleteError);
 			return fail(500, { error: 'Failed to delete comment: ' + deleteError.message });
 		}
 

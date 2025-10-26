@@ -21,7 +21,7 @@
 <section class="relative overflow-hidden" style="min-height: 100vh; min-height: -webkit-fill-available; min-height: 100dvh;">
 	<!-- Background Image -->
 	<div class="absolute inset-0">
-		<img src="/experience-bg.webp" alt="" role="presentation" class="w-full h-full object-cover" style="object-position: center;" />
+		<img src="/experience-bg.webp" alt="" role="presentation" loading="lazy" class="w-full h-full object-cover" style="object-position: center;" />
 	</div>
 
 	<!-- Dark overlay -->
@@ -41,7 +41,7 @@
 	<div class="absolute inset-0 opacity-10" style="background: radial-gradient(ellipse at 50% 0%, rgba(252,116,3,0.4) 0%, transparent 50%), radial-gradient(ellipse at 50% 100%, rgba(252,116,3,0.4) 0%, transparent 50%);"></div>
 
 	<!-- Texture overlay -->
-	<div class="absolute inset-0 opacity-5" style="background-image: url('/calendar-bg.png'); background-size: cover;"></div>
+	<div class="texture-overlay"></div>
 
 	<!-- Content -->
 	<div class="relative z-10 h-full flex flex-col items-center justify-center text-center px-4 py-20">

@@ -1,14 +1,16 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
+	import { browser } from '$app/environment';
 	import type { PageData } from './$types';
 	import QuoteSection from '$lib/components/QuoteSection.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import GoldenGhostAwards from '$lib/components/GoldenGhostAwards.svelte';
 	import { getAwardCount, hasGoldenGhostAwards } from '$lib/utils/awards';
+	import { isValidImageUrl, getFallbackReviewImage } from '$lib/imageUtils';
 
 	let { data }: { data: PageData } = $props();
 	let showMcCloudLogo = $state(false);
-	let scrollContainer: HTMLDivElement;
+	let scrollContainer = $state<HTMLDivElement | undefined>();
 	let autoScrollInterval: NodeJS.Timeout | null = null;
 	let isPaused = $state(false);
 
@@ -192,7 +194,9 @@
 
 	onDestroy(() => {
 		stopAutoScroll();
-		window.removeEventListener('keydown', handleKeyPress);
+		if (browser) {
+			window.removeEventListener('keydown', handleKeyPress);
+		}
 	});
 
 </script>
@@ -278,6 +282,8 @@
 				<!-- Scrollable Container -->
 				<div
 					bind:this={scrollContainer}
+					role="region"
+					aria-label="Featured reviews carousel"
 					onmouseenter={pauseAutoScroll}
 					onmouseleave={resumeAutoScroll}
 					ontouchstart={pauseAutoScroll}
@@ -286,9 +292,9 @@
 					style="scroll-snap-type: x mandatory;"
 				>
 					{#each data.featuredReviews as review}
-						{@const imageUrl = review.cover_image_url && !review.cover_image_url.includes('placeholder')
+						{@const imageUrl = isValidImageUrl(review.cover_image_url)
 							? review.cover_image_url
-							: 'https://images.unsplash.com/photo-1509248961158-e54f6934749c?w=800&h=450&q=80&fit=crop'}
+							: getFallbackReviewImage()}
 						<a
 							href="/reviews/{review.slug}"
 							class="group bg-neutral-900/50 rounded-lg overflow-hidden hover:bg-neutral-900 transition-all duration-300 relative border border-neutral-800 {hasGoldenGhostAwards(review) ? 'hover:border-yellow-500' : 'hover:border-haunt-orange'} transform md:hover:scale-105 md:hover:z-10 flex-shrink-0 w-full md:w-[calc((100%-4rem)/3)] flex flex-col"
@@ -311,7 +317,7 @@
 									src={imageUrl}
 									alt={review.name}
 									loading="lazy"
-									class="w-full h-full {review.cover_image_url && !review.cover_image_url.includes('placeholder') ? 'object-contain' : 'object-cover'} transition-transform duration-300"
+									class="w-full h-full {isValidImageUrl(review.cover_image_url) ? 'object-contain' : 'object-cover'} transition-transform duration-300"
 								/>
 							</div>
 
@@ -520,7 +526,7 @@
 			<!-- View All Awards CTA -->
 			<div class="text-center mt-16">
 				<a
-					href="/awards"
+					href="/reviews"
 					class="group inline-flex items-center gap-3 bg-gradient-to-r from-yellow-500 to-yellow-600 hover:from-yellow-400 hover:to-yellow-500 text-black font-extrabold py-5 px-12 rounded-xl transition-all transform hover:scale-105 shadow-2xl overflow-hidden relative text-xl"
 					style="box-shadow: 0 0 40px rgba(255,215,0,0.6);"
 				>
@@ -545,7 +551,7 @@
 	</div>
 
 	<!-- Texture overlay -->
-	<div class="absolute inset-0 opacity-5" style="background-image: url('/calendar-bg.png'); background-size: cover;"></div>
+	<div class="texture-overlay"></div>
 
 	<!-- Animated particles effect -->
 	<div class="absolute inset-0 opacity-10">
@@ -653,7 +659,7 @@
 
 			<!-- Instagram Wrapper -->
 			<div class="relative rounded-2xl overflow-hidden h-[260px] md:h-[650px] flex items-center justify-center" style=" box-shadow: 0 10px 40px rgba(0,0,0,0.8);">
-				<iframe src="https://snapwidget.com/embed/1110765" class="snapwidget-widget absolute inset-0 w-full h-full" allowtransparency="true" frameborder="0" scrolling="no" style="border:none; overflow:hidden;" title="Posts from Instagram"></iframe>
+				<iframe src="https://snapwidget.com/embed/1110765" class="snapwidget-widget absolute inset-0 w-full h-full" frameborder="0" scrolling="no" style="border:none; overflow:hidden;" title="Posts from Instagram"></iframe>
 			</div>
 		</div>
 		</div>
@@ -740,13 +746,6 @@
 		animation: fade-in 1.5s ease-out forwards;
 	}
 
-	.glitch-text {
-		text-shadow:
-			0 0 20px rgba(255, 255, 255, 0.5),
-			0 0 40px rgba(255, 255, 255, 0.3),
-			0 0 60px rgba(255, 255, 255, 0.2);
-	}
-
 	/* Hide scrollbar for carousel */
 	.carousel-container::-webkit-scrollbar {
 		display: none;
@@ -755,12 +754,5 @@
 	.carousel-container {
 		-ms-overflow-style: none;  /* IE and Edge */
 		scrollbar-width: none;  /* Firefox */
-	}
-
-	/* Responsive background for featured reviews section */
-	@media (min-width: 768px) {
-		.hero-bg {
-			background-size: cover !important;
-		}
 	}
 </style>

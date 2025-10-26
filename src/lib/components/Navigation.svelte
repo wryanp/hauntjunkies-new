@@ -119,7 +119,7 @@
 
 	<!-- Mobile menu -->
 	{#if mobileMenuOpen}
-		<div class="md:hidden bg-black/50 border-t border-haunt-orange/20" role="navigation" aria-label="Mobile navigation menu">
+		<div class="md:hidden bg-black/50 border-t border-haunt-orange/20 z-50" role="navigation" aria-label="Mobile navigation menu">
 			<div class="px-2 pt-1 pb-1 space-y-0">
 				{#each navLinks as link}
 					<a

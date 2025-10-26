@@ -113,7 +113,6 @@ export const actions: Actions = {
 			});
 
 		if (insertError) {
-			console.error('Error inserting contact submission:', insertError);
 			return fail(500, { error: 'Failed to send message. Please try again.' });
 		}
 
@@ -217,7 +216,6 @@ export const actions: Actions = {
 				replyTo: sanitizedEmail
 			});
 		} catch (emailError) {
-			console.error('Error sending contact notification email:', emailError);
 			// Don't fail the form submission if email fails
 		}
 

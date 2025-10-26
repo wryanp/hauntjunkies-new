@@ -173,7 +173,7 @@
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
 			</svg>
 			<div>
-				<h3 class="text-green-400 font-bold">Success!</h3>
+				<p class="text-green-400 font-bold">Success!</p>
 				<p class="text-green-300 text-sm">{form?.message || 'Action completed successfully.'}</p>
 			</div>
 		</div>
@@ -186,7 +186,7 @@
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
 			</svg>
 			<div>
-				<h3 class="text-red-400 font-bold">Error</h3>
+				<p class="text-red-400 font-bold">Error</p>
 				<p class="text-red-300 text-sm">{form.error}</p>
 			</div>
 		</div>
@@ -728,7 +728,7 @@
 					<img src="/golden-ghost-award.webp" alt="Golden Ghost Award icon" class="w-5 h-5" />
 					Manage Awards
 					{#if editingReview && data.reviews.find(r => r.id === editingReview)}
-						{@const review = data.reviews.find(r => r.id === editingReview)}
+						{@const review = data.reviews.find(r => r.id === editingReview)!}
 						{@const count = getAwardCount(review)}
 						{#if count > 0}
 							<span class="bg-yellow-500 text-black text-xs px-2 py-0.5 rounded-full font-bold">

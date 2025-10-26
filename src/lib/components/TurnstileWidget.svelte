@@ -14,6 +14,7 @@
 		script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
 		script.async = true;
 		script.defer = true;
+		script.crossOrigin = 'anonymous'; // Enable CORS for better security
 		script.onload = () => {
 			renderWidget();
 		};

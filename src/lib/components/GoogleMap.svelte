@@ -22,7 +22,7 @@
 		width="100%"
 		height={height}
 		style="border:0;"
-		allowfullscreen=""
+		allowfullscreen
 		loading="lazy"
 		referrerpolicy="no-referrer-when-downgrade"
 	></iframe>

@@ -9,7 +9,6 @@ export const load: PageServerLoad = async () => {
 	if (!PUBLIC_SUPABASE_URL || !PUBLIC_SUPABASE_ANON_KEY ||
 	    PUBLIC_SUPABASE_URL === 'your_supabase_url' ||
 	    PUBLIC_SUPABASE_ANON_KEY === 'your_supabase_anon_key') {
-		console.warn('Supabase credentials not configured - returning empty data');
 		return {
 			heroMessage: undefined,
 			featuredReviews: [],
@@ -37,9 +36,7 @@ export const load: PageServerLoad = async () => {
 		.eq('featured', true)
 		.order('created_at', { ascending: false });
 
-	if (error) {
-		console.error('Error fetching featured reviews:', error);
-	}
+	// Silently handle review fetch errors
 
 	// Fetch active quotes (always fetch quotes even if reviews fail)
 	const { data: quotes, error: quotesError } = await supabase
@@ -48,9 +45,7 @@ export const load: PageServerLoad = async () => {
 		.eq('is_active', true)
 		.order('display_order', { ascending: true });
 
-	if (quotesError) {
-		console.error('Error fetching quotes:', quotesError);
-	}
+	// Silently handle quotes fetch errors
 
 	// Fetch site settings for awards hero toggle
 	const { data: awardsHeroSetting, error: settingsError } = await supabase
@@ -59,9 +54,7 @@ export const load: PageServerLoad = async () => {
 		.eq('setting_key', 'show_awards_hero')
 		.single();
 
-	if (settingsError) {
-		console.error('Error fetching site settings:', settingsError);
-	}
+	// Silently handle settings fetch errors
 
 	const showAwardsHero = awardsHeroSetting?.setting_value?.enabled ?? false;
 
@@ -73,9 +66,7 @@ export const load: PageServerLoad = async () => {
 			.select('*')
 			.order('created_at', { ascending: false });
 
-		if (reviewsError) {
-			console.error('Error fetching reviews for award winners:', reviewsError);
-		} else if (allReviews) {
+		if (!reviewsError && allReviews) {
 			multiAwardWinners = getMultiAwardWinners(allReviews as Review[]);
 		}
 	}

@@ -273,8 +273,9 @@
 								<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
 									<div class="grid grid-cols-2 gap-4">
 										<div>
-											<label class="block text-white font-semibold mb-2 text-sm">Start Time</label>
+											<label for="startTime" class="block text-white font-semibold mb-2 text-sm">Start Time</label>
 											<input
+												id="startTime"
 												type="time"
 												name="startTime"
 												bind:value={editingDate.start_time}
@@ -282,8 +283,9 @@
 											/>
 										</div>
 										<div>
-											<label class="block text-white font-semibold mb-2 text-sm">End Time</label>
+											<label for="endTime" class="block text-white font-semibold mb-2 text-sm">End Time</label>
 											<input
+												id="endTime"
 												type="time"
 												name="endTime"
 												bind:value={editingDate.end_time}
@@ -294,8 +296,9 @@
 
 									<div class="grid grid-cols-2 gap-4">
 										<div>
-											<label class="block text-white font-semibold mb-2 text-sm">Capacity</label>
+											<label for="capacity" class="block text-white font-semibold mb-2 text-sm">Capacity</label>
 											<input
+												id="capacity"
 												type="number"
 												name="capacity"
 												bind:value={editingDate.capacity}
@@ -305,8 +308,9 @@
 											/>
 										</div>
 										<div>
-											<label class="block text-white font-semibold mb-2 text-sm">Max Per Request</label>
+											<label for="maxTicketsPerRequest" class="block text-white font-semibold mb-2 text-sm">Max Per Request</label>
 											<input
+												id="maxTicketsPerRequest"
 												type="number"
 												name="maxTicketsPerRequest"
 												bind:value={editingDate.max_tickets_per_request}
@@ -319,8 +323,9 @@
 								</div>
 
 								<div class="mb-4">
-									<label class="block text-white font-semibold mb-2 text-sm">Notes</label>
+									<label for="notes" class="block text-white font-semibold mb-2 text-sm">Notes</label>
 									<textarea
+										id="notes"
 										name="notes"
 										bind:value={editingDate.notes}
 										rows="2"

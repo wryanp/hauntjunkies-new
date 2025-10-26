@@ -1,14 +1,9 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { browser } from '$app/environment';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
-
-	// Scroll to top when error message appears
-	$effect(() => {
-		if (form?.error) {
-			window.scrollTo({ top: 0, behavior: 'smooth' });
-
 
 	// Real-time validation errors
 	let emailError = $state('');
@@ -19,7 +14,7 @@
 		if (!value || value.trim().length === 0) {
 			return 'Email is required';
 		}
-		const emailRegex = /^[\s@]+@[^\s@]+\.[^\s@]+$/;
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 		if (!emailRegex.test(value)) {
 			return 'Please enter a valid email address';
 		}
@@ -32,6 +27,9 @@
 		}
 		if (value.length < 6) {
 			return 'Password must be at least 6 characters';
+		}
+		if (value.length > 72) {
+			return 'Password must be 72 characters or less';
 		}
 		return '';
 	}
@@ -46,6 +44,11 @@
 		const input = event.target as HTMLInputElement;
 		passwordError = validatePassword(input.value);
 	}
+
+	// Scroll to top when error message appears
+	$effect(() => {
+		if (browser && form?.error) {
+			window.scrollTo({ top: 0, behavior: 'smooth' });
 		}
 	});
 </script>
@@ -80,7 +83,7 @@
 			<!-- Supabase Not Configured Warning -->
 			{#if data.supabaseConfigured === false}
 				<div class="mb-6 p-4 bg-yellow-900/30 border border-yellow-500/50 rounded-lg">
-					<h3 class="text-yellow-200 font-semibold mb-2">⚠️ Setup Required</h3>
+					<h2 class="text-yellow-200 font-semibold mb-2">⚠️ Setup Required</h2>
 					<p class="text-yellow-200/80 text-sm mb-3">
 						Supabase is not configured. To use the admin panel:
 					</p>
@@ -109,6 +112,7 @@
 						type="email"
 						id="email"
 						name="email"
+						autocomplete="email"
 						required
 						onblur={handleEmailBlur}
 						class="w-full px-4 py-3 bg-black/50 border-2 rounded-lg {emailError ? "border-red-500" : "border-haunt-orange/30"} text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors"

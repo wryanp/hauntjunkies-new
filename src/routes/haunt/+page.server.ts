@@ -15,7 +15,6 @@ export const load: PageServerLoad = async () => {
 	if (!PUBLIC_SUPABASE_URL || !PUBLIC_SUPABASE_ANON_KEY ||
 	    PUBLIC_SUPABASE_URL === 'your_supabase_url' ||
 	    PUBLIC_SUPABASE_ANON_KEY === 'your_supabase_anon_key') {
-		console.warn('Supabase credentials not configured - returning empty data');
 		return {
 			info: null,
 			photos: []
@@ -168,7 +167,6 @@ export const actions: Actions = {
 			});
 
 		if (insertError) {
-			console.error('Error inserting ticket request:', insertError);
 			return fail(500, { error: 'Failed to submit request. Please try again.' });
 		}
 

@@ -122,7 +122,7 @@
 				showCopyToast = true;
 				setTimeout(() => { showCopyToast = false; }, 3000);
 			}).catch((err) => {
-				console.error('Clipboard API failed:', err);
+				// Silently fallback to manual copy method
 				fallbackCopyToClipboard();
 			});
 		} else {
@@ -152,7 +152,7 @@
 			showCopyToast = true;
 			setTimeout(() => { showCopyToast = false; }, 3000);
 		} catch (err) {
-			console.error('Fallback copy failed:', err);
+			// Silently handle copy failure
 			copyToastMessage = 'Copy failed - please try again';
 			showCopyToast = true;
 			setTimeout(() => { showCopyToast = false; }, 3000);
@@ -622,6 +622,7 @@
 								type="text"
 								id="author_name"
 								name="author_name"
+								autocomplete="name"
 								required
 								class="w-full px-4 py-2 rounded-lg bg-gray-800 border transition-colors {authorNameError ? "border-red-500" : "border-gray-700"} text-white focus:outline-none focus:border-haunt-orange"
 							/>
@@ -635,6 +636,7 @@
 								type="email"
 								id="author_email"
 								name="author_email"
+								autocomplete="email"
 								required
 								class="w-full px-4 py-2 rounded-lg bg-gray-800 border transition-colors {authorEmailError ? "border-red-500" : "border-gray-700"} text-white focus:outline-none focus:border-haunt-orange"
 							/>

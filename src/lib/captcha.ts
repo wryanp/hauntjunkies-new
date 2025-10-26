@@ -20,7 +20,6 @@ export async function verifyTurnstile(
 	}
 
 	if (!secretKey || secretKey === 'your_turnstile_secret_key') {
-		console.error('Turnstile secret key not configured');
 		return { success: false, error: 'CAPTCHA verification not configured' };
 	}
 
@@ -39,7 +38,6 @@ export async function verifyTurnstile(
 		const data = await response.json();
 
 		if (!data.success) {
-			console.error('Turnstile verification failed:', data['error-codes']);
 			return {
 				success: false,
 				error: 'CAPTCHA verification failed. Please try again.'
@@ -48,7 +46,6 @@ export async function verifyTurnstile(
 
 		return { success: true };
 	} catch (error) {
-		console.error('Error verifying Turnstile CAPTCHA:', error);
 		return {
 			success: false,
 			error: 'Failed to verify CAPTCHA. Please try again.'

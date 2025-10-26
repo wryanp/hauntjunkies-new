@@ -8,7 +8,6 @@ export const load: PageServerLoad = async () => {
 	if (!PUBLIC_SUPABASE_URL || !PUBLIC_SUPABASE_ANON_KEY ||
 	    PUBLIC_SUPABASE_URL === 'your_supabase_url' ||
 	    PUBLIC_SUPABASE_ANON_KEY === 'your_supabase_anon_key') {
-		console.warn('Supabase credentials not configured - returning empty data');
 		return { reviews: [] };
 	}
 
@@ -21,7 +20,6 @@ export const load: PageServerLoad = async () => {
 		.order('created_at', { ascending: false }); // Fallback for reviews without review_date
 
 	if (error) {
-		console.error('Error fetching reviews:', error);
 		return { reviews: [] };
 	}
 

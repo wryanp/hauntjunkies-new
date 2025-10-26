@@ -141,6 +141,7 @@
 	}
 
 	#custom-tickets {
+		appearance: textfield;
 		-moz-appearance: textfield;
 	}
 </style>
@@ -161,8 +162,6 @@
 		loop
 		playsinline
 		preload="auto"
-		webkit-playsinline
-		x5-playsinline
 		class="fixed inset-0 w-full h-full object-cover -z-10"
 	>
 		<source src="/videos/haunt.mp4" type="video/mp4" />
@@ -288,7 +287,7 @@
 											name="date"
 											value={dateOption.date}
 											bind:group={formData.date}
-											disabled={isSoldOut}
+											disabled={isSoldOut || submitting}
 											class="peer sr-only"
 											required
 										/>
@@ -443,8 +442,9 @@
 										autocomplete="given-name"
 										bind:value={formData.firstName}
 										required
+										disabled={submitting}
 										onblur={handleFirstNameBlur}
-									class="w-full px-4 py-3 bg-black/50 border-2 rounded-lg text-white focus:outline-none focus:border-haunt-red transition-colors {firstNameError ? 'border-red-500' : 'border-haunt-red/30'}"
+									class="w-full px-4 py-3 bg-black/50 border-2 rounded-lg text-white focus:outline-none focus:border-haunt-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed {firstNameError ? 'border-red-500' : 'border-haunt-red/30'}"
 									/>
 								</div>
 
@@ -459,8 +459,9 @@
 										autocomplete="family-name"
 										bind:value={formData.lastName}
 										required
+										disabled={submitting}
 										onblur={handleLastNameBlur}
-									class="w-full px-4 py-3 bg-black/50 border-2 rounded-lg text-white focus:outline-none focus:border-haunt-red transition-colors {lastNameError ? 'border-red-500' : 'border-haunt-red/30'}"
+									class="w-full px-4 py-3 bg-black/50 border-2 rounded-lg text-white focus:outline-none focus:border-haunt-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed {lastNameError ? 'border-red-500' : 'border-haunt-red/30'}"
 									/>
 								</div>
 							</div>
@@ -476,8 +477,9 @@
 									autocomplete="email"
 									bind:value={formData.email}
 									required
+									disabled={submitting}
 									onblur={handleEmailBlur}
-									class="w-full px-4 py-3 bg-black/50 border-2 rounded-lg text-white focus:outline-none focus:border-haunt-red transition-colors {emailError ? 'border-red-500' : 'border-haunt-red/30'}"
+									class="w-full px-4 py-3 bg-black/50 border-2 rounded-lg text-white focus:outline-none focus:border-haunt-red transition-colors disabled:opacity-50 disabled:cursor-not-allowed {emailError ? 'border-red-500' : 'border-haunt-red/30'}"
 								/>
 								<p class="text-gray-400 text-sm mt-2">
 									Your tickets will be sent to this email address

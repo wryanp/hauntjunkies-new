@@ -28,8 +28,9 @@
 		<link rel="preconnect" href="https://*.supabase.co" crossorigin />
 
 		<!-- Google Analytics 4 -->
-		<!-- Replace G-XXXXXXXXXX with your actual GA4 Measurement ID -->
-		<script async src="https://www.googletagmanager.com/gtag/js?id=G-9GHXQ5RJJ8"></script>
+		<!-- Note: Google Analytics doesn't support SRI (Subresource Integrity) due to dynamic content -->
+		<!-- Security is managed via CSP (Content Security Policy) headers in src/hooks.server.ts -->
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-9GHXQ5RJJ8" crossorigin="anonymous"></script>
 		<script>
 			window.dataLayer = window.dataLayer || [];
 			function gtag(){dataLayer.push(arguments);}

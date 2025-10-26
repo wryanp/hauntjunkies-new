@@ -60,6 +60,7 @@ coverage
 # Temp files
 *.tmp
 *.temp
+*.bak
 .cache
 
 # Lock files (optional - uncomment if you want to ignore)

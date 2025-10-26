@@ -83,7 +83,6 @@ export const actions = {
 			});
 
 		if (error) {
-			console.error('Error adding date:', error);
 			return fail(500, { error: 'Failed to add date' });
 		}
 
@@ -133,7 +132,6 @@ export const actions = {
 			.eq('id', id);
 
 		if (error) {
-			console.error('Error updating date:', error);
 			return fail(500, { error: 'Failed to update date' });
 		}
 
@@ -164,7 +162,6 @@ export const actions = {
 			.eq('id', id);
 
 		if (error) {
-			console.error('Error toggling availability:', error);
 			return fail(500, { error: 'Failed to update availability' });
 		}
 
@@ -194,7 +191,6 @@ export const actions = {
 			.eq('id', id);
 
 		if (error) {
-			console.error('Error deleting date:', error);
 			return fail(500, { error: 'Failed to delete date' });
 		}
 

@@ -32,7 +32,6 @@ export const GET: RequestHandler = async ({ url, cookies }) => {
 		.order('created_at', { ascending: true });
 
 	if (fetchError) {
-		console.error('Error fetching tickets for export:', fetchError);
 		throw error(500, 'Failed to fetch ticket data');
 	}
 

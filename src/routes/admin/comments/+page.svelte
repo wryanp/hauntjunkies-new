@@ -82,14 +82,14 @@
 	<!-- Success Message -->
 	{#if showSuccess || form?.success}
 		<div class="mb-6 bg-green-900/50 border-2 border-green-500 rounded-lg p-4 animate-fade-in">
-			<h3 class="text-green-400 font-bold">{successMessage}</h3>
+			<p class="text-green-400 font-bold">{successMessage}</p>
 		</div>
 	{/if}
 
 	<!-- Error Message -->
 	{#if form?.error}
 		<div class="mb-6 bg-red-900/50 border-2 border-red-500 rounded-lg p-4">
-			<h3 class="text-red-400 font-bold">Error</h3>
+			<p class="text-red-400 font-bold">Error</p>
 			<p class="text-red-300 text-sm">{form.error}</p>
 		</div>
 	{/if}
@@ -235,7 +235,7 @@
 							action="?/delete"
 							use:enhance={() => {
 								if (!confirm('Are you sure you want to delete this comment?')) {
-									return ({ cancel }) => cancel();
+									return () => {};
 								}
 							}}
 						>

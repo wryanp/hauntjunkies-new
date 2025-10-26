@@ -23,7 +23,7 @@ export const actions: Actions = {
 		try {
 			await supabase.auth.signOut();
 		} catch (error) {
-			console.error('Error signing out from Supabase (but will clear local cookies anyway):', error);
+			// Silently handle Supabase signout errors - will clear cookies anyway
 		}
 
 		// Manually clear all Supabase-related cookies to ensure logout

@@ -8,7 +8,10 @@ const config = {
 	kit: {
 		adapter: adapter({
 			runtime: 'nodejs22.x'
-		})
+		}),
+		csrf: {
+			trustedOrigins: [] // Empty array = only allow same-origin requests (strict CSRF protection)
+		}
 	}
 };
 

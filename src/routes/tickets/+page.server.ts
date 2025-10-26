@@ -50,9 +50,7 @@ export const load: PageServerLoad = async ({ setHeaders, cookies }) => {
 				.eq('date', date.date)
 				.eq('status', 'confirmed');
 
-			if (error) {
-				console.error('Error fetching ticket requests for date', date.date, error);
-			}
+			// Silently handle ticket fetch errors
 
 			const tickets_sold = requests?.reduce((sum, req) => sum + req.tickets, 0) || 0;
 
@@ -243,7 +241,6 @@ export const actions = {
 		});
 
 		if (rpcError) {
-			console.error('Error calling purchase_tickets function:', rpcError);
 			return fail(500, { error: 'Failed to process ticket request. Please try again.' });
 		}
 
@@ -267,7 +264,6 @@ export const actions = {
 		});
 
 		if (!emailResult.success) {
-			console.error('Failed to send confirmation emails, but ticket was saved:', emailResult.error);
 			// Don't fail the request - ticket is already saved
 		}
 

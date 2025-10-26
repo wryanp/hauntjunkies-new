@@ -105,7 +105,6 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		.eq('id', comment.id);
 
 	if (updateError) {
-		console.error('Error approving comment:', updateError);
 		return json({ error: 'Failed to approve comment' }, { status: 500 });
 	}
 

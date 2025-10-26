@@ -184,7 +184,6 @@ export const actions: Actions = {
 			.single();
 
 		if (insertError) {
-			console.error('Error inserting comment:', insertError);
 			return fail(500, { error: 'Failed to submit comment. Please try again.' });
 		}
 
@@ -199,7 +198,6 @@ export const actions: Actions = {
 				commentText: sanitizedComment,
 				approvalToken: approvalToken
 			}).catch(error => {
-				console.error('Failed to send comment notification email:', error);
 				// Don't fail the request - comment was saved successfully
 			});
 		}

@@ -419,7 +419,6 @@ export async function sendTicketConfirmation(ticketData: TicketData) {
 
 		// Check if customer email failed
 		if (customerEmailResult.error) {
-			console.error('Customer email failed:', customerEmailResult.error);
 			// Send urgent alert to admin about email failure
 			try {
 				await resend.emails.send({
@@ -429,7 +428,7 @@ export async function sendTicketConfirmation(ticketData: TicketData) {
 					html: createEmailFailureAlertHTML(ticketData, customerEmailResult.error.message)
 				});
 			} catch (alertError) {
-				console.error('Failed to send email failure alert:', alertError);
+				// Silently handle alert email failure
 			}
 
 			throw new Error(`Customer email failed: ${customerEmailResult.error.message}`);
@@ -445,13 +444,11 @@ export async function sendTicketConfirmation(ticketData: TicketData) {
 
 		// Check if admin email failed
 		if (adminEmailResult.error) {
-			console.error('Admin email failed:', adminEmailResult.error);
 			// Don't throw here - customer email succeeded, that's more important
 		}
 
 		return { success: true };
 	} catch (error) {
-		console.error('Error sending emails:', error);
 		return { success: false, error };
 	}
 }
@@ -568,13 +565,11 @@ export async function sendCommentNotification(commentData: CommentData) {
 		});
 
 		if (result.error) {
-			console.error('Comment notification email failed:', result.error);
 			throw new Error(`Email failed: ${result.error.message}`);
 		}
 
 		return { success: true };
 	} catch (error) {
-		console.error('Error sending comment notification:', error);
 		return { success: false, error };
 	}
 }

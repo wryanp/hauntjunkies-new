@@ -113,6 +113,53 @@
     }
   }
 
+  /* Respect user's motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .parallax {
+      background-attachment: scroll;
+    }
+  }
+
+  /* High contrast mode: reduce glow effects for better readability on bright screens */
+  @media (prefers-contrast: more) {
+    /* Remove glowing text shadows, use solid shadows for contrast */
+    h1, h2, h3, h4, h5, h6 {
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9) !important;
+    }
+
+    /* Remove all glow effects */
+    [style*="text-shadow"] {
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9) !important;
+    }
+
+    /* Ensure gradient text has solid fallback */
+    .text-transparent {
+      color: white !important;
+      -webkit-text-fill-color: white !important;
+    }
+
+    /* Remove box glows */
+    [style*="box-shadow"] {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5) !important;
+    }
+  }
+
+  /* Focus visible styles for accessibility */
+  *:focus-visible {
+    outline: 2px solid #FC7403;
+    outline-offset: 2px;
+  }
+
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 2px solid #FC7403;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(252, 116, 3, 0.2);
+  }
+
   .bg-overlay-dark::before {
     content: '';
     position: absolute;
@@ -531,5 +578,17 @@
     border-bottom: 1px solid #ddd;
     padding-bottom: 8pt;
     margin-bottom: 16pt;
+  }
+}
+
+/* Reusable texture overlay utility */
+@layer utilities {
+  .texture-overlay {
+    position: absolute;
+    inset: 0;
+    opacity: 0.05;
+    background-image: url('/calendar-bg.png');
+    background-size: cover;
+    pointer-events: none;
   }
 }

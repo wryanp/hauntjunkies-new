@@ -38,7 +38,7 @@
 	// FAQ expand/collapse state
 	let faqExpanded = $state(false);
 
-	// Default story text if not in database
+	// Default story text (permanent content, won't change)
 	const defaultStory = `The year was 1665. Dr. William McCloud, a successful black hematologist, was on the cutting edge of blood transfusion research and managed his own medical facility in the small town of Madeline Cove.
 
 One evening, while Dr. McCloud was locking up for the night, he was approached by a mysterious young woman who begged to be seen by him. She was visibly weak and her skin eerily pale, so Dr. McCloud reluctantly obliged and invited her in.
@@ -258,80 +258,6 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 </script>
 
 <style>
-	.flip-card {
-		perspective: 1000px;
-		cursor: pointer;
-	}
-
-	.flip-card-inner {
-		position: relative;
-		width: 100%;
-		height: 100%;
-		transition: transform 0.6s;
-		transform-style: preserve-3d;
-	}
-
-	/* Only enable hover on devices that support hover (not touch devices) */
-	@media (hover: hover) and (pointer: fine) {
-		.flip-card:hover .flip-card-inner {
-			transform: rotateY(180deg);
-		}
-	}
-
-	/* Click-based flip for all devices */
-	.flip-card.flipped .flip-card-inner {
-		transform: rotateY(180deg);
-	}
-
-	.flip-card-front,
-	.flip-card-back {
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		backface-visibility: hidden;
-		-webkit-backface-visibility: hidden; /* Safari support */
-		border-radius: 0.5rem;
-		overflow: hidden;
-	}
-
-	.flip-card-back {
-		transform: rotateY(180deg);
-	}
-
-	@keyframes bounce {
-		0%, 100% {
-			transform: translateY(0) translateX(-50%);
-		}
-		50% {
-			transform: translateY(-10px) translateX(-50%);
-		}
-	}
-
-	@keyframes fade-in {
-		from {
-			opacity: 0;
-			transform: translateY(10px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-
-	.animate-bounce {
-		animation: bounce 2s infinite;
-	}
-
-	.animate-fade-in {
-		animation: fade-in 0.5s ease-out;
-	}
-
-	.glitch-text {
-		text-shadow:
-			0 0 20px rgba(255, 255, 255, 0.5),
-			0 0 40px rgba(255, 255, 255, 0.3),
-			0 0 60px rgba(255, 255, 255, 0.2);
-	}
 
 	.glitch-text-secondary {
 		text-shadow:
@@ -358,8 +284,6 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 		loop
 		playsinline
 		preload="auto"
-		webkit-playsinline
-		x5-playsinline
 		class="absolute inset-0 w-full h-full object-cover"
 	>
 		<source src="/videos/haunt.mp4" type="video/mp4" />
@@ -420,7 +344,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 	<div class="absolute inset-0 opacity-10" style="background: radial-gradient(ellipse at 50% 0%, rgba(164,18,20,0.4) 0%, transparent 50%), radial-gradient(ellipse at 50% 100%, rgba(164,18,20,0.4) 0%, transparent 50%);"></div>
 
 	<!-- Texture overlay -->
-	<div class="absolute inset-0 opacity-5" style="background-image: url('/calendar-bg.png'); background-size: cover;"></div>
+	<div class="texture-overlay"></div>
 
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 		<!-- Striking Header -->
@@ -617,6 +541,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 			<div class="w-24 h-1 bg-gradient-to-r from-transparent via-haunt-red to-transparent mx-auto mt-6"></div>
 		</div>
 	</div>
+	</div>
 </section>
 
 {#if hasActiveDates}
@@ -708,30 +633,46 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">26</span></div>
 						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">27</span></div>
 						<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">28</span></div>
-						<!-- Oct 29 - HIGHLIGHTED -->
-						<a href="/tickets?date={oct29Date}" class="block bg-gradient-to-br from-haunt-red/40 via-red-900/30 to-black border-2 border-haunt-red/40 p-1 h-14 md:h-16 relative transform hover:scale-105 transition-all cursor-pointer overflow-hidden" style="box-shadow: 0 0 10px rgba(164,18,20,0.3), inset 0 0 8px rgba(164,18,20,0.2);">
-							<span class="font-extrabold text-white text-xl md:text-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,1)]">29</span>
-							<div class="absolute bottom-0.5 right-0.5 text-haunt-red text-[11px] md:text-[12px] font-bold uppercase tracking-tight bg-black/80 px-1 py-0.5" style="text-shadow: 0 0 4px rgba(164,18,20,0.8); line-height: 1;">OPEN</div>
-						</a>
-						<!-- Oct 30 - HIGHLIGHTED -->
-						<a href="/tickets?date={oct30Date}" class="block bg-gradient-to-br from-haunt-red/40 via-red-900/30 to-black border-2 border-haunt-red/40 p-1 h-14 md:h-16 relative transform hover:scale-105 transition-all cursor-pointer overflow-hidden" style="box-shadow: 0 0 10px rgba(164,18,20,0.3), inset 0 0 8px rgba(164,18,20,0.2);">
-							<span class="font-extrabold text-white text-xl md:text-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,1)]">30</span>
-							<div class="absolute bottom-0.5 right-0.5 text-haunt-red text-[11px] md:text-[12px] font-bold uppercase tracking-tight bg-black/80 px-1 py-0.5" style="text-shadow: 0 0 4px rgba(164,18,20,0.8); line-height: 1;">OPEN</div>
-						</a>
-						<!-- Oct 31 - HIGHLIGHTED -->
-						<a href="/tickets?date={oct31Date}" class="block bg-gradient-to-br from-haunt-red/40 via-red-900/30 to-black border-2 border-haunt-red/40 p-1 h-14 md:h-16 relative transform hover:scale-105 transition-all cursor-pointer overflow-hidden" style="box-shadow: 0 0 10px rgba(164,18,20,0.3), inset 0 0 8px rgba(164,18,20,0.2);">
-							<span class="font-extrabold text-white text-xl md:text-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,1)]">31</span>
-							<div class="absolute bottom-0.5 right-0.5 text-haunt-red text-[11px] md:text-[12px] font-bold uppercase tracking-tight bg-black/80 px-1 py-0.5" style="text-shadow: 0 0 4px rgba(164,18,20,0.8); line-height: 1;">OPEN</div>
-						</a>
+						<!-- Oct 29 - Dynamic based on ticket availability -->
+						{#if hasTickets(hauntYear, 10, 29)}
+							<a href="/tickets?date={oct29Date}" class="block bg-gradient-to-br from-haunt-red/40 via-red-900/30 to-black border-2 border-haunt-red/40 p-1 h-14 md:h-16 relative transform hover:scale-105 transition-all cursor-pointer overflow-hidden" style="box-shadow: 0 0 10px rgba(164,18,20,0.3), inset 0 0 8px rgba(164,18,20,0.2);">
+								<span class="font-extrabold text-white text-xl md:text-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,1)]">29</span>
+								<div class="absolute bottom-0.5 right-0.5 text-haunt-red text-[11px] md:text-[12px] font-bold uppercase tracking-tight bg-black/80 px-1 py-0.5" style="text-shadow: 0 0 4px rgba(164,18,20,0.8); line-height: 1;">OPEN</div>
+							</a>
+						{:else}
+							<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">29</span></div>
+						{/if}
+						<!-- Oct 30 - Dynamic based on ticket availability -->
+						{#if hasTickets(hauntYear, 10, 30)}
+							<a href="/tickets?date={oct30Date}" class="block bg-gradient-to-br from-haunt-red/40 via-red-900/30 to-black border-2 border-haunt-red/40 p-1 h-14 md:h-16 relative transform hover:scale-105 transition-all cursor-pointer overflow-hidden" style="box-shadow: 0 0 10px rgba(164,18,20,0.3), inset 0 0 8px rgba(164,18,20,0.2);">
+								<span class="font-extrabold text-white text-xl md:text-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,1)]">30</span>
+								<div class="absolute bottom-0.5 right-0.5 text-haunt-red text-[11px] md:text-[12px] font-bold uppercase tracking-tight bg-black/80 px-1 py-0.5" style="text-shadow: 0 0 4px rgba(164,18,20,0.8); line-height: 1;">OPEN</div>
+							</a>
+						{:else}
+							<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">30</span></div>
+						{/if}
+						<!-- Oct 31 - Dynamic based on ticket availability -->
+						{#if hasTickets(hauntYear, 10, 31)}
+							<a href="/tickets?date={oct31Date}" class="block bg-gradient-to-br from-haunt-red/40 via-red-900/30 to-black border-2 border-haunt-red/40 p-1 h-14 md:h-16 relative transform hover:scale-105 transition-all cursor-pointer overflow-hidden" style="box-shadow: 0 0 10px rgba(164,18,20,0.3), inset 0 0 8px rgba(164,18,20,0.2);">
+								<span class="font-extrabold text-white text-xl md:text-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,1)]">31</span>
+								<div class="absolute bottom-0.5 right-0.5 text-haunt-red text-[11px] md:text-[12px] font-bold uppercase tracking-tight bg-black/80 px-1 py-0.5" style="text-shadow: 0 0 4px rgba(164,18,20,0.8); line-height: 1;">OPEN</div>
+							</a>
+						{:else}
+							<div class="bg-black/20 border border-red-900/40 p-1 h-14 md:h-16 md:p-3 hover:bg-black/40 hover:border-haunt-red/60 transition-all relative" style="text-shadow: 0 0 4px rgba(164,18,20,0.25);"><span class="text-base md:text-lg font-extrabold text-gray-200 relative z-10">31</span></div>
+						{/if}
 					</div>
 
 					<!-- November Row -->
 					<div class="grid grid-cols-7 border-t-4 border-haunt-red/80 relative" style="box-shadow: inset 0 4px 8px rgba(164,18,20,0.3);">
-						<!-- Nov 1 - HIGHLIGHTED -->
-						<a href="/tickets?date={nov1Date}" class="block bg-gradient-to-br from-haunt-red/40 via-red-900/30 to-black border-2 border-haunt-red/40 p-1 h-14 md:h-16 relative transform hover:scale-105 transition-all cursor-pointer overflow-hidden" style="box-shadow: 0 0 10px rgba(164,18,20,0.3), inset 0 0 8px rgba(164,18,20,0.2);">
-							<span class="font-extrabold text-white text-xl md:text-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,1)]">1</span>
-							<div class="absolute bottom-0.5 right-0.5 text-haunt-red text-[11px] md:text-[12px] font-bold uppercase tracking-tight bg-black/80 px-1 py-0.5" style="text-shadow: 0 0 4px rgba(164,18,20,0.8); line-height: 1;">OPEN</div>
-						</a>
+						<!-- Nov 1 - Dynamic based on ticket availability -->
+						{#if hasTickets(hauntYear, 11, 1)}
+							<a href="/tickets?date={nov1Date}" class="block bg-gradient-to-br from-haunt-red/40 via-red-900/30 to-black border-2 border-haunt-red/40 p-1 h-14 md:h-16 relative transform hover:scale-105 transition-all cursor-pointer overflow-hidden" style="box-shadow: 0 0 10px rgba(164,18,20,0.3), inset 0 0 8px rgba(164,18,20,0.2);">
+								<span class="font-extrabold text-white text-xl md:text-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,1)]">1</span>
+								<div class="absolute bottom-0.5 right-0.5 text-haunt-red text-[11px] md:text-[12px] font-bold uppercase tracking-tight bg-black/80 px-1 py-0.5" style="text-shadow: 0 0 4px rgba(164,18,20,0.8); line-height: 1;">OPEN</div>
+							</a>
+						{:else}
+							<div class="bg-transparent border border-red-900/30 p-1 h-14 md:h-16 md:p-3"></div>
+						{/if}
 						<div class="bg-transparent border border-red-900/30 p-1 h-14 md:h-16 md:p-3"></div>
 						<div class="bg-transparent border border-red-900/30 p-1 h-14 md:h-16 md:p-3"></div>
 						<div class="bg-transparent border border-red-900/30 p-1 h-14 md:h-16 md:p-3"></div>
@@ -802,7 +743,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 <!-- FAQs Section -->
 <section id="faq-section" class="py-20 bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
 	<!-- Background texture overlay -->
-	<div class="absolute inset-0 opacity-5" style="background-image: url('/calendar-bg.png'); background-size: cover;"></div>
+	<div class="texture-overlay"></div>
 
 	<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 		<!-- Striking Header -->
@@ -933,7 +874,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 <!-- Directions Section -->
 <section class="py-20 bg-black relative overflow-hidden">
 	<!-- Texture overlay -->
-	<div class="absolute inset-0 opacity-5" style="background-image: url('/calendar-bg.png'); background-size: cover;"></div>
+	<div class="texture-overlay"></div>
 
 	<!-- Animated background effects -->
 	<div class="absolute inset-0 opacity-10">

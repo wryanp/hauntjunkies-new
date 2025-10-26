@@ -178,7 +178,6 @@ export const actions: Actions = {
 			.eq('setting_key', 'show_awards_hero');
 
 		if (error) {
-			console.error('Error toggling awards hero:', error);
 			return fail(500, { error: 'Failed to update setting' });
 		}
 

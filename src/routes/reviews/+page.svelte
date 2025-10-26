@@ -3,6 +3,7 @@
 	import type { Review } from '$lib/types';
 	import SEO from '$lib/components/SEO.svelte';
 	import { hasGoldenGhostAwards } from '$lib/utils/awards';
+	import { isValidImageUrl, getFallbackReviewImage } from '$lib/imageUtils';
 
 	let { data }: { data: PageData } = $props();
 
@@ -174,9 +175,9 @@
 							<!-- Reviews grid for this year -->
 							<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 								{#each groupedReviews[state][year] as review}
-									{@const imageUrl = review.cover_image_url && !review.cover_image_url.includes('placeholder')
+									{@const imageUrl = isValidImageUrl(review.cover_image_url)
 										? review.cover_image_url
-										: 'https://images.unsplash.com/photo-1509248961158-e54f6934749c?w=800&h=450&q=80&fit=crop'}
+										: getFallbackReviewImage()}
 									<a
 										href="/reviews/{review.slug}"
 										class="group bg-neutral-900/50 rounded-lg overflow-hidden hover:bg-neutral-900 transition-all duration-300 relative border border-neutral-800 {hasGoldenGhostAwards(review) ? 'hover:border-yellow-500' : 'hover:border-haunt-orange'} transform hover:scale-105 flex flex-col h-full"
@@ -198,7 +199,7 @@
 												src={imageUrl}
 												alt={review.name}
 												loading="lazy"
-												class="w-full h-full {review.cover_image_url && !review.cover_image_url.includes('placeholder') ? 'object-contain' : 'object-cover'} transition-transform duration-300"
+												class="w-full h-full {isValidImageUrl(review.cover_image_url) ? 'object-contain' : 'object-cover'} transition-transform duration-300"
 											/>
 										</div>
 

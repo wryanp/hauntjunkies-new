@@ -2,8 +2,10 @@ import { redirect, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { createServerClient } from '@supabase/ssr';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
-import { ADMIN_EMAIL, ADMIN_PASSWORD } from '$env/static/private';
+import { ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_PASSWORD_HASH } from '$env/static/private';
 import { randomBytes, timingSafeEqual } from 'crypto';
+import bcrypt from 'bcryptjs';
+import { dev } from '$app/environment';
 
 export const load: PageServerLoad = async ({ locals, cookies }) => {
 	// Check if Supabase is configured
@@ -79,9 +81,20 @@ export const actions: Actions = {
 		}
 
 		// Try simple admin login first (if configured in .env)
-		// Use constant-time comparison to prevent timing attacks
+		// Use constant-time comparison for email to prevent timing attacks
 		const emailMatches = ADMIN_EMAIL && constantTimeCompare(email, ADMIN_EMAIL);
-		const passwordMatches = ADMIN_PASSWORD && constantTimeCompare(password, ADMIN_PASSWORD);
+
+		// Use bcrypt for password comparison (preferred) or fallback to constant-time comparison
+		let passwordMatches = false;
+		if (emailMatches) {
+			if (ADMIN_PASSWORD_HASH) {
+				// Use bcrypt comparison (secure, recommended)
+				passwordMatches = await bcrypt.compare(password, ADMIN_PASSWORD_HASH);
+			} else if (ADMIN_PASSWORD) {
+				// Fallback to constant-time comparison (less secure, for backwards compatibility)
+				passwordMatches = constantTimeCompare(password, ADMIN_PASSWORD);
+			}
+		}
 
 		if (emailMatches && passwordMatches) {
 			// Generate a cryptographically secure session token with timestamp and entropy
@@ -93,7 +106,7 @@ export const actions: Actions = {
 			cookies.set('admin_session', sessionData, {
 				path: '/',
 				httpOnly: true,
-				secure: true, // SECURITY: Always use secure cookies (HTTPS only)
+				secure: !dev, // SECURITY: HTTPS in production, HTTP allowed in development
 				sameSite: 'strict',
 				maxAge: 60 * 60 * 24 * 7 // 7 days
 			});

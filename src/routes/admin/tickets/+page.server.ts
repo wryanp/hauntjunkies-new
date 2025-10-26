@@ -30,9 +30,7 @@ export const load: PageServerLoad = async ({ cookies, parent }) => {
 		.select('*')
 		.order('created_at', { ascending: false });
 
-	if (error) {
-		console.error('Error fetching ticket requests:', error);
-	}
+	// Silently handle ticket fetch errors
 
 	// Mock ticket data for demo if no real tickets exist
 	const mockTickets = [
@@ -133,7 +131,6 @@ export const actions: Actions = {
 			.eq('id', id);
 
 		if (updateError) {
-			console.error('Error updating ticket status:', updateError);
 			return fail(500, { error: 'Failed to update status: ' + updateError.message });
 		}
 
@@ -175,7 +172,6 @@ export const actions: Actions = {
 			.eq('id', id);
 
 		if (deleteError) {
-			console.error('Error deleting ticket:', deleteError);
 			return fail(500, { error: 'Failed to delete ticket: ' + deleteError.message });
 		}
 
@@ -224,7 +220,6 @@ export const actions: Actions = {
 			.in('id', ids);
 
 		if (deleteError) {
-			console.error('Error bulk deleting tickets:', deleteError);
 			return fail(500, { error: 'Failed to delete tickets: ' + deleteError.message });
 		}
 

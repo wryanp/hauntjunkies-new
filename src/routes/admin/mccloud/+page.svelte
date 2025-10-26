@@ -48,41 +48,11 @@
 		<div class="bg-gray-800 rounded-lg shadow-xl p-6 mb-8">
 			<h2 class="text-2xl font-semibold text-white mb-6">General Information</h2>
 
-			<form method="POST" action="?/updateInfo" use:enhance={() => {
-				submitting = true;
-				return async ({ update }) => {
-					await update();
-					submitting = false;
-				};
-			}}>
-				<div class="space-y-6">
-					<!-- Story -->
-					<div>
-						<label for="story" class="block text-sm font-medium text-gray-300 mb-2">
-							Story (full legend text)
-						</label>
-						<textarea
-							id="story"
-							name="story"
-							rows="10"
-							class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-haunt-red font-mono text-sm"
-							placeholder="Leave empty to use default story"
-						>{data.info?.story || ''}</textarea>
-						<p class="text-gray-500 text-sm mt-1">Use \n\n for paragraph breaks</p>
-					</div>
-
-					<!-- Submit Button -->
-					<div class="flex justify-end">
-						<button
-							type="submit"
-							disabled={submitting}
-							class="px-6 py-2 bg-haunt-red hover:bg-red-700 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-						>
-							{submitting ? 'Saving...' : 'Save Changes'}
-						</button>
-					</div>
-				</div>
-			</form>
+			<div class="text-center py-12 text-gray-400">
+				<p class="text-lg mb-2">McCloud Manor Story</p>
+				<p class="text-sm">The McCloud Manor story is permanent and hardcoded in the application.</p>
+				<p class="text-sm mt-4 text-gray-500">Other fields (title, dates, hours, pricing, etc.) can be managed through the database directly.</p>
+			</div>
 		</div>
 
 		<!-- Photos Section -->
@@ -113,6 +83,7 @@
 								<button
 									type="submit"
 									class="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white p-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+									aria-label="Delete photo"
 								>
 									<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
