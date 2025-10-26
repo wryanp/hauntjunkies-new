@@ -584,11 +584,11 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 
 {#if hasActiveDates}
 <!-- Schedule Section -->
-<section class="py-16 pb-16 bg-black relative overflow-hidden" style="background-image: url('/calendar-bg.webp'); background-size: cover; background-position: center center; background-repeat: no-repeat; background-attachment: scroll;">
+<section class="pt-16 pb-64 lg:pb-24 bg-black relative" style="background-image: url('/calendar-bg.webp'); background-size: cover; background-position: center center; background-repeat: no-repeat; background-attachment: scroll;">
 	<!-- Red glow overlay -->
-	<div class="absolute inset-0 bg-gradient-radial from-haunt-red/30 via-haunt-red/10 to-transparent" style="background: radial-gradient(circle at center, rgba(164,18,20,0.4) 0%, rgba(164,18,20,0.2) 40%, transparent 70%);"></div>
+	<div class="absolute inset-0 pointer-events-none" style="background: radial-gradient(circle at center, rgba(164,18,20,0.4) 0%, rgba(164,18,20,0.2) 40%, transparent 70%);"></div>
 	<!-- Overlay for better text readability -->
-	<div class="absolute inset-0 bg-black/30"></div>
+	<div class="absolute inset-0 bg-black/30 pointer-events-none"></div>
 
 	<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 		<div class="text-center mb-12">
@@ -742,7 +742,14 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 {/if}
 
 <!-- FAQs Section -->
-<section id="faq-section" class="py-20 bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
+<section id="faq-section" class="py-20 bg-gradient-to-b from-gray-900 to-black relative overflow-hidden" style="margin-top: -12rem;">
+	<style>
+		@media (min-width: 1024px) {
+			#faq-section {
+				margin-top: -4rem !important;
+			}
+		}
+	</style>
 	<!-- Background texture overlay -->
 	<div class="texture-overlay"></div>
 
