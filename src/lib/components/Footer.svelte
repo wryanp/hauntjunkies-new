@@ -5,7 +5,7 @@
 
 <footer class="relative border-t border-haunt-orange/20 py-12 overflow-hidden bg-black">
 	<!-- Background Image -->
-	<div class="absolute inset-0" style="background-color: #000; background-image: url('/bg.jpg'); background-size: cover; background-position: center;"></div>
+	<div class="absolute inset-0" style="background-color: #000; background-image: url('/bg.webp'); background-size: cover; background-position: center;"></div>
 
 	<!-- Overlay -->
 	<div class="absolute inset-0 bg-black/40"></div>

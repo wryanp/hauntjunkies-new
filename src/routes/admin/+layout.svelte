@@ -106,7 +106,7 @@
 					<!-- Logo and Brand -->
 					<div class="flex items-center space-x-3 md:space-x-4">
 						<a href="/" class="transform hover:scale-110 transition-transform duration-300">
-							<img src="/logo-url.png" alt="Haunt Junkies" class="h-9 md:h-10 w-auto" />
+							<img src="/logo-url.webp" alt="Haunt Junkies" class="h-9 md:h-10 w-auto" />
 						</a>
 						<span class="text-haunt-orange font-bold text-lg md:text-xl hidden sm:block">Admin Dashboard</span>
 					</div>

@@ -531,7 +531,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 					<!-- Logo container -->
 					<div class="relative bg-white px-8 py-4 rounded-xl shadow-2xl transform hover:scale-105 transition-transform" style="box-shadow: 0 0 30px rgba(164,18,20,0.5), 0 10px 40px rgba(0,0,0,0.5);">
 						<img
-							src="/fox5-logo.png"
+							src="/fox5-logo.webp"
 							alt="FOX 5 Atlanta"
 							class="h-12 md:h-16 w-auto"
 						/>
@@ -546,7 +546,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 
 {#if hasActiveDates}
 <!-- Schedule Section -->
-<section class="py-16 pb-16 bg-black relative overflow-hidden" style="background-image: url('/calendar-bg.png'); background-size: cover; background-position: center center; background-repeat: no-repeat; background-attachment: scroll; min-height: 100vh;">
+<section class="py-16 pb-16 bg-black relative overflow-hidden" style="background-image: url('/calendar-bg.webp'); background-size: cover; background-position: center center; background-repeat: no-repeat; background-attachment: scroll; min-height: 100vh;">
 	<!-- Red glow overlay -->
 	<div class="absolute inset-0 bg-gradient-radial from-haunt-red/30 via-haunt-red/10 to-transparent" style="background: radial-gradient(circle at center, rgba(164,18,20,0.4) 0%, rgba(164,18,20,0.2) 40%, transparent 70%);"></div>
 	<!-- Overlay for better text readability -->
@@ -563,7 +563,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 		<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:items-start">
 			<!-- Calendar (Left - 2 columns) -->
 			<div class="lg:col-span-2">
-				<div class="rounded-none lg:rounded-lg overflow-hidden shadow-2xl border-0 lg:border-4 border-haunt-red/70 relative" style="background-image: url('/schedule-bg.jpg'); background-size: cover; background-position: center center; background-repeat: no-repeat; box-shadow: 0 0 40px rgba(164,18,20,0.8), inset 0 0 30px rgba(0,0,0,0.9);">
+				<div class="rounded-none lg:rounded-lg overflow-hidden shadow-2xl border-0 lg:border-4 border-haunt-red/70 relative" style="background-image: url('/schedule-bg.webp'); background-size: cover; background-position: center center; background-repeat: no-repeat; box-shadow: 0 0 40px rgba(164,18,20,0.8), inset 0 0 30px rgba(0,0,0,0.9);">
 					<!-- Dark overlay for readability -->
 					<div class="absolute inset-0 bg-black/50"></div>
 					<!-- Blood drips effect -->
@@ -692,7 +692,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 
 			<!-- Schedule Info (Right - 1 column) -->
 			<div class="lg:col-span-1">
-				<div class="bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-lg overflow-hidden shadow-2xl border-4 border-haunt-red/70 relative flex flex-col" style="background-image: url('/schedule-bg.jpg'); background-size: cover; background-position: center; box-shadow: 0 0 40px rgba(164,18,20,0.8), inset 0 0 30px rgba(0,0,0,0.9);">
+				<div class="bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-lg overflow-hidden shadow-2xl border-4 border-haunt-red/70 relative flex flex-col" style="background-image: url('/schedule-bg.webp'); background-size: cover; background-position: center; box-shadow: 0 0 40px rgba(164,18,20,0.8), inset 0 0 30px rgba(0,0,0,0.9);">
 					<!-- Dark overlay for readability -->
 					<div class="absolute inset-0 bg-black/50"></div>
 					<!-- Blood drips effect -->
@@ -833,7 +833,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 <!-- Ticket Request Form -->
 <section id="tickets" class="py-20 relative overflow-hidden">
 	<!-- Ticket background image -->
-	<div class="absolute inset-0 bg-center" style="background-image: url('/ticketbg.png'); background-size: 120%;"></div>
+	<div class="absolute inset-0 bg-center" style="background-image: url('/ticketbg.webp'); background-size: 120%;"></div>
 
 	<!-- Dark overlay for better text readability -->
 	<div class="absolute inset-0 bg-black/50 md:bg-black/40"></div>
@@ -918,7 +918,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 						class="sm:hidden relative inline-block w-full rounded-xl overflow-hidden group cursor-pointer leading-none"
 					>
 						<img
-							src="/mccloud-map.png"
+							src="/mccloud-map.webp"
 							alt="Map showing McCloud Manor at 2100 Carlysle Park Lane"
 							class="w-full h-auto block align-bottom"
 						/>
@@ -984,7 +984,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 						<!-- OpenStreetMap Static Map -->
 						<div class="w-full h-full relative flex items-center justify-center">
 							<img
-								src="/mccloud-map.png"
+								src="/mccloud-map.webp"
 									alt="Map showing McCloud Manor at 2100 Carlysle Park Lane"
 								class="w-full h-full object-cover"
 								/>

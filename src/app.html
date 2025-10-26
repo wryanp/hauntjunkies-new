@@ -28,8 +28,10 @@
 		<link rel="preconnect" href="https://*.supabase.co" crossorigin />
 
 		<!-- Google Analytics 4 -->
-		<!-- Note: Google Analytics doesn't support SRI (Subresource Integrity) due to dynamic content -->
+		<!-- Note: Replace G-9GHXQ5RJJ8 with your GA4 Measurement ID from environment variable PUBLIC_GA_MEASUREMENT_ID -->
+		<!-- Google Analytics doesn't support SRI (Subresource Integrity) due to dynamic content -->
 		<!-- Security is managed via CSP (Content Security Policy) headers in src/hooks.server.ts -->
+		<!-- IMPORTANT: Update this ID in production! Or move to +layout.svelte to use env vars -->
 		<script async src="https://www.googletagmanager.com/gtag/js?id=G-9GHXQ5RJJ8" crossorigin="anonymous"></script>
 		<script>
 			window.dataLayer = window.dataLayer || [];

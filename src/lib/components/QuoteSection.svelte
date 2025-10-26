@@ -12,7 +12,7 @@
 {#if randomQuote}
 	<section class="py-16 md:py-20 relative overflow-hidden">
 		<!-- Background Image -->
-		<div class="absolute inset-0" style="background-image: url('/experience-bg.jpg'); background-size: cover; background-position: center;"></div>
+		<div class="absolute inset-0" style="background-image: url('/experience-bg.webp'); background-size: cover; background-position: center;"></div>
 
 		<!-- Dark overlay -->
 		<div class="absolute inset-0 bg-black/90"></div>
@@ -31,7 +31,7 @@
 		<div class="absolute inset-0 opacity-10" style="background: radial-gradient(ellipse at 50% 0%, rgba(252,116,3,0.4) 0%, transparent 50%), radial-gradient(ellipse at 50% 100%, rgba(252,116,3,0.4) 0%, transparent 50%);"></div>
 
 		<!-- Texture overlay -->
-		<div class="absolute inset-0 opacity-5" style="background-image: url('/calendar-bg.png'); background-size: cover;"></div>
+		<div class="absolute inset-0 opacity-5" style="background-image: url('/calendar-bg.webp'); background-size: cover;"></div>
 
 		<!-- Content -->
 		<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">

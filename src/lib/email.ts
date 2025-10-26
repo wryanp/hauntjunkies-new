@@ -1,11 +1,17 @@
 import { Resend } from 'resend';
-import { RESEND_API_KEY, SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
+import { RESEND_API_KEY, RESEND_FROM_EMAIL, SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
 import ical from 'ical-generator';
 import { createHmac } from 'crypto';
+import { logEmailError, logError } from './logger';
 
 // Validate API key before initializing Resend client
 if (!RESEND_API_KEY || RESEND_API_KEY === 'your_resend_api_key') {
 	throw new Error('RESEND_API_KEY is not configured. Please set it in your .env file.');
+}
+
+// Validate email from address
+if (!RESEND_FROM_EMAIL) {
+	throw new Error('RESEND_FROM_EMAIL is not configured. Please set it in your .env file.');
 }
 
 const resend = new Resend(RESEND_API_KEY);
@@ -397,11 +403,10 @@ export async function sendTicketConfirmation(ticketData: TicketData) {
 	const calendarInvite = generateCalendarInvite(ticketData);
 
 	try {
-		// Send email to customer
-		// Note: Use 'onboarding@resend.dev' for testing, or verify your domain in Resend dashboard
-		const fromEmail = process.env.NODE_ENV === 'development'
-			? 'McCloud Manor <onboarding@resend.dev>'
-			: 'McCloud Manor <noreply@hauntjunkies.com>';
+		// Use from email from environment variable
+		// Set in .env: RESEND_FROM_EMAIL="Haunt Junkies <onboarding@resend.dev>" (dev)
+		// or RESEND_FROM_EMAIL="Haunt Junkies <noreply@hauntjunkies.com>" (production, after domain verification)
+		const fromEmail = RESEND_FROM_EMAIL;
 
 		// Send customer email with calendar attachment
 		const customerEmailResult = await resend.emails.send({

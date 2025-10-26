@@ -54,7 +54,7 @@
 			'name': 'Haunt Junkies',
 			'logo': {
 				'@type': 'ImageObject',
-				'url': `${baseUrl}/logo-url.png`
+				'url': `${baseUrl}/logo-url.webp`
 			}
 		}
 	};

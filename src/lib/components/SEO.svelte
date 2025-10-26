@@ -18,7 +18,7 @@
 	let {
 		title,
 		description,
-		image = 'https://hauntjunkies.com/og-default.jpg',
+		image = 'https://hauntjunkies.com/og.png',
 		url,
 		type = 'website',
 		article,

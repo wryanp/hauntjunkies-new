@@ -14,6 +14,36 @@ export const handle: Handle = async ({ event, resolve }) => {
 	if (isProduction) {
 		// Content Security Policy (CSP)
 		// Prevents XSS attacks by controlling which resources can be loaded
+		//
+		// SECURITY NOTE: CSP unsafe directives justification
+		// ================================================
+		// 'unsafe-inline' in script-src:
+		//   - Required by Cloudflare Turnstile CAPTCHA (challenges.cloudflare.com)
+		//   - Required by Google Analytics (www.googletagmanager.com)
+		//   - Both are trusted third-party services essential for spam prevention and analytics
+		//
+		// 'unsafe-eval' in script-src:
+		//   - Required by Google Analytics for dynamic script execution
+		//   - Needed for GA4 measurement and event tracking
+		//
+		// 'unsafe-inline' in style-src:
+		//   - Required by Cloudflare Turnstile for widget styling
+		//   - Required by Google Fonts for dynamic font loading
+		//
+		// FUTURE IMPROVEMENT: Implement CSP nonces
+		// ========================================
+		// To remove 'unsafe-inline' while maintaining functionality:
+		// 1. Generate a cryptographic nonce per request
+		// 2. Add nonce to all inline scripts/styles
+		// 3. Replace 'unsafe-inline' with 'nonce-{value}'
+		// 4. Verify Turnstile and GA4 support nonce-based CSP
+		//
+		// Example implementation:
+		//   const nonce = crypto.randomBytes(16).toString('base64');
+		//   event.locals.cspNonce = nonce;
+		//   script-src 'self' 'nonce-${nonce}' https://challenges.cloudflare.com ...
+		//   Then in HTML: <script nonce="${locals.cspNonce}">...</script>
+		//
 		const cspDirectives = [
 			"default-src 'self'",
 			"script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com",

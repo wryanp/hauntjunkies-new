@@ -60,7 +60,7 @@
 <!-- Login Section -->
 <section class="relative bg-gradient-to-b from-black via-gray-900 to-black overflow-hidden flex items-center justify-center" style="min-height: 100vh; min-height: -webkit-fill-available; min-height: 100dvh;">
 	<!-- Background Image -->
-	<div class="absolute inset-0" style="background-image: url('/bg.jpg'); background-size: cover; background-position: center;"></div>
+	<div class="absolute inset-0" style="background-image: url('/bg.webp'); background-size: cover; background-position: center;"></div>
 
 	<!-- Overlay -->
 	<div class="absolute inset-0 bg-black/80"></div>
@@ -71,7 +71,7 @@
 		<div class="text-center mb-8">
 			<!-- Logo -->
 			<div class="mb-4">
-				<img src="/logo-url.png" alt="Haunt Junkies" class="max-h-32 sm:max-h-40 md:max-h-48 w-auto mx-auto object-contain" />
+				<img src="/logo-url.webp" alt="Haunt Junkies" class="max-h-32 sm:max-h-40 md:max-h-48 w-auto mx-auto object-contain" />
 			</div>
 			<h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-haunt-orange via-orange-500 to-haunt-orange tracking-tight" style="text-shadow: 0 0 40px rgba(255,107,0,0.6);">
 				ADMIN LOGIN

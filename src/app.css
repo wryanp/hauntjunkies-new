@@ -587,7 +587,7 @@
     position: absolute;
     inset: 0;
     opacity: 0.05;
-    background-image: url('/calendar-bg.png');
+    background-image: url('/calendar-bg.webp');
     background-size: cover;
     pointer-events: none;
   }

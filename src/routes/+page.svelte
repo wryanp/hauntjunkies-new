@@ -215,7 +215,7 @@
 		'@type': 'Organization',
 		'name': 'Haunt Junkies',
 		'url': 'https://hauntjunkies.com',
-		'logo': 'https://hauntjunkies.com/logo-url.png',
+		'logo': 'https://hauntjunkies.com/logo-url.webp',
 		'description': 'Expert reviews of haunted attractions, Halloween events, and horror experiences',
 		'sameAs': [
 			'https://www.facebook.com/hauntjunkies',
@@ -234,6 +234,9 @@
 	<div class="absolute inset-0 bg-black/40"></div>
 
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-32 pb-20 overflow-visible">
+		<!-- Main Site Heading -->
+		<h1 class="sr-only">Haunt Junkies - Southern California's Premier Haunted Attraction Reviews</h1>
+
 		<!-- Featured Reviews Header -->
 		<div class="text-center mb-12">
 			<div class="relative inline-block">
@@ -344,7 +347,7 @@
 												{#if isHalf}
 													<!-- Mobile: Use half-ghost image -->
 													<img
-														src="/half-ghost.png"
+														src="/half-ghost.webp"
 														alt="Rating ghost"
 														class="w-7 h-7 object-contain opacity-100 brightness-110 md:hidden -mx-1.5"
 														style="filter: drop-shadow(0 2px 4px rgba(252, 116, 3, 0.4));"
@@ -353,13 +356,13 @@
 													<div class="relative w-7 h-7 hidden md:block">
 														<!-- Dim background ghost -->
 														<img
-															src="/ghost.png"
+															src="/ghost.webp"
 															alt="Rating ghost"
 															class="absolute inset-0 w-7 h-7 object-contain opacity-20 grayscale"
 														/>
 														<!-- Bright half ghost (clipped to left 50%) -->
 														<img
-															src="/ghost.png"
+															src="/ghost.webp"
 															alt="Rating ghost"
 															class="absolute inset-0 w-7 h-7 object-contain opacity-100 brightness-110"
 															style="clip-path: inset(0 50% 0 0); filter: drop-shadow(0 2px 4px rgba(252, 116, 3, 0.4));"
@@ -367,7 +370,7 @@
 													</div>
 												{:else}
 													<img
-														src="/ghost.png"
+														src="/ghost.webp"
 														alt="Rating ghost"
 														class="w-7 h-7 object-contain transition-all {isFull ? 'opacity-100 brightness-110' : 'opacity-20 grayscale'}"
 														style="filter: {isFull ? 'drop-shadow(0 2px 4px rgba(252, 116, 3, 0.4))' : 'none'};"
@@ -689,7 +692,7 @@
 		<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
 			<!-- McCloud Manor Logo -->
 			<div class="mb-8 mccloud-logo {showMcCloudLogo ? 'animate-fade-in' : 'logo-hidden'}">
-				<img src="/mccloudmanor.png" alt="McCloud Manor" loading="lazy" class="h-56 md:h-64 lg:h-72 w-auto mx-auto drop-shadow-2xl" />
+				<img src="/mccloudmanor.webp" alt="McCloud Manor" loading="lazy" class="h-56 md:h-64 lg:h-72 w-auto mx-auto drop-shadow-2xl" />
 			</div>
 
 			<p class="text-xl md:text-2xl text-gray-200 mb-8 drop-shadow-lg font-light">

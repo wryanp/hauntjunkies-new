@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
-import { RESEND_API_KEY, SUPABASE_SERVICE_ROLE_KEY, TURNSTILE_SECRET_KEY } from '$env/static/private';
+import { RESEND_API_KEY, RESEND_FROM_EMAIL, SUPABASE_SERVICE_ROLE_KEY, TURNSTILE_SECRET_KEY } from '$env/static/private';
 import { fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { Resend } from 'resend';
@@ -8,6 +8,7 @@ import { checkRateLimit, getClientIP, formatTimeRemaining } from '$lib/rateLimit
 import { validateEmail, validateText, sanitizeHTML } from '$lib/validation';
 import { verifyTurnstile } from '$lib/captcha';
 import { dev } from '$app/environment';
+import { logEmailError } from '$lib/logger';
 
 const resend = new Resend(RESEND_API_KEY);
 
@@ -31,9 +32,10 @@ export const actions: Actions = {
 		const formData = await request.formData();
 		const captchaToken = formData.get('cf-turnstile-response')?.toString() || '';
 
-		// Verify CAPTCHA (skip in development mode)
-		// SECURITY: Use NODE_ENV instead of dev flag to prevent accidental bypass in production
-		if (process.env.NODE_ENV === 'production') {
+		// Verify CAPTCHA (skip only in explicit development mode)
+		// SECURITY FIX: Fail-safe default - security checks are ON unless explicitly in development
+		// This prevents accidental bypass if NODE_ENV is misconfigured (e.g., 'staging', undefined, etc.)
+		if (process.env.NODE_ENV !== 'development') {
 			const captchaResult = await verifyTurnstile(captchaToken, TURNSTILE_SECRET_KEY);
 			if (!captchaResult.success) {
 				return fail(400, { error: captchaResult.error || 'Please complete the CAPTCHA verification' });
@@ -209,14 +211,18 @@ export const actions: Actions = {
 			`;
 
 			await resend.emails.send({
-				from: 'Haunt Junkies <onboarding@resend.dev>',
+				from: RESEND_FROM_EMAIL,
 				to: 'hauntjunkies@gmail.com',
 				subject: `New Contact Form: ${subject}`,
 				html: emailHtml,
 				replyTo: sanitizedEmail
 			});
 		} catch (emailError) {
-			// Don't fail the form submission if email fails
+			// Don't fail the form submission if email fails, but log the error
+			logEmailError('hauntjunkies@gmail.com', emailError, {
+				route: '/contact',
+				metadata: { subject, from: sanitizedEmail }
+			});
 		}
 
 		return { success: true };

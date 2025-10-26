@@ -433,7 +433,7 @@
 										{#if isHalf}
 											<!-- Mobile: Use half-ghost image -->
 											<img
-												src="/half-ghost.png"
+												src="/half-ghost.webp"
 												alt="Rating ghost"
 												class="w-14 h-14 object-contain opacity-100 brightness-150 md:hidden"
 												style="filter: drop-shadow(0 4px 8px rgba(252, 116, 3, 0.8)) contrast(1.2);"
@@ -442,13 +442,13 @@
 											<div class="relative w-14 h-14 hidden md:block">
 												<!-- Dim background ghost -->
 												<img
-													src="/ghost.png"
+													src="/ghost.webp"
 													alt="Rating ghost"
 													class="absolute inset-0 w-14 h-14 object-contain opacity-30 grayscale"
 												/>
 												<!-- Bright half ghost (clipped to left 50%) -->
 												<img
-													src="/ghost.png"
+													src="/ghost.webp"
 													alt="Rating ghost"
 													class="absolute inset-0 w-14 h-14 object-contain opacity-100 brightness-150"
 													style="clip-path: inset(0 50% 0 0); filter: drop-shadow(0 4px 8px rgba(252, 116, 3, 0.8)) contrast(1.2);"
@@ -456,7 +456,7 @@
 											</div>
 										{:else}
 											<img
-												src="/ghost.png"
+												src="/ghost.webp"
 												alt="Rating ghost"
 												class="w-14 h-14 object-contain transition-all {isFull ? 'opacity-100 brightness-110' : 'opacity-20 grayscale'}"
 												style="filter: {isFull ? 'drop-shadow(0 3px 6px rgba(252, 116, 3, 0.5))' : 'none'};"

@@ -10,9 +10,14 @@
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"optimize-images": "node scripts/optimize-images.js"
+		"optimize-images": "node scripts/optimize-images.js",
+		"test": "playwright test",
+		"test:ui": "playwright test --ui",
+		"test:headed": "playwright test --headed",
+		"test:report": "playwright show-report"
 	},
 	"devDependencies": {
+		"@playwright/test": "^1.56.1",
 		"@sveltejs/adapter-auto": "^6.1.0",
 		"@sveltejs/adapter-vercel": "^6.0.0",
 		"@sveltejs/kit": "^2.43.2",

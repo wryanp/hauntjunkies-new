@@ -47,14 +47,20 @@ export const load: LayoutServerLoad = async ({ url, cookies }) => {
 			const inactivityLimit = 30 * 60 * 1000; // 30 minutes in milliseconds
 
 			// Check if session has been inactive for more than 30 minutes
-			if (lastActivity) {
-				const lastActivityTime = parseInt(lastActivity);
-				if (!isNaN(lastActivityTime) && (Date.now() - lastActivityTime) > inactivityLimit) {
-					// Session expired due to inactivity
-					cookies.delete('admin_session', { path: '/' });
-					cookies.delete('admin_last_activity', { path: '/' });
-					throw redirect(303, '/admin/login');
-				}
+			if (!lastActivity) {
+				// SECURITY FIX: Missing lastActivity cookie = expired session
+				// Prevents bypass of inactivity timeout by deleting the cookie
+				cookies.delete('admin_session', { path: '/' });
+				cookies.delete('admin_last_activity', { path: '/' });
+				throw redirect(303, '/admin/login');
+			}
+
+			const lastActivityTime = parseInt(lastActivity);
+			if (!isNaN(lastActivityTime) && (Date.now() - lastActivityTime) > inactivityLimit) {
+				// Session expired due to inactivity
+				cookies.delete('admin_session', { path: '/' });
+				cookies.delete('admin_last_activity', { path: '/' });
+				throw redirect(303, '/admin/login');
 			}
 
 			// Validate timestamp - session expires after 7 days

@@ -52,11 +52,24 @@
 		pointer-events: auto;
 		`;
 
-		button.innerHTML = `
-			<svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="display: block;">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-			</svg>
-		`;
+		// SECURITY FIX: Use DOM methods instead of innerHTML to prevent XSS
+		// Create SVG element and path using proper DOM APIs
+		const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+		svg.setAttribute('width', '24');
+		svg.setAttribute('height', '24');
+		svg.setAttribute('fill', 'none');
+		svg.setAttribute('viewBox', '0 0 24 24');
+		svg.setAttribute('stroke', 'currentColor');
+		svg.style.display = 'block';
+
+		const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+		path.setAttribute('stroke-linecap', 'round');
+		path.setAttribute('stroke-linejoin', 'round');
+		path.setAttribute('stroke-width', '2');
+		path.setAttribute('d', 'M5 10l7-7m0 0l7 7m-7-7v18');
+
+		svg.appendChild(path);
+		button.appendChild(svg);
 
 		button.addEventListener('click', () => {
 			window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -103,19 +116,28 @@
 </script>
 
 <svelte:head>
-	<link rel="icon" href="/favicon.png" />
+	<!-- Favicon is set in app.html with multi-format support -->
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+	<!-- PERFORMANCE FIX: Added display=swap to prevent font blocking -->
 	<link href="https://fonts.googleapis.com/css2?family=Creepster&family=Eater&family=Nosifer&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
 	<title>Haunt Junkies - Haunted Attraction Reviews</title>
 </svelte:head>
+
+<!-- Skip to main content link for keyboard navigation accessibility -->
+<a
+	href="#main-content"
+	class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-haunt-orange focus:text-white focus:rounded-md focus:font-bold"
+>
+	Skip to main content
+</a>
 
 {#if !isAdminPage}
 	<Navigation />
 {/if}
 
 <div class="flex flex-col min-h-screen w-full max-w-full md:overflow-x-hidden">
-	<main class="flex-grow w-full max-w-full">
+	<main id="main-content" class="flex-grow w-full max-w-full">
 		{@render children?.()}
 	</main>
 

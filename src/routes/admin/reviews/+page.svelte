@@ -796,7 +796,7 @@
 						<p class="text-gray-400 text-sm mb-2">{review.city}, {review.state}</p>
 						{#if review.rating_overall}
 							<p class="flex items-center gap-2">
-								<img src="/ghost.png" alt="Rating" class="w-5 h-5 object-contain" />
+								<img src="/ghost.webp" alt="Rating" class="w-5 h-5 object-contain" />
 								<span class="text-haunt-orange font-semibold leading-none">{review.rating_overall.toFixed(1)}/5</span>
 							</p>
 						{/if}

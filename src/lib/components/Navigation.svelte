@@ -8,7 +8,7 @@
 	// Determine which logo to show based on current page
 	const isHauntPage = $derived($page.url.pathname === '/haunt' || $page.url.pathname === '/tickets');
 	const isMcCloudContact = $derived($page.url.pathname === '/contact' && $page.url.searchParams.get('theme') === 'mccloud');
-	const logoSrc = $derived((isHauntPage || isMcCloudContact) ? '/mccloudmanor.png' : '/logo-url.png');
+	const logoSrc = $derived((isHauntPage || isMcCloudContact) ? '/mccloudmanor.webp' : '/logo-url.webp');
 	const logoAlt = $derived((isHauntPage || isMcCloudContact) ? 'McCloud Manor' : 'Haunt Junkies');
 	const logoHref = $derived((isHauntPage || isMcCloudContact) ? '/haunt' : '/');
 
@@ -31,7 +31,7 @@
 		{
 			href: (isHauntPage || isMcCloudContact) ? '/' : '/haunt',
 			label: (isHauntPage || isMcCloudContact) ? 'Haunt Junkies' : 'McCloud Manor',
-			logoSrc: (isHauntPage || isMcCloudContact) ? '/logo-url.png' : '/mccloudmanor.png',
+			logoSrc: (isHauntPage || isMcCloudContact) ? '/logo-url.webp' : '/mccloudmanor.webp',
 			isLogo: true
 		}
 	]);

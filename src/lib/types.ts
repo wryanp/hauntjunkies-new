@@ -179,42 +179,42 @@ export const AWARD_CATEGORIES: Record<AwardCategory, AwardInfo> = {
 		icon: '🎭',
 		description: 'Outstanding performance and character portrayal',
 		fieldName: 'award_best_actors_year',
-		imagePath: '/Best_Haunt_Actors_Badge.png'
+		imagePath: '/Best_Haunt_Actors_Badge.webp'
 	},
 	best_makeup: {
 		label: 'Best Haunt Makeup',
 		icon: '💄',
 		description: 'Exceptional makeup and prosthetics artistry',
 		fieldName: 'award_best_makeup_year',
-		imagePath: '/Best_Haunt_Makeup_Badge.png'
+		imagePath: '/Best_Haunt_Makeup_Badge.webp'
 	},
 	best_set_design: {
 		label: 'Best Set Design',
 		icon: '🏛️',
 		description: 'Immersive environments and scenic design',
 		fieldName: 'award_best_set_design_year',
-		imagePath: '/Best_Set_Design_Badge.png'
+		imagePath: '/Best_Set_Design_Badge.webp'
 	},
 	best_story: {
 		label: 'Best Haunt Story',
 		icon: '📖',
 		description: 'Compelling narrative and storytelling',
 		fieldName: 'award_best_story_year',
-		imagePath: '/Best_Haunt_Story_Badge.png'
+		imagePath: '/Best_Haunt_Story_Badge.webp'
 	},
 	scariest: {
 		label: 'Scariest Haunt',
 		icon: '😱',
 		description: 'Most terrifying and intense experience',
 		fieldName: 'award_scariest_year',
-		imagePath: '/Scariest_Haunt_Badge.png'
+		imagePath: '/Scariest_Haunt_Badge.webp'
 	},
 	best_overall: {
 		label: 'Best Overall Haunt',
 		icon: '👑',
 		description: 'The ultimate haunt experience - our highest honor',
 		fieldName: 'award_best_overall_year',
-		imagePath: '/Best_Overall_Haunt_Badge.png'
+		imagePath: '/Best_Overall_Haunt_Badge.webp'
 	}
 };
 

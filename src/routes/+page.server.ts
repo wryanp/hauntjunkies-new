@@ -3,6 +3,7 @@ import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/publi
 import type { PageServerLoad } from './$types';
 import type { Review, HeroMessage, Quote, SiteSettings } from '$lib/types';
 import { getMultiAwardWinners } from '$lib/utils/awards';
+import { logDatabaseError } from '$lib/logger';
 
 export const load: PageServerLoad = async () => {
 	// Handle missing Supabase credentials gracefully
@@ -36,7 +37,10 @@ export const load: PageServerLoad = async () => {
 		.eq('featured', true)
 		.order('created_at', { ascending: false });
 
-	// Silently handle review fetch errors
+	// Log review fetch errors for monitoring
+	if (error) {
+		logDatabaseError('fetch featured reviews', error, { route: '/' });
+	}
 
 	// Fetch active quotes (always fetch quotes even if reviews fail)
 	const { data: quotes, error: quotesError } = await supabase
@@ -45,7 +49,10 @@ export const load: PageServerLoad = async () => {
 		.eq('is_active', true)
 		.order('display_order', { ascending: true });
 
-	// Silently handle quotes fetch errors
+	// Log quotes fetch errors
+	if (quotesError) {
+		logDatabaseError('fetch quotes', quotesError, { route: '/' });
+	}
 
 	// Fetch site settings for awards hero toggle
 	const { data: awardsHeroSetting, error: settingsError } = await supabase
@@ -54,7 +61,10 @@ export const load: PageServerLoad = async () => {
 		.eq('setting_key', 'show_awards_hero')
 		.single();
 
-	// Silently handle settings fetch errors
+	// Log settings fetch errors
+	if (settingsError) {
+		logDatabaseError('fetch site settings', settingsError, { route: '/' });
+	}
 
 	const showAwardsHero = awardsHeroSetting?.setting_value?.enabled ?? false;
 

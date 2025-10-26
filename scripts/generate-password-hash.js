@@ -9,7 +9,7 @@
  * Copy the generated hash to your .env file as ADMIN_PASSWORD_HASH
  */
 
-const bcrypt = require('bcryptjs');
+import bcrypt from 'bcryptjs';
 
 // Get password from command line argument
 const password = process.argv[2];

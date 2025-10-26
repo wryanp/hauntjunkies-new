@@ -70,9 +70,10 @@ export const actions: Actions = {
 		const formData = await request.formData();
 		const captchaToken = formData.get('cf-turnstile-response')?.toString() || '';
 
-		// Verify CAPTCHA (skip in development mode)
-		// SECURITY: Use NODE_ENV instead of dev flag to prevent accidental bypass in production
-		if (process.env.NODE_ENV === 'production') {
+		// Verify CAPTCHA (skip only in explicit development mode)
+		// SECURITY FIX: Fail-safe default - security checks are ON unless explicitly in development
+		// This prevents accidental bypass if NODE_ENV is misconfigured (e.g., 'staging', undefined, etc.)
+		if (process.env.NODE_ENV !== 'development') {
 			const captchaResult = await verifyTurnstile(captchaToken, TURNSTILE_SECRET_KEY);
 			if (!captchaResult.success) {
 				return fail(400, { error: captchaResult.error || 'Please complete the CAPTCHA verification' });
