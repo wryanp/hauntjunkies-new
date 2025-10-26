@@ -55,14 +55,22 @@
 				<!-- Image Container -->
 				<div class="relative bg-gradient-to-br from-gray-900/80 via-black/80 to-gray-900/80 rounded-2xl border-4 border-haunt-orange/50 p-4 md:p-6" style="box-shadow: 0 0 40px rgba(255,107,0,0.5), inset 0 0 20px rgba(0,0,0,0.8);">
 					<!-- Image -->
-					<div class="relative aspect-[3/4] overflow-hidden rounded-xl">
+					<div class="relative aspect-[3/4] overflow-hidden rounded-xl flex items-center justify-center">
 						<img
-							src="/hjunkies.jpg"
+							src="/hjunkies.webp"
 							alt="Haunt Junkies Team"
-							class="w-full h-full object-cover"
-							style="object-position: center 15%;"
+							class="w-full h-full object-contain mobile-image"
+							style="object-position: center center; transform: rotate(90deg) scale(1.3);"
 						/>
 					</div>
+
+					<style>
+						@media (max-width: 768px) {
+							.mobile-image {
+								transform: rotate(90deg) scale(1.4) !important;
+							}
+						}
+					</style>
 				</div>
 			</div>
 
