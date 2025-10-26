@@ -37,21 +37,13 @@
 	function parseReviewText(text: string | undefined): string {
 		if (!text) return '';
 
-		// First, replace [IMAGE:URL] with actual images
-		let parsed = text.replace(/\[IMAGE:(https?:\/\/[^\]]+)\]/g, (match, imageUrl) => {
-			return `
-				<div class="my-8 mx-auto max-w-2xl">
-					<img
-						src="${imageUrl}"
-						alt="Review image"
-						class="w-full rounded-lg border-2 border-haunt-orange/30 shadow-xl"
-					/>
-				</div>
-			`;
+		// First, replace [IMAGE:URL] with actual images and remove surrounding newlines
+		let parsed = text.replace(/\n*\[IMAGE:(https?:\/\/[^\]]+)\]\n*/g, (match, imageUrl) => {
+			return `<div class="my-0 mx-auto max-w-2xl" style="margin-top: 1rem !important; margin-bottom: 1rem !important;"><img src="${imageUrl}" alt="Review image" class="w-full rounded-lg border-2 border-haunt-orange/30 shadow-xl" /></div>`;
 		});
 
-		// Then, replace [REVIEWER_PHOTO:N] with actual images
-		parsed = parsed.replace(/\[REVIEWER_PHOTO:(\d+)\]/g, (match, photoIndex) => {
+		// Then, replace [REVIEWER_PHOTO:N] with actual images and remove surrounding newlines
+		parsed = parsed.replace(/\n*\[REVIEWER_PHOTO:(\d+)\]\n*/g, (match, photoIndex) => {
 			const index = parseInt(photoIndex) - 1; // Convert to 0-based index
 			const photo = data.reviewerPhotos?.[index];
 
@@ -63,16 +55,7 @@
 			const caption = photo.caption ? `<p class="text-sm text-gray-400 text-center mt-2 italic">${photo.caption}</p>` : '';
 			const altText = photo.alt_text || photo.caption || 'Reviewer photo from the haunt';
 
-			return `
-				<div class="my-8 mx-auto max-w-2xl">
-					<img
-						src="${photo.image_url}"
-						alt="${altText}"
-						class="w-full rounded-lg border-2 border-haunt-orange/30 shadow-xl"
-					/>
-					${caption}
-				</div>
-			`;
+			return `<div class="my-0 mx-auto max-w-2xl" style="margin-top: 1rem !important; margin-bottom: 1rem !important;"><img src="${photo.image_url}" alt="${altText}" class="w-full rounded-lg border-2 border-haunt-orange/30 shadow-xl" />${caption}</div>`;
 		});
 
 		return parsed;
@@ -177,7 +160,7 @@
 />
 <StructuredData review={data.review} />
 
-<div class="bg-gradient-to-b from-gray-900 to-black min-h-screen">
+<div class="bg-gradient-to-b from-black via-neutral-900 to-black min-h-screen">
 	<!-- Hero Image -->
 	{#if data.review.cover_image_url}
 		<div class="relative h-96 overflow-hidden bg-black">
@@ -248,14 +231,6 @@
 						</svg>
 						<span>{data.review.address}</span>
 					</a>
-				{/if}
-				{#if data.review.year}
-					<div class="flex items-center gap-1">
-						<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-							<path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
-						</svg>
-						<span>{data.review.year}</span>
-					</div>
 				{/if}
 			</div>
 
@@ -480,9 +455,33 @@
 
 		<!-- Review Text with Inline Images -->
 		{#if data.review.review_text}
-			<div class="bg-gray-800/50 rounded-lg p-6 mb-6 border border-gray-700">
+			<div class="bg-gray-800/50 rounded-lg px-4 py-3 md:p-6 mb-6 border border-gray-700">
 				<h2 class="text-2xl font-bold text-haunt-orange uppercase leading-none mb-4">{data.review.name} Review</h2>
 				<div class="prose prose-invert max-w-none text-gray-300 leading-relaxed" style="white-space: pre-line;">
+					<style>
+						.prose p {
+							margin-top: 0 !important;
+							margin-bottom: 0 !important;
+							padding-top: 0 !important;
+							padding-bottom: 0 !important;
+						}
+						.prose div {
+							margin-top: 0 !important;
+							margin-bottom: 0 !important;
+							padding-top: 0 !important;
+							padding-bottom: 0 !important;
+						}
+						@media (max-width: 767px) {
+							.prose p {
+								margin-top: 0 !important;
+								margin-bottom: 0 !important;
+							}
+							.prose div {
+								margin-top: 0 !important;
+								margin-bottom: 0 !important;
+							}
+						}
+					</style>
 					{@html formattedReviewText}
 				</div>
 			</div>

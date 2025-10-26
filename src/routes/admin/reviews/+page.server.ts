@@ -98,7 +98,7 @@ export const actions: Actions = {
 		// Extract other fields
 		const year = new Date().getFullYear(); // Default to current year
 		const review_text = formData.get('review_text')?.toString() || formData.get('description')?.toString() || '';
-		const featured = false; // Default to not featured
+		const featured = formData.get('featured') === 'true';
 
 		// Ratings
 		const rating_overall = parseFloat(formData.get('rating_overall')?.toString() || '0');
@@ -260,7 +260,7 @@ export const actions: Actions = {
 		}
 		const year = parseInt(formData.get('year')?.toString() || new Date().getFullYear().toString());
 		const review_text = formData.get('review_text')?.toString() || formData.get('description')?.toString() || '';
-		const featured = false; // Default to not featured
+		const featured = formData.get('featured') === 'true';
 
 		const rating_overall = parseFloat(formData.get('rating_overall')?.toString() || '0');
 		const rating_scares = parseFloat(formData.get('rating_scares')?.toString() || '0');

@@ -75,7 +75,7 @@
 	type="website"
 />
 
-<div class="bg-gradient-to-b from-gray-900 to-black pt-32 pb-12 md:pt-32 md:pb-12" style="min-height: 100vh; min-height: -webkit-fill-available; min-height: 100dvh;">
+<div class="bg-gradient-to-b from-black via-neutral-900 to-black pt-32 pb-12 md:pt-32 md:pb-12" style="min-height: 100vh; min-height: -webkit-fill-available; min-height: 100dvh;">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 		<!-- Header -->
 		<div class="text-center mb-16">
@@ -95,13 +95,13 @@
 					type="text"
 					bind:value={searchQuery}
 					placeholder="Search by name or location..."
-					class="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange"
+					class="w-full px-4 py-3 rounded-lg bg-neutral-900 border border-neutral-800 text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange"
 				/>
 			</div>
 			<div>
 				<select
 					bind:value={selectedState}
-					class="w-full md:w-48 px-4 py-3 rounded-lg bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-haunt-orange"
+					class="w-full md:w-48 px-4 py-3 rounded-lg bg-neutral-900 border border-neutral-800 text-white focus:outline-none focus:border-haunt-orange"
 				>
 					{#each states as state}
 						<option value={state}>{state === 'all' ? 'All States' : state}</option>
@@ -111,7 +111,7 @@
 			<div>
 				<select
 					bind:value={selectedYear}
-					class="w-full md:w-48 px-4 py-3 rounded-lg bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-haunt-orange"
+					class="w-full md:w-48 px-4 py-3 rounded-lg bg-neutral-900 border border-neutral-800 text-white focus:outline-none focus:border-haunt-orange"
 				>
 					{#each years as year}
 						<option value={year}>{year === 'all' ? 'All Years' : year}</option>
@@ -149,7 +149,7 @@
 										: 'https://images.unsplash.com/photo-1509248961158-e54f6934749c?w=800&h=450&q=80&fit=crop'}
 									<a
 										href="/reviews/{review.slug}"
-										class="group bg-gray-800/50 rounded-lg overflow-hidden hover:bg-gray-800 transition-all duration-300 relative border border-gray-700 {hasGoldenGhostAwards(review) ? 'hover:border-yellow-500' : 'hover:border-haunt-orange'} transform hover:scale-105 flex flex-col h-full"
+										class="group bg-neutral-900/50 rounded-lg overflow-hidden hover:bg-neutral-900 transition-all duration-300 relative border border-neutral-800 {hasGoldenGhostAwards(review) ? 'hover:border-yellow-500' : 'hover:border-haunt-orange'} transform hover:scale-105 flex flex-col h-full"
 									>
 										{#if hasGoldenGhostAwards(review)}
 											{@const yearMatch = review.name.match(/(\d{4})/)}

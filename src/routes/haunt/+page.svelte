@@ -466,9 +466,9 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 
 	<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 		<!-- Story Header -->
-		<div class="text-center mb-16">
-			<h2 class="text-5xl md:text-6xl lg:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-haunt-red via-red-600 to-haunt-red mb-4 tracking-tight" style="text-shadow: 0 0 40px rgba(164,18,20,0.6);">
-				THE LEGEND OF McCLOUD MANOR
+		<div class="text-center mb-8">
+			<h2 class="text-[2.6rem] md:text-6xl lg:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-haunt-red via-red-600 to-haunt-red mb-4 tracking-tight leading-tight" style="text-shadow: 0 0 40px rgba(164,18,20,0.6);">
+				THE LEGEND OF McCLOUD&nbsp;MANOR
 			</h2>
 			<div class="w-48 h-1 bg-gradient-to-r from-transparent via-haunt-red to-transparent mx-auto mb-6"></div>
 		</div>
@@ -969,12 +969,38 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 						</div>
 					</div>
 
-					<!-- Get Directions Button -->
+					<!-- Map on Mobile -->
+					<a
+						href="https://maps.google.com/?q=2100+Carlysle+Park+Lane,+Lawrenceville,+GA+30044"
+						target="_blank"
+						rel="noopener noreferrer"
+						class="sm:hidden relative inline-block w-full rounded-xl overflow-hidden group cursor-pointer leading-none"
+					>
+						<img
+							src="/mccloud-map.png"
+							alt="Map showing McCloud Manor at 2100 Carlysle Park Lane"
+							class="w-full h-auto block align-bottom"
+						/>
+
+						<!-- Overlay (red background appears on tap/click, button always visible) -->
+						<div class="absolute inset-0 bg-haunt-red/0 group-hover:bg-haunt-red/20 group-active:bg-haunt-red/20 transition-all duration-300 flex items-center justify-center">
+							<div class="bg-black/90 px-8 py-5 rounded-xl border-2 border-haunt-red">
+								<p class="text-white font-bold text-xl flex items-center gap-3">
+									<span>Click for directions</span>
+									<svg class="w-6 h-6 text-haunt-red" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+									</svg>
+								</p>
+							</div>
+						</div>
+					</a>
+
+					<!-- Get Directions Button (Desktop only) -->
 					<a
 						href="https://maps.google.com/maps?q=2100+Carlysle+Park+Lane,+Lawrenceville,+GA+30044"
 						target="_blank"
 						rel="noopener noreferrer"
-						class="group inline-flex items-center gap-3 bg-gradient-to-r from-haunt-red to-red-900 hover:from-red-900 hover:to-haunt-red text-white font-extrabold py-4 px-8 rounded-xl transition-all transform hover:scale-105 shadow-2xl overflow-hidden relative text-lg w-full justify-center"
+						class="hidden sm:inline-flex group items-center gap-3 bg-gradient-to-r from-haunt-red to-red-900 hover:from-red-900 hover:to-haunt-red text-white font-extrabold py-4 px-8 rounded-xl transition-all transform hover:scale-105 shadow-2xl overflow-hidden relative text-lg w-full justify-center"
 						style="box-shadow: 0 0 40px rgba(164,18,20,0.6);"
 					>
 						<!-- Animated shimmer -->
@@ -1045,7 +1071,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 						<div class="absolute inset-0 bg-haunt-red/0 group-hover:bg-haunt-red/20 transition-all duration-300 flex items-center justify-center">
 							<div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/90 px-8 py-5 rounded-xl border-2 border-haunt-red">
 								<p class="text-white font-bold text-xl flex items-center gap-3">
-									<span>Click to Open in Google Maps</span>
+									<span>Click for directions</span>
 									<svg class="w-6 h-6 text-haunt-red" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
 									</svg>

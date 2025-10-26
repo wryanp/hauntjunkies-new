@@ -16,14 +16,36 @@
 	function scrollLeft() {
 		if (scrollContainer) {
 			const scrollAmount = scrollContainer.clientWidth;
-			scrollContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+			const currentScroll = scrollContainer.scrollLeft;
+
+			// If at the beginning, scroll to the end
+			if (currentScroll <= 10) {
+				const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+				// Round to nearest scroll position to prevent overflow
+				const targetScroll = Math.floor(maxScroll / scrollAmount) * scrollAmount;
+				scrollContainer.scrollTo({ left: targetScroll, behavior: 'smooth' });
+			} else {
+				// Calculate target position and ensure it's aligned
+				const targetScroll = Math.max(0, Math.round((currentScroll - scrollAmount) / scrollAmount) * scrollAmount);
+				scrollContainer.scrollTo({ left: targetScroll, behavior: 'smooth' });
+			}
 		}
 	}
 
 	function scrollRight() {
 		if (scrollContainer) {
 			const scrollAmount = scrollContainer.clientWidth;
-			scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+			const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+			const currentScroll = scrollContainer.scrollLeft;
+
+			// If at the end, scroll back to the beginning
+			if (currentScroll >= maxScroll - 10) {
+				scrollContainer.scrollTo({ left: 0, behavior: 'smooth' });
+			} else {
+				// Calculate target position and ensure it's aligned
+				const targetScroll = Math.min(maxScroll, Math.round((currentScroll + scrollAmount) / scrollAmount) * scrollAmount);
+				scrollContainer.scrollTo({ left: targetScroll, behavior: 'smooth' });
+			}
 		}
 	}
 
@@ -195,24 +217,24 @@
 		{#if data.featuredReviews && data.featuredReviews.length > 0}
 			<div class="relative px-8 md:px-12 overflow-visible">
 				<!-- Navigation Arrows -->
-				{#if data.featuredReviews.length > 3}
+				{#if data.featuredReviews.length >= 2}
 					<button
 						onclick={scrollLeft}
-						class="absolute -left-4 md:-left-8 top-1/2 -translate-y-1/2 z-10 bg-black/80 hover:bg-haunt-orange border-2 border-haunt-orange text-haunt-orange hover:text-white p-4 transition-all transform hover:scale-110 hidden md:flex items-center justify-center"
+						class="absolute left-2 md:-left-8 top-1/2 -translate-y-1/2 z-10 bg-black/80 hover:bg-haunt-orange border-2 border-haunt-orange text-haunt-orange hover:text-white p-3 md:p-4 transition-all transform hover:scale-110 flex items-center justify-center"
 						aria-label="Scroll left"
 						style="box-shadow: 0 0 20px rgba(252, 116, 3, 0.5);"
 					>
-						<svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+						<svg class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
 							<path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
 						</svg>
 					</button>
 					<button
 						onclick={scrollRight}
-						class="absolute -right-4 md:-right-8 top-1/2 -translate-y-1/2 z-10 bg-black/80 hover:bg-haunt-orange border-2 border-haunt-orange text-haunt-orange hover:text-white p-4 transition-all transform hover:scale-110 hidden md:flex items-center justify-center"
+						class="absolute right-2 md:-right-8 top-1/2 -translate-y-1/2 z-10 bg-black/80 hover:bg-haunt-orange border-2 border-haunt-orange text-haunt-orange hover:text-white p-3 md:p-4 transition-all transform hover:scale-110 flex items-center justify-center"
 						aria-label="Scroll right"
 						style="box-shadow: 0 0 20px rgba(252, 116, 3, 0.5);"
 					>
-						<svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+						<svg class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
 							<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
 						</svg>
 					</button>
@@ -225,7 +247,7 @@
 					onmouseleave={resumeAutoScroll}
 					ontouchstart={pauseAutoScroll}
 					ontouchend={resumeAutoScroll}
-					class="carousel-container flex gap-8 overflow-x-auto overflow-y-visible scroll-smooth py-8 px-6"
+					class="carousel-container flex gap-0 md:gap-8 overflow-x-auto overflow-y-visible scroll-smooth py-12 px-0 md:px-6"
 					style="scroll-snap-type: x mandatory;"
 				>
 					{#each data.featuredReviews as review}
@@ -234,7 +256,7 @@
 							: 'https://images.unsplash.com/photo-1509248961158-e54f6934749c?w=800&h=450&q=80&fit=crop'}
 						<a
 							href="/reviews/{review.slug}"
-							class="group bg-gray-800/50 rounded-lg overflow-hidden hover:bg-gray-800 transition-all duration-300 relative border border-gray-700 {hasGoldenGhostAwards(review) ? 'hover:border-yellow-500' : 'hover:border-haunt-orange'} transform hover:scale-105 hover:z-10 flex-shrink-0 w-full md:w-[calc((100%-4rem)/3)] flex flex-col"
+							class="group bg-neutral-900/50 rounded-lg overflow-hidden hover:bg-neutral-900 transition-all duration-300 relative border border-neutral-800 {hasGoldenGhostAwards(review) ? 'hover:border-yellow-500' : 'hover:border-haunt-orange'} transform md:hover:scale-105 md:hover:z-10 flex-shrink-0 w-full md:w-[calc((100%-4rem)/3)] flex flex-col"
 							style="scroll-snap-align: center;"
 						>
 							{#if hasGoldenGhostAwards(review)}
@@ -249,7 +271,7 @@
 								</div>
 							{/if}
 
-							<div class="aspect-video overflow-hidden bg-gray-900">
+							<div class="aspect-video overflow-hidden bg-neutral-900">
 								<img
 									src={imageUrl}
 									alt={review.name}
@@ -395,9 +417,9 @@
 						<div class="absolute -inset-2 bg-gradient-to-r from-yellow-600/30 via-yellow-500/40 to-yellow-600/30 rounded-2xl blur-xl opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
 
 						<!-- Card -->
-						<div class="relative bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-2xl overflow-hidden border-2 border-yellow-500/60 group-hover:border-yellow-400 transition-all duration-500" style="box-shadow: 0 0 30px rgba(255,215,0,0.4);">
+						<div class="relative bg-gradient-to-br from-neutral-900 via-black to-neutral-900 rounded-2xl overflow-hidden border-2 border-yellow-500/60 group-hover:border-yellow-400 transition-all duration-500" style="box-shadow: 0 0 30px rgba(255,215,0,0.4);">
 							{#if review.cover_image_url}
-								<div class="aspect-video overflow-hidden relative bg-gray-900">
+								<div class="aspect-video overflow-hidden relative bg-neutral-900">
 									<img
 										src={review.cover_image_url}
 										alt={review.name}

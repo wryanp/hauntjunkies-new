@@ -26,7 +26,6 @@
 	const navLinks = $derived([
 		{ href: '/', label: 'Home' },
 		{ href: '/reviews', label: 'Reviews' },
-		{ href: '/awards', label: 'Awards' },
 		{ href: (isHauntPage || isMcCloudContact) ? '/contact?theme=mccloud' : '/contact', label: 'Contact' },
 		// Show opposite logo in nav: Haunt Junkies logo when on haunt/mccloud pages, McCloud logo when not
 		{
