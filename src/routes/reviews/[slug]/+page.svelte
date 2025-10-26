@@ -16,6 +16,8 @@
 	let commentFormVisible = $state(false);
 	let submitting = $state(false);
 	let captchaToken = $state(dev ? 'dev-mode' : ''); // Auto-pass in dev mode
+	let commentLength = $state(0);
+	const COMMENT_MAX_LENGTH = 2000;
 
 	// Calculate total award count
 	let awardCount = $derived(
@@ -583,12 +585,19 @@
 						</div>
 					</div>
 					<div class="mb-4">
-						<label for="comment_text" class="block text-sm font-medium text-gray-400 mb-2">Comment</label>
+						<div class="flex justify-between items-center mb-2">
+							<label for="comment_text" class="block text-sm font-medium text-gray-400">Comment</label>
+							<span class="text-sm {commentLength > COMMENT_MAX_LENGTH ? 'text-red-400' : 'text-gray-500'}">
+								{commentLength} / {COMMENT_MAX_LENGTH}
+							</span>
+						</div>
 						<textarea
 							id="comment_text"
 							name="comment_text"
 							required
 							rows="4"
+							maxlength={COMMENT_MAX_LENGTH}
+							oninput={(e) => commentLength = e.currentTarget.value.length}
 							class="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white focus:outline-none focus:border-haunt-orange"
 						></textarea>
 					</div>

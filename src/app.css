@@ -411,3 +411,125 @@
     padding-bottom: 0.5rem;
   }
 }
+
+/* Print styles for better review printing */
+@media print {
+  /* Reset colors for printing */
+  * {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Hide non-essential elements */
+  nav,
+  footer,
+  button,
+  .scroll-top-button,
+  [class*="navigation"],
+  [class*="footer"],
+  [class*="comment-form"],
+  [class*="share"],
+  [class*="social"] {
+    display: none !important;
+  }
+
+  /* Page breaks */
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+    page-break-inside: avoid;
+  }
+
+  p, li {
+    orphans: 3;
+    widows: 3;
+  }
+
+  img {
+    page-break-inside: avoid;
+    max-width: 100% !important;
+  }
+
+  /* Show links */
+  a[href]:after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #666;
+  }
+
+  /* Don't show links for internal navigation */
+  a[href^="#"]:after,
+  a[href^="/"]:after {
+    content: "";
+  }
+
+  /* Review content optimization */
+  .review-content,
+  article {
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Remove backgrounds and borders */
+  .bg-black,
+  .bg-gray-900,
+  [class*="bg-"],
+  [class*="border-"] {
+    background: white !important;
+    border-color: #ddd !important;
+  }
+
+  /* Optimize text for readability */
+  body {
+    font-size: 12pt !important;
+    line-height: 1.5 !important;
+    color: black !important;
+    background: white !important;
+  }
+
+  h1 { font-size: 24pt !important; margin-bottom: 12pt; }
+  h2 { font-size: 20pt !important; margin-bottom: 10pt; }
+  h3 { font-size: 16pt !important; margin-bottom: 8pt; }
+  h4 { font-size: 14pt !important; margin-bottom: 6pt; }
+
+  /* Show ratings clearly */
+  [class*="rating"],
+  [class*="score"] {
+    border: 1px solid #333 !important;
+    padding: 4pt;
+    margin: 4pt 0;
+  }
+
+  /* Comments section */
+  [class*="comment"] {
+    border-top: 1px solid #ddd;
+    padding-top: 8pt;
+    margin-top: 8pt;
+  }
+
+  /* Hide decorative elements */
+  [class*="glow"],
+  [class*="shadow"],
+  [class*="overlay"],
+  [class*="blur"],
+  [class*="gradient"] {
+    display: none !important;
+  }
+
+  /* Ensure proper page margins */
+  @page {
+    margin: 2cm;
+  }
+
+  /* Print header with site name */
+  body::before {
+    content: "Haunt Junkies - Haunted Attraction Reviews";
+    display: block;
+    font-size: 10pt;
+    color: #666;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 8pt;
+    margin-bottom: 16pt;
+  }
+}

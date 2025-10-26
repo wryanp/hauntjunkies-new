@@ -6,7 +6,7 @@ import { fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import type { McCloudInfo, McCloudPhoto } from '$lib/types';
 import { checkRateLimit, getClientIP, formatTimeRemaining } from '$lib/rateLimit';
-import { validateEmail, validateText, validatePhone, validateInteger, validateDate } from '$lib/validation';
+import { validateEmail, validateText, validateInteger, validateDate } from '$lib/validation';
 import { verifyTurnstile } from '$lib/captcha';
 import { dev } from '$app/environment';
 
@@ -96,7 +96,6 @@ export const actions: Actions = {
 		// Extract form fields
 		const name = formData.get('name')?.toString() || '';
 		const email = formData.get('email')?.toString() || '';
-		const phone = formData.get('phone')?.toString() || '';
 		const quantityStr = formData.get('quantity')?.toString() || '';
 		const preferred_date = formData.get('preferred_date')?.toString() || '';
 		const message = formData.get('message')?.toString() || '';
@@ -116,12 +115,6 @@ export const actions: Actions = {
 		const emailValidation = validateEmail(email);
 		if (!emailValidation.valid) {
 			return fail(400, { error: emailValidation.error });
-		}
-
-		// Validate phone (optional)
-		const phoneValidation = validatePhone(phone);
-		if (!phoneValidation.valid) {
-			return fail(400, { error: phoneValidation.error });
 		}
 
 		// Validate quantity
@@ -158,7 +151,6 @@ export const actions: Actions = {
 		// Use sanitized values
 		const sanitizedName = nameValidation.sanitized!;
 		const sanitizedEmail = emailValidation.sanitized!;
-		const sanitizedPhone = phone.trim() || null;
 		const sanitizedMessage = messageValidation.sanitized || null;
 		const quantity = quantityValidation.value!;
 
@@ -168,7 +160,7 @@ export const actions: Actions = {
 			.insert({
 				name: sanitizedName,
 				email: sanitizedEmail,
-				phone: sanitizedPhone,
+				phone: null,
 				quantity,
 				preferred_date: validatedDate,
 				message: sanitizedMessage,

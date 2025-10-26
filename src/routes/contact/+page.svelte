@@ -10,6 +10,8 @@
 
 	let submitting = $state(false);
 	let captchaToken = $state(dev ? 'dev-mode' : ''); // Auto-pass in dev mode
+	let messageLength = $state(0);
+	const MESSAGE_MAX_LENGTH = 5000;
 
 	// Detect theme from URL parameter (theme=mccloud for red theme)
 	const isMcCloudTheme = $derived($page.url.searchParams.get('theme') === 'mccloud');
@@ -132,12 +134,19 @@
 				</div>
 
 				<div class="mb-6">
-					<label for="message" class="block text-sm font-medium text-gray-400 mb-2">Message *</label>
+					<div class="flex justify-between items-center mb-2">
+						<label for="message" class="block text-sm font-medium text-gray-400">Message *</label>
+						<span class="text-sm {messageLength > MESSAGE_MAX_LENGTH ? 'text-red-400' : 'text-gray-500'}">
+							{messageLength} / {MESSAGE_MAX_LENGTH}
+						</span>
+					</div>
 					<textarea
 						id="message"
 						name="message"
 						required
 						rows="6"
+						maxlength={MESSAGE_MAX_LENGTH}
+						oninput={(e) => messageLength = e.currentTarget.value.length}
 						class="w-full px-4 py-3 rounded-lg bg-black/50 border-2 border-gray-600 text-white focus:outline-none {isMcCloudTheme ? 'focus:border-haunt-red' : 'focus:border-haunt-orange'}"
 					></textarea>
 				</div>

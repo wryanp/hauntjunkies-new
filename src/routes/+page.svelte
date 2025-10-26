@@ -85,6 +85,21 @@
 		isPaused = false;
 	}
 
+	// Keyboard navigation for carousel
+	function handleKeyPress(event: KeyboardEvent) {
+		if (event.key === 'ArrowLeft') {
+			event.preventDefault();
+			scrollLeft();
+			pauseAutoScroll();
+			setTimeout(resumeAutoScroll, 10000); // Resume after 10 seconds
+		} else if (event.key === 'ArrowRight') {
+			event.preventDefault();
+			scrollRight();
+			pauseAutoScroll();
+			setTimeout(resumeAutoScroll, 10000);
+		}
+	}
+
 	onMount(async () => {
 		// Scroll to top when page loads
 		window.scrollTo({ top: 0, behavior: 'instant' });
@@ -168,12 +183,16 @@
 			},
 		});
 
+		// Add keyboard navigation
+		window.addEventListener('keydown', handleKeyPress);
+
 		// Start auto-scrolling for featured reviews
 		startAutoScroll();
 	});
 
 	onDestroy(() => {
 		stopAutoScroll();
+		window.removeEventListener('keydown', handleKeyPress);
 	});
 
 </script>
