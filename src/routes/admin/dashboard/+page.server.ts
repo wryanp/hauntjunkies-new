@@ -59,66 +59,6 @@ export const load: PageServerLoad = async ({ cookies }) => {
 		.eq('setting_key', 'show_awards_hero')
 		.single();
 
-	// Mock ticket data for demo if no real tickets exist
-	const mockTickets = [
-		{
-			id: 'mock-1',
-			name: 'John Smith',
-			first_name: 'John',
-			last_name: 'Smith',
-			email: 'john.smith@email.com',
-			phone: '555-0101',
-			tickets: 4,
-			date: '2024-10-31',
-			preferred_date: '2024-10-31',
-			special_requests: null,
-			status: 'confirmed',
-			created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString() // 2 hours ago
-		},
-		{
-			id: 'mock-2',
-			name: 'Sarah Johnson',
-			first_name: 'Sarah',
-			last_name: 'Johnson',
-			email: 'sarah.j@email.com',
-			phone: '555-0102',
-			tickets: 2,
-			date: '2024-11-01',
-			preferred_date: '2024-11-01',
-			special_requests: null,
-			status: 'confirmed',
-			created_at: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString() // 5 hours ago
-		},
-		{
-			id: 'mock-3',
-			name: 'Michael Brown',
-			first_name: 'Michael',
-			last_name: 'Brown',
-			email: 'mbrown@email.com',
-			phone: '555-0103',
-			tickets: 6,
-			date: '2024-10-31',
-			preferred_date: '2024-10-31',
-			special_requests: 'Wheelchair accessible',
-			status: 'confirmed',
-			created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString() // 1 day ago
-		},
-		{
-			id: 'mock-4',
-			name: 'Emily Davis',
-			first_name: 'Emily',
-			last_name: 'Davis',
-			email: 'emily.davis@email.com',
-			phone: '555-0104',
-			tickets: 3,
-			date: '2024-11-02',
-			preferred_date: '2024-11-02',
-			special_requests: null,
-			status: 'confirmed',
-			created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() // 2 days ago
-		}
-	];
-
 	return {
 		stats: {
 			reviews: reviewsResult.count || 0,
@@ -134,7 +74,7 @@ export const load: PageServerLoad = async ({ cookies }) => {
 		recentActivity: {
 			reviews: recentReviews.data || [],
 			comments: recentComments.data || [],
-			tickets: (recentTickets.data && recentTickets.data.length > 0) ? recentTickets.data : mockTickets
+			tickets: recentTickets.data || []
 		},
 		showAwardsHero: awardsHeroSetting?.setting_value?.enabled ?? false
 	};

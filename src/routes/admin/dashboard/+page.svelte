@@ -90,19 +90,6 @@
 			<h2 class="text-xl font-bold text-white">Recent Ticket Reservations</h2>
 			<a href="/admin/tickets" class="text-haunt-orange hover:text-orange-400 text-sm font-semibold">View All →</a>
 		</div>
-		{#if data.recentActivity.tickets.length > 0 && data.recentActivity.tickets[0]?.id?.startsWith('mock-')}
-			<div class="bg-yellow-900/20 border border-yellow-500/50 rounded-lg p-3 mb-4">
-				<div class="flex items-start gap-2">
-					<svg class="w-5 h-5 text-yellow-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-					</svg>
-					<div>
-						<p class="text-yellow-400 font-semibold text-sm">Demo Data</p>
-						<p class="text-yellow-300/80 text-xs">No real ticket purchases yet. Showing sample data for preview.</p>
-					</div>
-				</div>
-			</div>
-		{/if}
 		<div class="grid grid-cols-1 md:grid-cols-2 gap-3 overflow-y-auto pr-2">
 			{#if data.recentActivity.tickets.length > 0}
 				{#each data.recentActivity.tickets as ticket}
