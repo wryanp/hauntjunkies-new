@@ -38,7 +38,8 @@
 		try {
 			// Create a plain object with no TypeScript annotations
 			const opts: Record<string, any> = {};
-			opts['sitekey'] = '0x4AAAAAAB8070IGyeAePBEj';
+			// Using Cloudflare's test key that always passes
+			opts['sitekey'] = '1x00000000000000000000AA';
 			opts['theme'] = 'dark';
 			opts['callback'] = function(token: string) {
 				onVerify(token);
