@@ -583,7 +583,7 @@
 				Our very own awards show
 			</p>
 			<p class="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto font-light">
-				Recognizing haunts for creating immersive haunted house experiences
+				Recognizing haunts for creating incredible haunted house experiences
 			</p>
 		</div>
 
