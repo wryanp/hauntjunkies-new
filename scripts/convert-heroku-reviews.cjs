@@ -115,9 +115,7 @@ function parseCopyLine(line) {
 function convertReview(fields) {
   // Map fields
   const name = fields[1];
-  const address1 = fields[2] || '';
-  const address2 = fields[3] || '';
-  const address = (address1 + ' ' + address2).trim() || null;
+  const address = fields[2] || null;  // Keep address1 as address field
   const city = fields[4];
   const state = fields[5];
   const zip = fields[6];
