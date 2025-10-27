@@ -12,8 +12,11 @@
 	let loading = $state(true);
 	let error = $state(false);
 
+	// Hardcoded site key as a workaround for environment variable type issues
+	const SITE_KEY = '0x4AAAAAAB8070IGyeAePBEj';
+
 	onMount(() => {
-		const siteKey = env.PUBLIC_TURNSTILE_SITE_KEY || '';
+		const siteKey = SITE_KEY;
 		console.log('Turnstile Site Key:', siteKey, 'Type:', typeof siteKey);
 
 		if (!siteKey) {
