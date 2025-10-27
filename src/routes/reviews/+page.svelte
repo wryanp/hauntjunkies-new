@@ -63,9 +63,25 @@
 		return grouped;
 	});
 
-	// Get sorted state keys
+	// Get sorted state keys by most recent year and review count
 	const sortedStates = $derived.by(() => {
-		return Object.keys(groupedReviews).sort();
+		return Object.keys(groupedReviews).sort((stateA, stateB) => {
+			// Get the most recent year for each state
+			const yearsA = Object.keys(groupedReviews[stateA]).map(Number).sort((a, b) => b - a);
+			const yearsB = Object.keys(groupedReviews[stateB]).map(Number).sort((a, b) => b - a);
+			const mostRecentYearA = yearsA[0];
+			const mostRecentYearB = yearsB[0];
+
+			// First, sort by most recent year (descending)
+			if (mostRecentYearA !== mostRecentYearB) {
+				return mostRecentYearB - mostRecentYearA;
+			}
+
+			// If same year, sort by total review count in that year (descending)
+			const countA = groupedReviews[stateA][mostRecentYearA.toString()].length;
+			const countB = groupedReviews[stateB][mostRecentYearB.toString()].length;
+			return countB - countA;
+		});
 	});
 </script>
 
