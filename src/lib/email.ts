@@ -408,6 +408,8 @@ export async function sendTicketConfirmation(ticketData: TicketData) {
 		// or RESEND_FROM_EMAIL="Haunt Junkies <noreply@hauntjunkies.com>" (production, after domain verification)
 		const fromEmail = RESEND_FROM_EMAIL;
 
+		console.log(`Sending ticket confirmation email to: ${ticketData.email} from: ${fromEmail}`);
+
 		// Send customer email with calendar attachment
 		const customerEmailResult = await resend.emails.send({
 			from: fromEmail,
@@ -421,6 +423,8 @@ export async function sendTicketConfirmation(ticketData: TicketData) {
 				}
 			]
 		});
+
+		console.log('Customer email result:', customerEmailResult);
 
 		// Check if customer email failed
 		if (customerEmailResult.error) {
