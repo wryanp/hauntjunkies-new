@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { PUBLIC_TURNSTILE_SITE_KEY } from '$env/static/public';
+	import { env } from '$env/dynamic/public';
 
 	let { onVerify = () => {}, onError = () => {} }: {
 		onVerify?: (token: string) => void;
@@ -13,7 +13,7 @@
 	let error = $state(false);
 
 	onMount(() => {
-		const siteKey = String(PUBLIC_TURNSTILE_SITE_KEY || '');
+		const siteKey = env.PUBLIC_TURNSTILE_SITE_KEY || '';
 		console.log('Turnstile Site Key:', siteKey, 'Type:', typeof siteKey);
 
 		if (!siteKey) {
