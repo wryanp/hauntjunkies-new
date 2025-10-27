@@ -248,12 +248,12 @@
 				<div class="w-48 h-1 bg-gradient-to-r from-transparent via-haunt-orange to-transparent mx-auto mb-6"></div>
 			</div>
 
-			<p class="text-2xl md:text-3xl text-orange-100 font-bold max-w-3xl mx-auto mb-2">
+			<!-- <p class="text-2xl md:text-3xl text-orange-100 font-bold max-w-3xl mx-auto mb-2">
 				Expert reviews from real haunt enthusiasts
 			</p>
 			<p class="text-lg text-gray-400 font-light">
 				Read reviews from our previous haunt tours
-			</p>
+			</p> -->
 		</div>
 
 		{#if data.featuredReviews && data.featuredReviews.length > 0}
