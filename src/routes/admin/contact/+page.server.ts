@@ -3,6 +3,7 @@ import { createServerClient } from '@supabase/ssr';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
 import { fail } from '@sveltejs/kit';
+import { verifyAdminAuth } from '$lib/server/auth';
 
 export const load: PageServerLoad = async ({ cookies }) => {
 	const supabase = createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
@@ -37,8 +38,7 @@ export const load: PageServerLoad = async ({ cookies }) => {
 export const actions: Actions = {
 	toggleRead: async ({ request, cookies }) => {
 		// Verify admin authentication
-		const adminSession = cookies.get('admin_session');
-		if (!adminSession) {
+		if (!(await verifyAdminAuth(cookies))) {
 			return fail(401, { error: 'Unauthorized' });
 		}
 
@@ -87,8 +87,7 @@ export const actions: Actions = {
 
 	markAllRead: async ({ cookies }) => {
 		// Verify admin authentication
-		const adminSession = cookies.get('admin_session');
-		if (!adminSession) {
+		if (!(await verifyAdminAuth(cookies))) {
 			return fail(401, { error: 'Unauthorized' });
 		}
 
@@ -119,8 +118,7 @@ export const actions: Actions = {
 
 	delete: async ({ request, cookies }) => {
 		// Verify admin authentication
-		const adminSession = cookies.get('admin_session');
-		if (!adminSession) {
+		if (!(await verifyAdminAuth(cookies))) {
 			return fail(401, { error: 'Unauthorized' });
 		}
 

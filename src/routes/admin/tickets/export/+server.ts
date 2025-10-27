@@ -3,11 +3,11 @@ import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { verifyAdminAuth } from '$lib/server/auth';
 
 export const GET: RequestHandler = async ({ url, cookies }) => {
 	// Verify admin authentication
-	const adminSession = cookies.get('admin_session');
-	if (!adminSession) {
+	if (!(await verifyAdminAuth(cookies))) {
 		throw error(401, 'Unauthorized');
 	}
 
