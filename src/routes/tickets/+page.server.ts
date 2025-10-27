@@ -267,6 +267,9 @@ export const actions = {
 
 		if (!emailResult.success) {
 			// Don't fail the request - ticket is already saved
+			console.error('Email send failed:', emailResult.error);
+		} else {
+			console.log('Email sent successfully to:', sanitizedEmail);
 		}
 
 		return {
