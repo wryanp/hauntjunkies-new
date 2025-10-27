@@ -489,11 +489,24 @@
 
 					<!-- CAPTCHA Widget -->
 					{#if formData.date && formData.tickets > 0 && data.availableDates.length > 0}
-						<div class="mt-6">
+						<div class="mt-6 border-2 border-yellow-500 p-4 rounded-lg">
+							<p class="text-yellow-400 text-sm mb-2">🔍 CAPTCHA Section (Debug)</p>
+							<p class="text-gray-400 text-xs mb-4">
+								Date: {formData.date} | Tickets: {formData.tickets} | Available Dates: {data.availableDates.length}
+							</p>
 							<TurnstileWidget
 								onVerify={(token) => captchaToken = token}
 								onError={() => captchaToken = ''}
 							/>
+						</div>
+					{:else}
+						<div class="mt-6 border-2 border-red-500 p-4 rounded-lg">
+							<p class="text-red-400 text-sm">⚠️ CAPTCHA Not Showing (Debug)</p>
+							<p class="text-gray-400 text-xs">
+								Date: {formData.date || 'not set'} |
+								Tickets: {formData.tickets} |
+								Available Dates: {data.availableDates.length}
+							</p>
 						</div>
 					{/if}
 
