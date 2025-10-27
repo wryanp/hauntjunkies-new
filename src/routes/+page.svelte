@@ -579,9 +579,6 @@
 				<div class="w-48 h-1 bg-gradient-to-r from-transparent via-yellow-500 to-transparent mx-auto mb-6"></div>
 			</div>
 
-			<p class="text-2xl md:text-3xl text-yellow-100 font-bold max-w-3xl mx-auto mb-4">
-				Our very own awards show
-			</p>
 			<p class="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto font-light">
 				Recognizing haunts for creating incredible haunted house experiences
 			</p>
