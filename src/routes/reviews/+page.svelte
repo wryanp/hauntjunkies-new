@@ -36,10 +36,10 @@
 		});
 	});
 
-	// Group reviews by state and year for organized display
+	// Group reviews by year first, then by state for organized display
 	type GroupedReviews = {
-		[state: string]: {
-			[year: string]: Review[]
+		[year: string]: {
+			[state: string]: Review[]
 		}
 	};
 
@@ -47,42 +47,35 @@
 		const grouped: GroupedReviews = {};
 
 		filteredReviews.forEach(review => {
-			const state = review.state || 'Unknown State';
 			const year = review.year?.toString() || 'Unknown Year';
+			const state = review.state || 'Unknown State';
 
-			if (!grouped[state]) {
-				grouped[state] = {};
+			if (!grouped[year]) {
+				grouped[year] = {};
 			}
-			if (!grouped[state][year]) {
-				grouped[state][year] = [];
+			if (!grouped[year][state]) {
+				grouped[year][state] = [];
 			}
 
-			grouped[state][year].push(review);
+			grouped[year][state].push(review);
 		});
 
 		return grouped;
 	});
 
-	// Get sorted state keys by most recent year and review count
-	const sortedStates = $derived.by(() => {
-		return Object.keys(groupedReviews).sort((stateA, stateB) => {
-			// Get the most recent year for each state
-			const yearsA = Object.keys(groupedReviews[stateA]).map(Number).sort((a, b) => b - a);
-			const yearsB = Object.keys(groupedReviews[stateB]).map(Number).sort((a, b) => b - a);
-			const mostRecentYearA = yearsA[0];
-			const mostRecentYearB = yearsB[0];
+	// Get sorted year keys (most recent first)
+	const sortedYears = $derived.by(() => {
+		return Object.keys(groupedReviews).sort((a, b) => Number(b) - Number(a));
+	});
 
-			// First, sort by most recent year (descending)
-			if (mostRecentYearA !== mostRecentYearB) {
-				return mostRecentYearB - mostRecentYearA;
-			}
-
-			// If same year, sort by total review count in that year (descending)
-			const countA = groupedReviews[stateA][mostRecentYearA.toString()].length;
-			const countB = groupedReviews[stateB][mostRecentYearB.toString()].length;
+	// Get sorted states within each year (by review count)
+	const getSortedStatesForYear = (year: string) => {
+		return Object.keys(groupedReviews[year]).sort((stateA, stateB) => {
+			const countA = groupedReviews[year][stateA].length;
+			const countB = groupedReviews[year][stateB].length;
 			return countB - countA;
 		});
-	});
+	};
 </script>
 
 <SEO
@@ -168,30 +161,30 @@
 			</div>
 		</div>
 
-		<!-- Reviews organized by State and Year -->
+		<!-- Reviews organized by Year and State -->
 		{#if filteredReviews.length > 0}
-			{#each sortedStates as state}
+			{#each sortedYears as year}
 				<div class="mb-16">
-					<!-- State Header -->
+					<!-- Year Header -->
 					<div class="mb-8">
 						<h2 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-haunt-orange via-orange-500 to-haunt-orange mb-2">
-							{getStateName(state)}
+							{year}
 						</h2>
 						<div class="w-24 h-1 bg-gradient-to-r from-haunt-orange to-transparent"></div>
 					</div>
 
-					<!-- Years within this state -->
-					{#each Object.keys(groupedReviews[state]).sort((a, b) => Number(b) - Number(a)) as year}
+					<!-- States within this year -->
+					{#each getSortedStatesForYear(year) as state}
 						<div class="mb-12">
-							<!-- Year subheader -->
+							<!-- State subheader -->
 							<h3 class="text-2xl md:text-3xl font-bold text-white mb-6 flex items-center gap-3">
-								<span class="text-haunt-orange">{year}</span>
+								<span class="text-haunt-orange">{getStateName(state)}</span>
 								<div class="h-px flex-1 bg-gradient-to-r from-gray-700 to-transparent"></div>
 							</h3>
 
-							<!-- Reviews grid for this year -->
+							<!-- Reviews grid for this state -->
 							<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-								{#each groupedReviews[state][year] as review}
+								{#each groupedReviews[year][state] as review}
 									{@const logo = data.logos[review.id]}
 									{@const imageUrl = logo || (isValidImageUrl(review.cover_image_url)
 										? review.cover_image_url
