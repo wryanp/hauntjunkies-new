@@ -13,7 +13,9 @@
 	let error = $state(false);
 
 	onMount(() => {
+		console.log('Turnstile Site Key:', PUBLIC_TURNSTILE_SITE_KEY);
 		if (!PUBLIC_TURNSTILE_SITE_KEY) {
+			console.error('No site key found!');
 			error = true;
 			loading = false;
 			return;
