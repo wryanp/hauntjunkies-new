@@ -102,7 +102,7 @@ src/routes/
 │       ├── +page.svelte        # Individual review
 │       └── +page.server.ts     # Review data + comments
 ├── haunt/
-│   ├── +page.svelte            # McCloud Manor (⚠️ Note: /haunt not /mccloudmanor)
+│   ├── +page.svelte            # McCloud Manor (⚠️ Note: /mccloudmanor not /mccloudmanor)
 │   └── +page.server.ts         # Manor data + ticket requests
 ├── tickets/
 │   ├── +page.svelte            # Ticket purchase form
@@ -127,7 +127,7 @@ src/routes/
 | `/` | Homepage with featured reviews, parallax hero, CTAs | |
 | `/reviews` | List all reviews with search/filter | |
 | `/reviews/[slug]` | Individual review detail pages | Slug-based routing |
-| `/haunt` | McCloud Manor home haunt page | ⚠️ **Not** `/mccloudmanor` |
+| `/mccloudmanor` | McCloud Manor home haunt page | ⚠️ **Not** `/mccloudmanor` |
 | `/tickets` | Direct ticket purchase with capacity check | Uses atomic DB function |
 | `/contact` | Contact form | |
 | `/shop` | Shopify merchandise | Future admin at `/admin` |
@@ -551,7 +551,7 @@ See [REMAINING-WORK.md](REMAINING-WORK.md) for full list.
 **Via Supabase:**
 1. 🌐 Supabase Table Editor → `mccloud_info`
 2. ✏️ Edit the single row
-3. ✅ Changes reflect immediately on `/haunt` page
+3. ✅ Changes reflect immediately on `/mccloudmanor` page
 
 ---
 

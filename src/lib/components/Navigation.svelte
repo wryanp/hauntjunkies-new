@@ -6,11 +6,11 @@
 	let scrolled = $state(false); // false = transparent, true = black background
 
 	// Determine which logo to show based on current page
-	const isHauntPage = $derived($page.url.pathname === '/haunt' || $page.url.pathname === '/tickets');
+	const isHauntPage = $derived($page.url.pathname === '/mccloudmanor' || $page.url.pathname === '/tickets');
 	const isMcCloudContact = $derived($page.url.pathname === '/contact' && $page.url.searchParams.get('theme') === 'mccloud');
 	const logoSrc = $derived((isHauntPage || isMcCloudContact) ? '/mccloudmanor.webp' : '/logo-url.webp');
 	const logoAlt = $derived((isHauntPage || isMcCloudContact) ? 'McCloud Manor' : 'Haunt Junkies');
-	const logoHref = $derived((isHauntPage || isMcCloudContact) ? '/haunt' : '/');
+	const logoHref = $derived((isHauntPage || isMcCloudContact) ? '/mccloudmanor' : '/');
 
 	// Dynamic hamburger menu color based on current page
 	const hamburgerBgColor = $derived((isHauntPage || isMcCloudContact) ? 'bg-haunt-red/50 hover:bg-haunt-red/60' : 'bg-haunt-orange/50 hover:bg-haunt-orange/60');
@@ -29,7 +29,7 @@
 		{ href: (isHauntPage || isMcCloudContact) ? '/contact?theme=mccloud' : '/contact', label: 'Contact' },
 		// Show opposite logo in nav: Haunt Junkies logo when on haunt/mccloud pages, McCloud logo when not
 		{
-			href: (isHauntPage || isMcCloudContact) ? '/' : '/haunt',
+			href: (isHauntPage || isMcCloudContact) ? '/' : '/mccloudmanor',
 			label: (isHauntPage || isMcCloudContact) ? 'Haunt Junkies' : 'McCloud Manor',
 			logoSrc: (isHauntPage || isMcCloudContact) ? '/logo-url.webp' : '/mccloudmanor.webp',
 			isLogo: true

@@ -14,7 +14,7 @@
 	const isAdminPage = $derived($page.url.pathname.startsWith('/admin'));
 
 	// Determine button color based on current page
-	const isHauntPage = $derived($page.url.pathname === '/haunt' || $page.url.pathname === '/tickets');
+	const isHauntPage = $derived($page.url.pathname === '/mccloudmanor' || $page.url.pathname === '/tickets');
 	const buttonColorClass = $derived(isHauntPage ? 'bg-haunt-red/40 hover:bg-haunt-red' : 'bg-haunt-orange/40 hover:bg-haunt-orange');
 
 	onMount(() => {
@@ -76,13 +76,13 @@
 		});
 
 		button.addEventListener('mouseenter', () => {
-			const isHaunt = $page.url.pathname === '/haunt' || $page.url.pathname === '/tickets';
+			const isHaunt = $page.url.pathname === '/mccloudmanor' || $page.url.pathname === '/tickets';
 			button.style.background = isHaunt ? 'rgba(164, 18, 20, 1)' : 'rgba(252, 116, 3, 1)';
 			button.style.transform = 'scale(1.1)';
 		});
 
 		button.addEventListener('mouseleave', () => {
-			const isHaunt = $page.url.pathname === '/haunt' || $page.url.pathname === '/tickets';
+			const isHaunt = $page.url.pathname === '/mccloudmanor' || $page.url.pathname === '/tickets';
 			button.style.background = isHaunt ? 'rgba(164, 18, 20, 0.4)' : 'rgba(252, 116, 3, 0.4)';
 			button.style.transform = 'scale(1)';
 		});
@@ -95,7 +95,7 @@
 			button.style.display = shouldShow && !isAdmin ? 'block' : 'none';
 
 			// Update color based on page
-			const isHaunt = $page.url.pathname === '/haunt' || $page.url.pathname === '/tickets';
+			const isHaunt = $page.url.pathname === '/mccloudmanor' || $page.url.pathname === '/tickets';
 			button.style.background = isHaunt ? 'rgba(164, 18, 20, 0.4)' : 'rgba(252, 116, 3, 0.4)';
 		};
 

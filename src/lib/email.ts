@@ -68,9 +68,9 @@ function generateCalendarInvite(ticketData: TicketData): string {
 		start: startDateTime,
 		end: endDateTime,
 		summary: 'McCloud Manor',
-		description: `Your tickets for McCloud Manor!\n\nTickets: ${ticketData.tickets}\n\nAddress: 2100 Carlysle Park Lane, Lawrenceville, GA 30044\n\nParking is free but EXTREMELY limited! Please carpool or even Uber/Lyft if possible. Do not park in or block any of our neighbors driveways.\n\nMore info: https://hauntjunkies.com/haunt#faq`,
+		description: `Your tickets for McCloud Manor!\n\nTickets: ${ticketData.tickets}\n\nAddress: 2100 Carlysle Park Lane, Lawrenceville, GA 30044\n\nParking is free but EXTREMELY limited! Please carpool or even Uber/Lyft if possible. Do not park in or block any of our neighbors driveways.\n\nMore info: https://hauntjunkies.com/mccloudmanor#faq`,
 		location: '2100 Carlysle Park Lane, Lawrenceville, GA 30044',
-		url: 'https://hauntjunkies.com/haunt'
+		url: 'https://hauntjunkies.com/mccloudmanor'
 	});
 
 	return calendar.toString();
@@ -216,7 +216,7 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 										</a>
 									</td>
 									<td class="button-column" width="48%" style="padding-left: 2%;">
-										<a href="https://hauntjunkies.com/haunt#faq" class="button-link" style="display: block; background-color: #a41214; color: #ffffff; text-decoration: none; padding: 14px 24px; border-radius: 4px; text-align: center; font-weight: 600; font-size: 14px;">
+										<a href="https://hauntjunkies.com/mccloudmanor#faq" class="button-link" style="display: block; background-color: #a41214; color: #ffffff; text-decoration: none; padding: 14px 24px; border-radius: 4px; text-align: center; font-weight: 600; font-size: 14px;">
 											View FAQ
 										</a>
 									</td>
@@ -257,7 +257,7 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 								Questions? Contact us at <a href="mailto:hauntjunkies@gmail.com" style="color: #a41214; text-decoration: none; font-weight: 600;">hauntjunkies@gmail.com</a>
 							</p>
 							<p style="margin: 0 0 16px 0; font-size: 14px; color: #666666;">
-								<a href="https://hauntjunkies.com/haunt" style="color: #a41214; text-decoration: none; font-weight: 600;">Visit McCloud Manor Website</a>
+								<a href="https://hauntjunkies.com/mccloudmanor" style="color: #a41214; text-decoration: none; font-weight: 600;">Visit McCloud Manor Website</a>
 							</p>
 							<p style="margin: 0; font-size: 12px; color: #999999;">
 								© ${new Date().getFullYear()} Haunt Junkies. All rights reserved.

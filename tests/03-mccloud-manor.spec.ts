@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('McCloud Manor (Haunt) Page', () => {
 	test('should load McCloud Manor page', async ({ page }) => {
-		await page.goto('/haunt');
+		await page.goto('/mccloudmanor');
 
 		// Check page loaded
 		await expect(page).toHaveTitle(/McCloud|Haunt|Junkies/i);
@@ -12,7 +12,7 @@ test.describe('McCloud Manor (Haunt) Page', () => {
 	});
 
 	test('should display manor information', async ({ page }) => {
-		await page.goto('/haunt');
+		await page.goto('/mccloudmanor');
 		await page.waitForLoadState('networkidle');
 
 		// Look for typical manor content
@@ -26,7 +26,7 @@ test.describe('McCloud Manor (Haunt) Page', () => {
 	});
 
 	test('should have ticket purchase link or form', async ({ page }) => {
-		await page.goto('/haunt');
+		await page.goto('/mccloudmanor');
 		await page.waitForLoadState('networkidle');
 
 		// Look for ticket-related elements
@@ -41,7 +41,7 @@ test.describe('McCloud Manor (Haunt) Page', () => {
 	});
 
 	test('should display photo gallery if available', async ({ page }) => {
-		await page.goto('/haunt');
+		await page.goto('/mccloudmanor');
 		await page.waitForLoadState('networkidle');
 
 		// Look for images
@@ -58,7 +58,7 @@ test.describe('McCloud Manor (Haunt) Page', () => {
 			errors.push(error.message);
 		});
 
-		await page.goto('/haunt');
+		await page.goto('/mccloudmanor');
 		await page.waitForLoadState('networkidle');
 
 		const ssrErrors = errors.filter(err =>

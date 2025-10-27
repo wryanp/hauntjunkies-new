@@ -17,7 +17,7 @@ export const GET: RequestHandler = async () => {
 	const staticPages = [
 		{ url: '', priority: '1.0', changefreq: 'weekly' }, // Homepage
 		{ url: 'reviews', priority: '0.9', changefreq: 'daily' },
-		{ url: 'haunt', priority: '0.8', changefreq: 'monthly' },
+		{ url: 'mccloudmanor', priority: '0.8', changefreq: 'monthly' },
 		{ url: 'tickets', priority: '0.7', changefreq: 'monthly' },
 		{ url: 'contact', priority: '0.6', changefreq: 'monthly' },
 		{ url: 'about', priority: '0.5', changefreq: 'yearly' }

@@ -700,7 +700,7 @@
 				A <span class="glitch-text-terrifying text-white font-bold">terrifying</span> home haunt experience brought to you by Haunt Junkies
 			</p>
 			<a
-				href="/haunt"
+				href="/mccloudmanor"
 				class="group inline-flex items-center gap-3 bg-gradient-to-r from-haunt-red to-red-900 hover:from-red-900 hover:to-haunt-red text-white font-extrabold py-5 px-12 rounded-xl transition-all transform hover:scale-105 shadow-2xl overflow-hidden relative text-xl"
 				style="box-shadow: 0 0 40px rgba(164,18,20,0.6);"
 			>

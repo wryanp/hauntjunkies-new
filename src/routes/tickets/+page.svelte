@@ -232,7 +232,7 @@
 
 				<div class="flex flex-col gap-4">
 					<a
-						href="/haunt"
+						href="/mccloudmanor"
 						class="px-6 py-3 bg-gradient-to-r from-haunt-red to-red-600 hover:from-red-600 hover:to-haunt-red text-white font-bold rounded-xl transition-all text-center"
 					>
 						Back to McCloud Manor
@@ -516,7 +516,7 @@
 								{submitting ? 'Processing...' : 'Reserve Tickets'}
 							</button>
 							<a
-								href="/haunt"
+								href="/mccloudmanor"
 								class="w-full px-8 py-4 bg-black/50 hover:bg-black/70 text-white font-bold rounded-xl border-2 border-haunt-red/30 hover:border-haunt-red/50 transition-all text-lg text-center"
 							>
 								Cancel

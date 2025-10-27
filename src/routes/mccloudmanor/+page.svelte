@@ -308,7 +308,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 <SEO
 	title="McCloud Manor"
 	description="Experience the terror of McCloud Manor - A haunted attraction like no other. Professional haunted house in Atlanta featuring extreme scares, interactive actors, and unforgettable horror. Book your tickets now!"
-	url="/haunt"
+	url="/mccloudmanor"
 	image="/og.png"
 	type="website"
 />
