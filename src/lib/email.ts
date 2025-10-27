@@ -113,7 +113,7 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 				padding: 30px 20px !important;
 			}
 			.mobile-font-xlarge {
-				font-size: 38px !important;
+				font-size: 50px !important;
 			}
 			.mobile-font-large {
 				font-size: 24px !important;
@@ -146,7 +146,10 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 					<!-- Header -->
 					<tr>
 						<td align="center" class="mobile-header-padding" style="padding: 50px 40px; background-color: #000000; border-bottom: 4px solid #a41214;">
-							<h1 style="margin: 0; font-size: 65px; font-weight: 700; color: #a41214; font-family: 'Karma', 'Georgia', serif; letter-spacing: 1px; text-transform: uppercase; text-align: center; line-height: 1.1; white-space: nowrap;">McCloud Manor</h1>
+							<h1 style="margin: 0; font-size: 90px; font-weight: 700; color: #a41214; font-family: 'Karma', 'Georgia', serif; letter-spacing: 2px; text-transform: uppercase; text-align: center; line-height: 1; white-space: nowrap;">
+							<span style="display: inline;">MCCLOUD</span>
+							<span style="display: inline; margin-left: 20px;">MANOR</span>
+						</h1>
 						</td>
 					</tr>
 
