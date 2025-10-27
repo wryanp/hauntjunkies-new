@@ -13,8 +13,10 @@
 	let error = $state(false);
 
 	onMount(() => {
-		console.log('Turnstile Site Key:', PUBLIC_TURNSTILE_SITE_KEY);
-		if (!PUBLIC_TURNSTILE_SITE_KEY) {
+		const siteKey = String(PUBLIC_TURNSTILE_SITE_KEY || '');
+		console.log('Turnstile Site Key:', siteKey, 'Type:', typeof siteKey);
+
+		if (!siteKey) {
 			console.error('No site key found!');
 			error = true;
 			loading = false;
@@ -28,7 +30,7 @@
 		script.defer = true;
 		script.crossOrigin = 'anonymous';
 		script.onload = () => {
-			setTimeout(() => renderWidget(), 100);
+			setTimeout(() => renderWidget(siteKey), 100);
 		};
 		script.onerror = () => {
 			error = true;
@@ -44,7 +46,7 @@
 		};
 	});
 
-	function renderWidget() {
+	function renderWidget(siteKey: string) {
 		if (!containerRef || !(window as any).turnstile) {
 			error = true;
 			loading = false;
@@ -52,8 +54,9 @@
 		}
 
 		try {
+			console.log('Rendering Turnstile with sitekey:', siteKey, 'Type:', typeof siteKey);
 			widgetId = (window as any).turnstile.render(containerRef, {
-				sitekey: PUBLIC_TURNSTILE_SITE_KEY,
+				sitekey: siteKey,
 				theme: 'dark',
 				callback: (token: string) => {
 					loading = false;
@@ -67,6 +70,7 @@
 			});
 			loading = false;
 		} catch (e) {
+			console.error('Turnstile render error:', e);
 			error = true;
 			loading = false;
 		}
