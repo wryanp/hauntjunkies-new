@@ -68,12 +68,23 @@
 		return Object.keys(groupedReviews).sort((a, b) => Number(b) - Number(a));
 	});
 
-	// Get sorted states within each year (by review count)
+	// Get sorted states within each year (by most recent upload)
 	const getSortedStatesForYear = (year: string) => {
 		return Object.keys(groupedReviews[year]).sort((stateA, stateB) => {
-			const countA = groupedReviews[year][stateA].length;
-			const countB = groupedReviews[year][stateB].length;
-			return countB - countA;
+			// Get the most recent upload date for each state
+			const reviewsA = groupedReviews[year][stateA];
+			const reviewsB = groupedReviews[year][stateB];
+
+			const mostRecentA = reviewsA.reduce((latest, review) => {
+				return new Date(review.created_at) > new Date(latest.created_at) ? review : latest;
+			}, reviewsA[0]);
+
+			const mostRecentB = reviewsB.reduce((latest, review) => {
+				return new Date(review.created_at) > new Date(latest.created_at) ? review : latest;
+			}, reviewsB[0]);
+
+			// Sort by most recent upload (descending)
+			return new Date(mostRecentB.created_at).getTime() - new Date(mostRecentA.created_at).getTime();
 		});
 	};
 </script>
