@@ -91,8 +91,13 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 	<meta name="color-scheme" content="light only">
 	<meta name="supported-color-schemes" content="light only">
 	<title>Your McCloud Manor Tickets</title>
-	<link href="https://fonts.googleapis.com/css2?family=Karma:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 	<style type="text/css">
+		@font-face {
+			font-family: 'Karma';
+			src: url('https://hauntjunkies.com/fonts/Karma-FreeVersion.ttf') format('truetype');
+			font-weight: normal;
+			font-style: normal;
+		}
 		:root {
 			color-scheme: light only;
 			supported-color-schemes: light only;
