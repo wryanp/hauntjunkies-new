@@ -8,6 +8,7 @@
 	import type { PageData, ActionData } from './$types';
 	import AwardsManager from '$lib/components/AwardsManager.svelte';
 	import { getAwardCount } from '$lib/utils/awards';
+	import RichTextEditor from '$lib/components/RichTextEditor.svelte';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
@@ -347,6 +348,119 @@
 
 	<!-- Form -->
 	{#if showForm}
+	<!-- Images Section (Separate forms for uploads when editing) -->
+	{#if editingReview}
+		<div class="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-haunt-orange/30 p-6 space-y-6">
+			<h2 class="text-2xl font-bold text-white mb-6">Images</h2>
+
+			<!-- Social Media Share Image -->
+			<div>
+				<label class="block text-white font-semibold mb-2">
+					Social Media Share Image
+				</label>
+
+				{#if reviewData.reviewImage?.trim()}
+					<div class="mb-3">
+						<p class="text-xs text-gray-400 mb-2">Current Social Share Image:</p>
+						<div class="w-full max-w-2xl mx-auto overflow-hidden rounded-lg border-2 border-haunt-orange/50 bg-black p-4">
+							<img src={reviewData.reviewImage} alt="Current social share" class="w-full h-auto object-contain aspect-[1200/630]" />
+						</div>
+					</div>
+				{/if}
+
+				<form method="POST" action="?/uploadSocialImage" enctype="multipart/form-data" use:enhance={() => {
+					return async ({ result, update }) => {
+						await update();
+						if (result.type === 'success') {
+							await invalidateAll();
+						}
+					};
+				}}>
+					<input type="hidden" name="id" value={editingReview} />
+					<div class="space-y-3">
+						<input
+							type="file"
+							name="socialImageFile"
+							accept="image/png,image/jpeg,image/jpg,image/webp"
+							class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-haunt-orange/20 file:text-haunt-orange hover:file:bg-haunt-orange/30 file:cursor-pointer"
+						/>
+						<button
+							type="submit"
+							class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-all font-semibold bg-haunt-orange/20 hover:bg-haunt-orange/30 text-haunt-orange border-haunt-orange/50"
+						>
+							<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+							</svg>
+							{reviewData.reviewImage ? 'Replace Social Share Image' : 'Upload Social Share Image'}
+						</button>
+					</div>
+				</form>
+
+				<div class="flex items-start gap-2 mt-2">
+					<svg class="w-4 h-4 text-haunt-orange mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+						<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+					</svg>
+					<p class="text-gray-500 text-sm">
+						This image appears when the review is shared on social media, text messages, or other platforms. <strong class="text-haunt-orange">Recommended: 1200x630px (Open Graph standard)</strong>. Max file size: 10MB.
+					</p>
+				</div>
+			</div>
+
+			<!-- Logo Image -->
+			<div>
+				<label class="block text-white font-semibold mb-2">
+					Logo Image
+				</label>
+
+				{#if data.logos[editingReview]}
+					<div class="mb-3">
+						<p class="text-xs text-gray-400 mb-2">Current Logo:</p>
+						<div class="w-full max-w-md mx-auto overflow-hidden rounded-lg border-2 border-haunt-orange/50 bg-black p-4">
+							<img src={data.logos[editingReview]} alt="Current logo" class="w-full h-32 object-contain" />
+						</div>
+					</div>
+				{/if}
+
+				<form method="POST" action="?/uploadLogo" enctype="multipart/form-data" use:enhance={() => {
+					return async ({ result, update }) => {
+						await update();
+						if (result.type === 'success') {
+							await invalidateAll();
+						}
+					};
+				}}>
+					<input type="hidden" name="id" value={editingReview} />
+					<div class="space-y-3">
+						<input
+							type="file"
+							name="logoFile"
+							accept="image/png,image/jpeg,image/jpg,image/webp"
+							class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-haunt-orange/20 file:text-haunt-orange hover:file:bg-haunt-orange/30 file:cursor-pointer"
+						/>
+						<button
+							type="submit"
+							class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-all font-semibold bg-haunt-orange/20 hover:bg-haunt-orange/30 text-haunt-orange border-haunt-orange/50"
+						>
+							<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+							</svg>
+							{data.logos[editingReview] ? 'Replace Logo' : 'Upload Logo'}
+						</button>
+					</div>
+				</form>
+
+				<div class="flex items-start gap-2 mt-2">
+					<svg class="w-4 h-4 text-haunt-orange mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+						<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+					</svg>
+					<p class="text-gray-500 text-sm">
+						The logo appears on review cards and detail pages. <strong class="text-haunt-orange">Recommended: Square or transparent PNG</strong>. Max file size: 5MB.
+					</p>
+				</div>
+			</div>
+		</div>
+	{/if}
+
 	<form method="POST" action={editingReview ? '?/update' : '?/create'} use:enhance={() => {
 		submitting = true;
 		const isEditing = !!editingReview;
@@ -381,122 +495,6 @@
 		<input type="hidden" name="twitter_url" value={reviewData.socialLinks.twitter} />
 		<input type="hidden" name="tiktok_url" value={reviewData.socialLinks.tiktok} />
 		<input type="hidden" name="youtube_url" value={reviewData.socialLinks.youtube} />
-
-		<!-- Images -->
-		<div class="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-haunt-orange/30 p-6">
-			<h2 class="text-2xl font-bold text-white mb-6">Images</h2>
-
-			<!-- Social Media Share Image -->
-			{#if editingReview}
-				<div class="mb-6">
-					<label class="block text-white font-semibold mb-2">
-						Social Media Share Image
-					</label>
-
-					{#if reviewData.reviewImage?.trim()}
-						<div class="mb-3">
-							<p class="text-xs text-gray-400 mb-2">Current Social Share Image:</p>
-							<div class="w-full max-w-2xl mx-auto overflow-hidden rounded-lg border-2 border-haunt-orange/50 bg-black p-4">
-								<img src={reviewData.reviewImage} alt="Current social share" class="w-full h-auto object-contain aspect-[1200/630]" />
-							</div>
-						</div>
-					{/if}
-
-					<form method="POST" action="?/uploadSocialImage" enctype="multipart/form-data" use:enhance={() => {
-						return async ({ result, update }) => {
-							await update();
-							if (result.type === 'success') {
-								await invalidateAll();
-							}
-						};
-					}}>
-						<input type="hidden" name="id" value={editingReview} />
-						<div class="space-y-3">
-							<input
-								type="file"
-								name="socialImageFile"
-								accept="image/png,image/jpeg,image/jpg,image/webp"
-								class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-haunt-orange/20 file:text-haunt-orange hover:file:bg-haunt-orange/30 file:cursor-pointer"
-							/>
-							<button
-								type="submit"
-								class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-all font-semibold bg-haunt-orange/20 hover:bg-haunt-orange/30 text-haunt-orange border-haunt-orange/50"
-							>
-								<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-								</svg>
-								{reviewData.reviewImage ? 'Replace Social Share Image' : 'Upload Social Share Image'}
-							</button>
-						</div>
-					</form>
-
-					<div class="flex items-start gap-2 mt-2">
-						<svg class="w-4 h-4 text-haunt-orange mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-							<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-						</svg>
-						<p class="text-gray-500 text-sm">
-							This image appears when the review is shared on social media, text messages, or other platforms. <strong class="text-haunt-orange">Recommended: 1200x630px (Open Graph standard)</strong>. Max file size: 10MB.
-						</p>
-					</div>
-				</div>
-			{/if}
-
-			<!-- Logo Image -->
-			{#if editingReview}
-				<div class="mb-6">
-					<label class="block text-white font-semibold mb-2">
-						Logo Image
-					</label>
-
-					{#if data.logos[editingReview]}
-						<div class="mb-3">
-							<p class="text-xs text-gray-400 mb-2">Current Logo:</p>
-							<div class="w-full max-w-md mx-auto overflow-hidden rounded-lg border-2 border-haunt-orange/50 bg-black p-4">
-								<img src={data.logos[editingReview]} alt="Current logo" class="w-full h-32 object-contain" />
-							</div>
-						</div>
-					{/if}
-
-					<form method="POST" action="?/uploadLogo" enctype="multipart/form-data" use:enhance={() => {
-						return async ({ result, update }) => {
-							await update();
-							if (result.type === 'success') {
-								await invalidateAll();
-							}
-						};
-					}}>
-						<input type="hidden" name="id" value={editingReview} />
-						<div class="space-y-3">
-							<input
-								type="file"
-								name="logoFile"
-								accept="image/png,image/jpeg,image/jpg,image/webp"
-								class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-haunt-orange/20 file:text-haunt-orange hover:file:bg-haunt-orange/30 file:cursor-pointer"
-							/>
-							<button
-								type="submit"
-								class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-all font-semibold bg-haunt-orange/20 hover:bg-haunt-orange/30 text-haunt-orange border-haunt-orange/50"
-							>
-								<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-								</svg>
-								{data.logos[editingReview] ? 'Replace Logo' : 'Upload Logo'}
-							</button>
-						</div>
-					</form>
-
-					<div class="flex items-start gap-2 mt-2">
-						<svg class="w-4 h-4 text-haunt-orange mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-							<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-						</svg>
-						<p class="text-gray-500 text-sm">
-							The logo appears on review cards and detail pages. <strong class="text-haunt-orange">Recommended: Square or transparent PNG</strong>. Max file size: 5MB.
-						</p>
-					</div>
-				</div>
-			{/if}
-
-		</div>
 
 		<!-- Social Media Links & Contact -->
 		<div class="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-haunt-orange/30 p-6">
@@ -663,18 +661,11 @@
 					<label for="description" class="block text-white font-semibold mb-2">
 						Review Text *
 					</label>
-					<textarea
-						id="description"
-						bind:value={reviewData.description}
-						required
-						rows="10"
-						class="w-full px-4 py-3 bg-black/50 border-2 border-haunt-orange/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors resize-none"
-						placeholder="Write your detailed review here..."
-					></textarea>
-					<p class="text-gray-500 text-sm mt-1">
-						Inline images: <code class="bg-gray-800 px-1 py-0.5 rounded">[REVIEWER_PHOTO:1]</code> (database images with captions) or
-						<code class="bg-gray-800 px-1 py-0.5 rounded">[IMAGE:https://url.com/image.jpg]</code> or
-						<code class="bg-gray-800 px-1 py-0.5 rounded">[IMAGE:https://url.com/image.jpg|Caption]</code> (direct URLs)
+					<RichTextEditor bind:value={reviewData.description} placeholder="Write your detailed review here..." />
+					<p class="text-gray-500 text-sm mt-2">
+						<strong class="text-haunt-orange">Tip:</strong> Use the editor toolbar for rich formatting. For inline images, use:
+						<code class="bg-gray-800 px-1 py-0.5 rounded">[REVIEWER_PHOTO:1]</code> (database images) or
+						<code class="bg-gray-800 px-1 py-0.5 rounded">[IMAGE:https://url.com/image.jpg]</code> (direct URLs)
 					</p>
 				</div>
 			</div>
