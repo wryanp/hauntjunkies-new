@@ -36,16 +36,23 @@
 		}
 
 		try {
-			widgetId = (window as any).turnstile.render(containerRef, {
-				sitekey: '0x4AAAAAAB8070IGyeAePBEj',
-				theme: 'dark',
-				callback: (token: string) => {
-					onVerify(token);
-				},
-				'error-callback': () => {
-					onError();
-				}
-			});
+			// Create a plain object with no TypeScript annotations
+			const opts: Record<string, any> = {};
+			opts['sitekey'] = '0x4AAAAAAB8070IGyeAePBEj';
+			opts['theme'] = 'dark';
+			opts['callback'] = function(token: string) {
+				onVerify(token);
+			};
+			opts['error-callback'] = function() {
+				onError();
+			};
+
+			console.log('Calling turnstile.render with:', opts);
+			console.log('sitekey type:', typeof opts['sitekey']);
+			console.log('sitekey value:', opts['sitekey']);
+
+			widgetId = (window as any).turnstile.render(containerRef, opts);
+			console.log('Widget rendered successfully, ID:', widgetId);
 		} catch (e) {
 			console.error('Turnstile render error:', e);
 		}
