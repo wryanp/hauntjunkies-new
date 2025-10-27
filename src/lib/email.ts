@@ -91,6 +91,7 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 	<meta name="color-scheme" content="light only">
 	<meta name="supported-color-schemes" content="light only">
 	<title>Your McCloud Manor Tickets</title>
+	<link href="https://fonts.googleapis.com/css2?family=Karma:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 	<style type="text/css">
 		:root {
 			color-scheme: light only;
@@ -131,7 +132,7 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 		}
 	</style>
 </head>
-<body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f4f4f4; color: #333333;">
+<body style="margin: 0; padding: 0; font-family: 'Karma', 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f4f4f4; color: #333333;">
 	<table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f4;">
 		<tr>
 			<td align="center" style="padding: 40px 20px;">
