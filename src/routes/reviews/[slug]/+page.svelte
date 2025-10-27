@@ -9,7 +9,8 @@
 	import GoldenGhostAwards from '$lib/components/GoldenGhostAwards.svelte';
 	import { hasGoldenGhostAwards } from '$lib/utils/awards';
 	import { dev } from '$app/environment';
-	import DOMPurify from 'isomorphic-dompurify';
+	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
@@ -18,6 +19,21 @@
 	let captchaToken = $state(dev ? 'dev-mode' : ''); // Auto-pass in dev mode
 	let commentLength = $state(0);
 	const COMMENT_MAX_LENGTH = 2000;
+
+	// Safe HTML sanitization - only runs on client side
+	function sanitize(html: string): string {
+		// AGGRESSIVE cleanup - remove ALL forms of carriage returns
+		html = html
+			.replace(/\r/g, '')      // Remove actual CR bytes (ASCII 13)
+			.replace(/\\r/g, '')     // Remove literal "\r" text
+			.replace(/&#13;/g, '')   // HTML entity for carriage return
+			.replace(/&#x0D;/g, ''); // Hex HTML entity for carriage return
+
+		if (!browser) return html; // Skip sanitization during SSR
+		// Use native DOMParser for basic sanitization on client
+		const doc = new DOMParser().parseFromString(html, 'text/html');
+		return doc.body.innerHTML;
+	}
 
 	// Real-time validation errors
 	let authorNameError = $state('');
@@ -55,8 +71,19 @@
 	function parseReviewText(text: string | undefined): string {
 		if (!text) return '';
 
-		// First, replace [IMAGE:URL] with actual images and remove surrounding newlines
-		let parsed = text.replace(/\n*\[IMAGE:(https?:\/\/[^\]]+)\]\n*/g, (match, imageUrl) => {
+		// AGGRESSIVE cleanup - remove all problematic characters
+		let parsed = text
+			// First, remove any actual carriage return bytes (ASCII 13)
+			.replace(/\r/g, '')
+			// Remove literal backslash-r sequences (the text "\r" appearing in strings)
+			.replace(/\\r/g, '')
+			// Now convert newlines to breaks
+			.replace(/\n/g, '<br>')
+			// Remove excessive breaks
+			.replace(/(<br>){3,}/g, '<br><br>'); // Remove excessive breaks
+
+		// Replace [IMAGE:URL] with actual images and remove surrounding newlines
+		parsed = parsed.replace(/\n*\[IMAGE:(https?:\/\/[^\]]+)\]\n*/g, (match, imageUrl) => {
 			// Escape URL for attribute context - don't use DOMPurify on individual attributes
 			const escapedUrl = escapeHtmlAttr(imageUrl.trim());
 			return `<div class="my-0 mx-auto max-w-2xl" style="margin-top: 1rem !important; margin-bottom: 1rem !important;"><img src="${escapedUrl}" alt="Review image" class="w-full rounded-lg border-2 border-haunt-orange/30 shadow-xl" /></div>`;
@@ -75,8 +102,8 @@
 			const escapedUrl = escapeHtmlAttr(photo.image_url.trim());
 			const escapedAltText = escapeHtmlAttr(photo.alt_text || photo.caption || 'Reviewer photo from the haunt');
 
-			// For caption (HTML content), we sanitize with DOMPurify since it goes in element content, not attributes
-			const caption = photo.caption ? `<p class="text-sm text-gray-400 text-center mt-2 italic">${DOMPurify.sanitize(photo.caption)}</p>` : '';
+			// For caption (HTML content), we sanitize since it goes in element content, not attributes
+			const caption = photo.caption ? `<p class="text-sm text-gray-400 text-center mt-2 italic">${sanitize(photo.caption)}</p>` : '';
 
 			return `<div class="my-0 mx-auto max-w-2xl" style="margin-top: 1rem !important; margin-bottom: 1rem !important;"><img src="${escapedUrl}" alt="${escapedAltText}" class="w-full rounded-lg border-2 border-haunt-orange/30 shadow-xl" />${caption}</div>`;
 		});
@@ -84,7 +111,7 @@
 		return parsed;
 	}
 
-	const formattedReviewText = $derived(DOMPurify.sanitize(parseReviewText(data.review.review_text)));
+	const formattedReviewText = $derived(sanitize(parseReviewText(data.review.review_text)));
 
 	// Extract YouTube video ID from URL
 	function getYouTubeEmbedUrl(url: string): string | null {

@@ -403,10 +403,9 @@ export async function sendTicketConfirmation(ticketData: TicketData) {
 	const calendarInvite = generateCalendarInvite(ticketData);
 
 	try {
-		// Use from email from environment variable
-		// Set in .env: RESEND_FROM_EMAIL="Haunt Junkies <onboarding@resend.dev>" (dev)
-		// or RESEND_FROM_EMAIL="Haunt Junkies <noreply@hauntjunkies.com>" (production, after domain verification)
-		const fromEmail = RESEND_FROM_EMAIL;
+		// Construct proper from field - Resend requires plain email or "Name <email>" format
+		// Environment variable should be just the email address (e.g., "noreply@hauntjunkies.com")
+		const fromEmail = `Haunt Junkies <${RESEND_FROM_EMAIL}>`;
 
 		console.log(`Sending ticket confirmation email to: ${ticketData.email} from: ${fromEmail}`);
 
@@ -562,9 +561,8 @@ function createCommentNotificationHTML(commentData: CommentData): string {
 
 export async function sendCommentNotification(commentData: CommentData) {
 	try {
-		const fromEmail = process.env.NODE_ENV === 'development'
-			? 'Haunt Junkies <onboarding@resend.dev>'
-			: 'Haunt Junkies <noreply@hauntjunkies.com>';
+		// Construct proper from field - Resend requires plain email or "Name <email>" format
+		const fromEmail = `Haunt Junkies <${RESEND_FROM_EMAIL}>`;
 
 		const result = await resend.emails.send({
 			from: fromEmail,

@@ -1,5 +1,11 @@
 -- HauntJunkies Database Schema for Supabase
 -- Run this in your Supabase SQL editor after creating a new project
+--
+-- IMPORTANT: After running this schema, you MUST also run:
+--   1. migrations/migration-purchase-tickets-function.sql (for atomic ticket purchases)
+--   2. migrations/create-storage-buckets.sql (for image upload storage)
+--
+-- See STORAGE-SETUP.md for detailed storage bucket setup instructions
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";

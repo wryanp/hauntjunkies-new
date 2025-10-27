@@ -1,9 +1,33 @@
 import { createServerClient } from '@supabase/ssr';
+import { createClient } from '@supabase/supabase-js';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import type { Review } from '$lib/types';
+
+// Helper function to verify admin authentication
+async function verifyAdminAuth(cookies: any): Promise<boolean> {
+	// Check Supabase session first
+	const supabaseClient = createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+		cookies: {
+			get: (key) => cookies.get(key),
+			set: (key, value, options) => {
+				cookies.set(key, value, { ...options, path: '/' });
+			},
+			remove: (key, options) => {
+				cookies.delete(key, { ...options, path: '/' });
+			}
+		}
+	});
+
+	const { data: { session } } = await supabaseClient.auth.getSession();
+	if (session) return true;
+
+	// Fallback to admin_session cookie
+	const adminSession = cookies.get('admin_session');
+	return !!adminSession;
+}
 
 export const load: PageServerLoad = async ({ cookies, parent }) => {
 	// Get authentication from layout
@@ -67,10 +91,8 @@ export const load: PageServerLoad = async ({ cookies, parent }) => {
 
 export const actions: Actions = {
 	create: async ({ request, cookies, locals }) => {
-		// Note: Authentication is handled by layout, but we double-check here for actions
-		// Actions don't go through parent() so we check cookies directly
-		const adminSession = cookies.get('admin_session');
-		if (!adminSession) {
+		// Verify admin authentication
+		if (!(await verifyAdminAuth(cookies))) {
 			return fail(401, { error: 'Unauthorized' });
 		}
 
@@ -221,8 +243,7 @@ export const actions: Actions = {
 
 	update: async ({ request, cookies }) => {
 		// Verify admin authentication
-		const adminSession = cookies.get('admin_session');
-		if (!adminSession) {
+		if (!(await verifyAdminAuth(cookies))) {
 			return fail(401, { error: 'Unauthorized' });
 		}
 
@@ -371,8 +392,7 @@ export const actions: Actions = {
 
 	delete: async ({ request, cookies }) => {
 		// Verify admin authentication
-		const adminSession = cookies.get('admin_session');
-		if (!adminSession) {
+		if (!(await verifyAdminAuth(cookies))) {
 			return fail(401, { error: 'Unauthorized' });
 		}
 
@@ -413,8 +433,7 @@ export const actions: Actions = {
 
 	toggleFeatured: async ({ request, cookies }) => {
 		// Verify admin authentication
-		const adminSession = cookies.get('admin_session');
-		if (!adminSession) {
+		if (!(await verifyAdminAuth(cookies))) {
 			return fail(401, { error: 'Unauthorized' });
 		}
 
@@ -456,8 +475,7 @@ export const actions: Actions = {
 
 	updateAwards: async ({ request, cookies }) => {
 		// Verify admin authentication
-		const adminSession = cookies.get('admin_session');
-		if (!adminSession) {
+		if (!(await verifyAdminAuth(cookies))) {
 			return fail(401, { error: 'Unauthorized' });
 		}
 
@@ -519,8 +537,7 @@ export const actions: Actions = {
 
 	toggleAwardsHero: async ({ cookies }) => {
 		// Verify admin authentication
-		const adminSession = cookies.get('admin_session');
-		if (!adminSession) {
+		if (!(await verifyAdminAuth(cookies))) {
 			return fail(401, { error: 'Unauthorized' });
 		}
 
@@ -565,8 +582,7 @@ export const actions: Actions = {
 
 	uploadLogo: async ({ request, cookies }) => {
 		// Verify admin authentication
-		const adminSession = cookies.get('admin_session');
-		if (!adminSession) {
+		if (!(await verifyAdminAuth(cookies))) {
 			return fail(401, { error: 'Unauthorized' });
 		}
 
@@ -594,21 +610,17 @@ export const actions: Actions = {
 			return fail(400, { error: 'File size too large. Maximum 10MB allowed.' });
 		}
 
-		const supabase = createServerClient(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-			cookies: {
-				get: (key) => cookies.get(key),
-				set: (key, value, options) => {
-					cookies.set(key, value, { ...options, path: '/' });
-				},
-				remove: (key, options) => {
-					cookies.delete(key, { ...options, path: '/' });
-				}
+		// Use createClient with service role key to bypass RLS
+		const supabase = createClient(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+			auth: {
+				autoRefreshToken: false,
+				persistSession: false
 			}
 		});
 
 		// Get file extension
 		const fileExt = logoFile.name.split('.').pop();
-		const fileName = `${id}.${fileExt}`;
+		const fileName = `logos/${id}.${fileExt}`;
 
 		// Convert File to ArrayBuffer then to Uint8Array
 		const arrayBuffer = await logoFile.arrayBuffer();
@@ -628,10 +640,10 @@ export const actions: Actions = {
 			const urlParts = existingLogo.image_url.split('/');
 			const oldFileName = urlParts[urlParts.length - 1];
 
-			// Delete from storage
+			// Delete from storage (logos subfolder)
 			await supabase.storage
-				.from('review-logos')
-				.remove([oldFileName]);
+				.from('review-images')
+				.remove([`logos/${oldFileName}`]);
 
 			// Delete from review_images table
 			await supabase
@@ -642,9 +654,9 @@ export const actions: Actions = {
 				.eq('display_order', 0);
 		}
 
-		// Upload to Supabase Storage
+		// Upload to Supabase Storage (review-images bucket, logos subfolder)
 		const { data: uploadData, error: uploadError } = await supabase.storage
-			.from('review-logos')
+			.from('review-images')
 			.upload(fileName, fileBuffer, {
 				contentType: logoFile.type,
 				upsert: true
@@ -656,7 +668,7 @@ export const actions: Actions = {
 
 		// Get public URL
 		const { data: { publicUrl } } = supabase.storage
-			.from('review-logos')
+			.from('review-images')
 			.getPublicUrl(fileName);
 
 		// Insert into review_images table
@@ -681,8 +693,7 @@ export const actions: Actions = {
 
 	uploadSocialImage: async ({ request, cookies }) => {
 		// Verify admin authentication
-		const adminSession = cookies.get('admin_session');
-		if (!adminSession) {
+		if (!(await verifyAdminAuth(cookies))) {
 			return fail(401, { error: 'Unauthorized' });
 		}
 
@@ -710,21 +721,17 @@ export const actions: Actions = {
 			return fail(400, { error: 'File size too large. Maximum 10MB allowed.' });
 		}
 
-		const supabase = createServerClient(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-			cookies: {
-				get: (key) => cookies.get(key),
-				set: (key, value, options) => {
-					cookies.set(key, value, { ...options, path: '/' });
-				},
-				remove: (key, options) => {
-					cookies.delete(key, { ...options, path: '/' });
-				}
+		// Use createClient with service role key to bypass RLS
+		const supabase = createClient(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+			auth: {
+				autoRefreshToken: false,
+				persistSession: false
 			}
 		});
 
 		// Get file extension
 		const fileExt = socialImageFile.name.split('.').pop();
-		const fileName = `social-${id}.${fileExt}`;
+		const fileName = `social/${id}.${fileExt}`;
 
 		// Convert File to ArrayBuffer then to Uint8Array
 		const arrayBuffer = await socialImageFile.arrayBuffer();
@@ -743,13 +750,13 @@ export const actions: Actions = {
 			const oldFileName = urlParts[urlParts.length - 1];
 
 			await supabase.storage
-				.from('review-social-images')
-				.remove([oldFileName]);
+				.from('review-images')
+				.remove([`social/${oldFileName}`]);
 		}
 
-		// Upload to Supabase Storage
+		// Upload to Supabase Storage (review-images bucket, social subfolder)
 		const { data: uploadData, error: uploadError } = await supabase.storage
-			.from('review-social-images')
+			.from('review-images')
 			.upload(fileName, fileBuffer, {
 				contentType: socialImageFile.type,
 				upsert: true
@@ -761,7 +768,7 @@ export const actions: Actions = {
 
 		// Get public URL
 		const { data: { publicUrl } } = supabase.storage
-			.from('review-social-images')
+			.from('review-images')
 			.getPublicUrl(fileName);
 
 		// Update review record with new social image URL

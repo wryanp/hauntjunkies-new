@@ -432,8 +432,13 @@ Create these buckets in Supabase Storage:
 
 | Bucket | Purpose | Public? |
 |--------|---------|---------|
-| `review-images` | Review cover images and gallery photos | ✅ Yes |
+| `review-images` | Review cover images, gallery photos, logos (logos/ subfolder), and social share images (social/ subfolder) | ✅ Yes |
 | `mccloud-photos` | McCloud Manor gallery images | ✅ Yes |
+
+**Note:** The `review-images` bucket uses subfolders for organization:
+- `logos/` - Review logos displayed on cards and detail pages
+- `social/` - Social media share images (og:image)
+- Root folder - Review gallery images
 
 ### Image URLs
 
