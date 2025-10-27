@@ -159,7 +159,7 @@
 					<!-- State Header -->
 					<div class="mb-8">
 						<h2 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-haunt-orange via-orange-500 to-haunt-orange mb-2">
-							{state}
+							{getStateName(state)}
 						</h2>
 						<div class="w-24 h-1 bg-gradient-to-r from-haunt-orange to-transparent"></div>
 					</div>
