@@ -140,7 +140,7 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 					<!-- Header -->
 					<tr>
 						<td align="center" class="mobile-header-padding" style="padding: 50px 40px; background-color: #000000; border-bottom: 4px solid #a41214;">
-							<img src="https://hauntjunkies.com/mccloudmanor.webp" alt="McCloud Manor Logo" style="max-width: 250px; width: 100%; height: auto; display: block; margin-left: auto; margin-right: auto;" />
+							<h1 style="margin: 0; font-size: 48px; font-weight: 700; color: #a41214; font-family: 'Georgia', serif; letter-spacing: 2px; text-transform: uppercase;">McCloud Manor</h1>
 						</td>
 					</tr>
 
