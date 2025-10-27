@@ -51,6 +51,7 @@
 
 	function renderWidget(siteKey: string) {
 		if (!containerRef || !(window as any).turnstile) {
+			console.error('Container or turnstile not ready');
 			error = true;
 			loading = false;
 			return;
@@ -58,19 +59,27 @@
 
 		try {
 			console.log('Rendering Turnstile with sitekey:', siteKey, 'Type:', typeof siteKey);
-			widgetId = (window as any).turnstile.render(containerRef, {
-				sitekey: siteKey,
-				theme: 'dark',
+
+			// Create explicit config object
+			const config = {
+				sitekey: String(siteKey),
+				theme: 'dark' as const,
 				callback: (token: string) => {
+					console.log('Turnstile callback received token');
 					loading = false;
 					onVerify(token);
 				},
 				'error-callback': () => {
+					console.error('Turnstile error callback triggered');
 					error = true;
 					loading = false;
 					onError();
 				}
-			});
+			};
+
+			console.log('Turnstile config:', JSON.stringify(config));
+			widgetId = (window as any).turnstile.render(containerRef, config);
+			console.log('Turnstile rendered, widgetId:', widgetId);
 			loading = false;
 		} catch (e) {
 			console.error('Turnstile render error:', e);
