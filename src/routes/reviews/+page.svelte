@@ -175,9 +175,10 @@
 							<!-- Reviews grid for this year -->
 							<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 								{#each groupedReviews[state][year] as review}
-									{@const imageUrl = isValidImageUrl(review.cover_image_url)
+									{@const logo = data.logos[review.id]}
+									{@const imageUrl = logo || (isValidImageUrl(review.cover_image_url)
 										? review.cover_image_url
-										: getFallbackReviewImage()}
+										: getFallbackReviewImage())}
 									<a
 										href="/reviews/{review.slug}"
 										class="group bg-neutral-900/50 rounded-lg overflow-hidden hover:bg-neutral-900 transition-all duration-300 relative border border-neutral-800 {hasGoldenGhostAwards(review) ? 'hover:border-yellow-500' : 'hover:border-haunt-orange'} transform hover:scale-105 flex flex-col h-full"
@@ -199,7 +200,7 @@
 												src={imageUrl}
 												alt={review.name}
 												loading="lazy"
-												class="w-full h-full {isValidImageUrl(review.cover_image_url) ? 'object-contain' : 'object-cover'} transition-transform duration-300"
+												class="w-full h-full {logo || isValidImageUrl(review.cover_image_url) ? 'object-contain' : 'object-cover'} transition-transform duration-300"
 											/>
 										</div>
 
@@ -260,9 +261,9 @@
 													<span class="text-gray-400 font-medium text-lg leading-none">{review.rating_overall.toFixed(1)}</span>
 												</div>
 											{/if}
-											{#if review.description}
+											{#if review.caption}
 												<p class="text-gray-300 italic line-clamp-3 leading-relaxed pl-3 border-l-2 border-haunt-orange/30 min-h-[4.5rem] mt-auto">
-													{review.description}
+													{review.caption}
 												</p>
 											{/if}
 										</div>

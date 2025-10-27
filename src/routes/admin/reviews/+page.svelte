@@ -20,7 +20,6 @@
 		slug: '',
 		caption: '',
 		description: '',
-		coverImage: '',
 		reviewImage: '',
 		overallRating: 5,
 		featured: false,
@@ -60,7 +59,6 @@
 			slug: review.slug || '',
 			caption: review.caption || '',
 			description: review.description || review.review_text || '',
-			coverImage: review.cover_image_url || '',
 			reviewImage: review.review_image || '',
 			overallRating: review.rating_overall || 5,
 			featured: review.featured || false,
@@ -88,7 +86,6 @@
 			slug: '',
 			caption: '',
 			description: '',
-			coverImage: '',
 			reviewImage: '',
 			overallRating: 5,
 			featured: false,
@@ -115,7 +112,6 @@
 				slug: '',
 				caption: '',
 				description: '',
-				coverImage: '',
 				reviewImage: '',
 				overallRating: 5,
 				featured: false,
@@ -376,8 +372,6 @@
 		<input type="hidden" name="caption" value={reviewData.caption} />
 		<input type="hidden" name="description" value={reviewData.description} />
 		<input type="hidden" name="review_text" value={reviewData.description} />
-		<input type="hidden" name="cover_image_url" value={reviewData.coverImage} />
-		<input type="hidden" name="review_image" value={reviewData.reviewImage} />
 		<input type="hidden" name="rating_overall" value={reviewData.overallRating} />
 		<input type="hidden" name="featured" value={reviewData.featured} />
 		<input type="hidden" name="address" value={reviewData.address} />
@@ -392,100 +386,115 @@
 		<div class="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-haunt-orange/30 p-6">
 			<h2 class="text-2xl font-bold text-white mb-6">Images</h2>
 
-			<!-- Cover Image -->
-			<div class="mb-6">
-				<label for="coverImage" class="block text-white font-semibold mb-2">
-					Cover Image URL *
-				</label>
-				<input
-					type="url"
-					id="coverImage"
-					bind:value={reviewData.coverImage}
-					required
-					class="w-full px-4 py-3 bg-black/50 border-2 border-haunt-orange/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors"
-					placeholder="https://example.com/image.jpg"
-				/>
-				<div class="flex items-start gap-2 mt-1">
-					<svg class="w-4 h-4 text-haunt-orange mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-						<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-					</svg>
-					<p class="text-gray-500 text-sm">
-						<strong class="text-haunt-orange">Recommended: 16:9 ratio (e.g., 1920x1080)</strong> - Images will be cropped to 16:9 on homepage to ensure uniform display.
-					</p>
-				</div>
-
-				<!-- Cover Image Preview - Shows how it will look on homepage -->
-				{#if reviewData.coverImage?.trim()}
-					<div class="mt-4 space-y-2">
-						<p class="text-xs text-gray-400 uppercase tracking-wide font-semibold">Preview (Homepage Display):</p>
-						<div class="w-full max-w-2xl mx-auto overflow-hidden rounded-lg border-2 border-haunt-orange/50 bg-black">
-							<div class="aspect-video overflow-hidden relative">
-								<img
-									src={reviewData.coverImage}
-									alt="Cover preview"
-									class="w-full h-full object-contain"
-									onerror={(e) => {
-										const target = e.target as HTMLImageElement;
-										target.style.display = 'none';
-										const errorDiv = target.parentElement?.querySelector('.error-message') as HTMLElement;
-										if (errorDiv) errorDiv.style.display = 'flex';
-									}}
-								/>
-								<div class="error-message hidden absolute inset-0 bg-gray-800 items-center justify-center text-gray-400">
-									Failed to load cover image
-								</div>
-							</div>
-						</div>
-					</div>
-				{/if}
-			</div>
-
 			<!-- Social Media Share Image -->
-			<div class="mb-6">
-				<label for="reviewImage" class="block text-white font-semibold mb-2">
-					Social Media Share Image
-				</label>
-				<input
-					type="url"
-					id="reviewImage"
-					bind:value={reviewData.reviewImage}
-					class="w-full px-4 py-3 bg-black/50 border-2 border-haunt-orange/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange transition-colors"
-					placeholder="https://example.com/share-image.jpg"
-				/>
-				<div class="flex items-start gap-2 mt-1">
-					<svg class="w-4 h-4 text-haunt-orange mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-						<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
-					</svg>
-					<p class="text-gray-500 text-sm">
-						This image appears when the review is shared on social media, text messages, or other platforms. <strong class="text-haunt-orange">Recommended: 1200x630px (Open Graph standard)</strong>. If left blank, the cover image will be used.
-					</p>
-				</div>
+			{#if editingReview}
+				<div class="mb-6">
+					<label class="block text-white font-semibold mb-2">
+						Social Media Share Image
+					</label>
 
-				<!-- Review Image Preview -->
-				{#if reviewData.reviewImage?.trim()}
-					<div class="mt-4 space-y-2">
-						<p class="text-xs text-gray-400 uppercase tracking-wide font-semibold">Preview (Social Share):</p>
-						<div class="w-full max-w-2xl mx-auto overflow-hidden rounded-lg border-2 border-haunt-orange/50 bg-black">
-							<div class="aspect-[1200/630] overflow-hidden relative">
-								<img
-									src={reviewData.reviewImage}
-									alt="Social share preview"
-									class="w-full h-full object-contain"
-									onerror={(e) => {
-										const target = e.target as HTMLImageElement;
-										target.style.display = 'none';
-										const errorDiv = target.parentElement?.querySelector('.error-message') as HTMLElement;
-										if (errorDiv) errorDiv.style.display = 'flex';
-									}}
-								/>
-								<div class="error-message hidden absolute inset-0 bg-gray-800 items-center justify-center text-gray-400">
-									Failed to load share image
-								</div>
+					{#if reviewData.reviewImage?.trim()}
+						<div class="mb-3">
+							<p class="text-xs text-gray-400 mb-2">Current Social Share Image:</p>
+							<div class="w-full max-w-2xl mx-auto overflow-hidden rounded-lg border-2 border-haunt-orange/50 bg-black p-4">
+								<img src={reviewData.reviewImage} alt="Current social share" class="w-full h-auto object-contain aspect-[1200/630]" />
 							</div>
 						</div>
+					{/if}
+
+					<form method="POST" action="?/uploadSocialImage" enctype="multipart/form-data" use:enhance={() => {
+						return async ({ result, update }) => {
+							await update();
+							if (result.type === 'success') {
+								await invalidateAll();
+							}
+						};
+					}}>
+						<input type="hidden" name="id" value={editingReview} />
+						<div class="space-y-3">
+							<input
+								type="file"
+								name="socialImageFile"
+								accept="image/png,image/jpeg,image/jpg,image/webp"
+								class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-haunt-orange/20 file:text-haunt-orange hover:file:bg-haunt-orange/30 file:cursor-pointer"
+							/>
+							<button
+								type="submit"
+								class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-all font-semibold bg-haunt-orange/20 hover:bg-haunt-orange/30 text-haunt-orange border-haunt-orange/50"
+							>
+								<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+								</svg>
+								{reviewData.reviewImage ? 'Replace Social Share Image' : 'Upload Social Share Image'}
+							</button>
+						</div>
+					</form>
+
+					<div class="flex items-start gap-2 mt-2">
+						<svg class="w-4 h-4 text-haunt-orange mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+							<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+						</svg>
+						<p class="text-gray-500 text-sm">
+							This image appears when the review is shared on social media, text messages, or other platforms. <strong class="text-haunt-orange">Recommended: 1200x630px (Open Graph standard)</strong>. Max file size: 10MB.
+						</p>
 					</div>
-				{/if}
-			</div>
+				</div>
+			{/if}
+
+			<!-- Logo Image -->
+			{#if editingReview}
+				<div class="mb-6">
+					<label class="block text-white font-semibold mb-2">
+						Logo Image
+					</label>
+
+					{#if data.logos[editingReview]}
+						<div class="mb-3">
+							<p class="text-xs text-gray-400 mb-2">Current Logo:</p>
+							<div class="w-full max-w-md mx-auto overflow-hidden rounded-lg border-2 border-haunt-orange/50 bg-black p-4">
+								<img src={data.logos[editingReview]} alt="Current logo" class="w-full h-32 object-contain" />
+							</div>
+						</div>
+					{/if}
+
+					<form method="POST" action="?/uploadLogo" enctype="multipart/form-data" use:enhance={() => {
+						return async ({ result, update }) => {
+							await update();
+							if (result.type === 'success') {
+								await invalidateAll();
+							}
+						};
+					}}>
+						<input type="hidden" name="id" value={editingReview} />
+						<div class="space-y-3">
+							<input
+								type="file"
+								name="logoFile"
+								accept="image/png,image/jpeg,image/jpg,image/webp"
+								class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-haunt-orange/20 file:text-haunt-orange hover:file:bg-haunt-orange/30 file:cursor-pointer"
+							/>
+							<button
+								type="submit"
+								class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-all font-semibold bg-haunt-orange/20 hover:bg-haunt-orange/30 text-haunt-orange border-haunt-orange/50"
+							>
+								<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+								</svg>
+								{data.logos[editingReview] ? 'Replace Logo' : 'Upload Logo'}
+							</button>
+						</div>
+					</form>
+
+					<div class="flex items-start gap-2 mt-2">
+						<svg class="w-4 h-4 text-haunt-orange mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+							<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+						</svg>
+						<p class="text-gray-500 text-sm">
+							The logo appears on review cards and detail pages. <strong class="text-haunt-orange">Recommended: Square or transparent PNG</strong>. Max file size: 5MB.
+						</p>
+					</div>
+				</div>
+			{/if}
 
 		</div>
 

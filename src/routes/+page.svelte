@@ -295,9 +295,10 @@
 					style="scroll-snap-type: x mandatory;"
 				>
 					{#each data.featuredReviews as review}
-						{@const imageUrl = isValidImageUrl(review.cover_image_url)
+						{@const logo = data.logos[review.id]}
+						{@const imageUrl = logo || (isValidImageUrl(review.cover_image_url)
 							? review.cover_image_url
-							: getFallbackReviewImage()}
+							: getFallbackReviewImage())}
 						<a
 							href="/reviews/{review.slug}"
 							class="group bg-neutral-900/50 rounded-lg overflow-hidden hover:bg-neutral-900 transition-all duration-300 relative border border-neutral-800 {hasGoldenGhostAwards(review) ? 'hover:border-yellow-500' : 'hover:border-haunt-orange'} transform md:hover:scale-105 md:hover:z-10 flex-shrink-0 w-full md:w-[calc((100%-4rem)/3)] flex flex-col"
@@ -320,7 +321,7 @@
 									src={imageUrl}
 									alt={review.name}
 									loading="lazy"
-									class="w-full h-full {isValidImageUrl(review.cover_image_url) ? 'object-contain' : 'object-cover'} transition-transform duration-300"
+									class="w-full h-full {logo || isValidImageUrl(review.cover_image_url) ? 'object-contain' : 'object-cover'} transition-transform duration-300"
 								/>
 							</div>
 
@@ -457,16 +458,18 @@
 			<!-- Award Winners Grid -->
 			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 				{#each data.multiAwardWinners as review}
+					{@const logo = data.logos[review.id]}
+					{@const awardImageUrl = logo || review.cover_image_url}
 					<a href="/reviews/{review.slug}" class="group relative">
 						<!-- Golden glow effect -->
 						<div class="absolute -inset-2 bg-gradient-to-r from-yellow-600/30 via-yellow-500/40 to-yellow-600/30 rounded-2xl blur-xl opacity-50 group-hover:opacity-100 transition-opacity duration-500"></div>
 
 						<!-- Card -->
 						<div class="relative bg-gradient-to-br from-neutral-900 via-black to-neutral-900 rounded-2xl overflow-hidden border-2 border-yellow-500/60 group-hover:border-yellow-400 transition-all duration-500" style="box-shadow: 0 0 30px rgba(255,215,0,0.4);">
-							{#if review.cover_image_url}
+							{#if awardImageUrl}
 								<div class="aspect-video overflow-hidden relative bg-neutral-900">
 									<img
-										src={review.cover_image_url}
+										src={awardImageUrl}
 										alt={review.name}
 										class="w-full h-full object-contain transition-transform duration-700"
 									/>

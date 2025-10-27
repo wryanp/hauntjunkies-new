@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import type { PageServerLoad } from './$types';
-import type { Review, HeroMessage, Quote, SiteSettings } from '$lib/types';
+import type { Review, HeroMessage, Quote, SiteSettings, ReviewImage } from '$lib/types';
 import { getMultiAwardWinners } from '$lib/utils/awards';
 import { logDatabaseError } from '$lib/logger';
 
@@ -15,7 +15,8 @@ export const load: PageServerLoad = async () => {
 			featuredReviews: [],
 			quotes: [],
 			showAwardsHero: false,
-			multiAwardWinners: []
+			multiAwardWinners: [],
+			logos: {}
 		};
 	}
 
@@ -81,11 +82,34 @@ export const load: PageServerLoad = async () => {
 		}
 	}
 
+	// Fetch logo images for featured reviews and multi-award winners
+	const allReviewIds = [
+		...(featuredReviews || []).map(r => r.id),
+		...multiAwardWinners.map(r => r.id)
+	];
+
+	let logos: Record<string, string> = {};
+	if (allReviewIds.length > 0) {
+		const { data: logoImages } = await supabase
+			.from('review_images')
+			.select('review_id, image_url')
+			.eq('caption', 'Review Logo')
+			.eq('display_order', 0)
+			.in('review_id', allReviewIds);
+
+		if (logoImages) {
+			logoImages.forEach((logo: ReviewImage) => {
+				logos[logo.review_id] = logo.image_url;
+			});
+		}
+	}
+
 	return {
 		heroMessage,
 		featuredReviews: (featuredReviews as Review[]) || [],
 		quotes: (quotes as Quote[]) || [],
 		showAwardsHero,
-		multiAwardWinners
+		multiAwardWinners,
+		logos
 	};
 };

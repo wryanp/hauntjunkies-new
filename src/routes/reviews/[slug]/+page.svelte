@@ -212,7 +212,7 @@
 
 <SEO
 	title={data.review.name}
-	description={data.review.description || `Expert review of ${data.review.name}. Ratings for scares, atmosphere, and value. Located in ${data.review.city}, ${data.review.state}. Read our full review and see photos.`}
+	description={data.review.caption || `Expert review of ${data.review.name}. Ratings for scares, atmosphere, and value. Located in ${data.review.city}, ${data.review.state}. Read our full review and see photos.`}
 	url={`/reviews/${data.review.slug}`}
 	image={data.review.review_image || data.review.cover_image_url || '/og.png'}
 	type="article"
@@ -233,15 +233,19 @@
 
 <div class="bg-gradient-to-b from-black via-neutral-900 to-black min-h-screen">
 	<!-- Hero Image -->
-	{#if data.review.cover_image_url}
-		<div class="relative h-96 overflow-hidden bg-black">
-			<img
-				src={data.review.cover_image_url}
-				alt={data.review.name}
-				class="w-full h-full object-contain"
-			/>
-			<div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent pointer-events-none"></div>
-		</div>
+	{#if data.images}
+		{@const logo = data.images.find(img => img.caption === 'Review Logo' && img.display_order === 0)}
+		{@const heroImage = logo?.image_url || data.review.cover_image_url}
+		{#if heroImage}
+			<div class="relative h-96 overflow-hidden bg-black">
+				<img
+					src={heroImage}
+					alt={data.review.name}
+					class="w-full h-full object-contain"
+				/>
+				<div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent pointer-events-none"></div>
+			</div>
+		{/if}
 	{/if}
 
 	<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-20 relative">

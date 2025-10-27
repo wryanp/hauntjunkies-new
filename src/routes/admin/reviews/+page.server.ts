@@ -40,9 +40,28 @@ export const load: PageServerLoad = async ({ cookies, parent }) => {
 		.eq('setting_key', 'show_awards_hero')
 		.single();
 
+	// Fetch logos for all reviews
+	const logos: Record<string, string> = {};
+	if (reviews && reviews.length > 0) {
+		const reviewIds = reviews.map(r => r.id);
+		const { data: logoImages } = await supabase
+			.from('review_images')
+			.select('review_id, image_url')
+			.eq('caption', 'Review Logo')
+			.eq('display_order', 0)
+			.in('review_id', reviewIds);
+
+		if (logoImages) {
+			logoImages.forEach((logo: any) => {
+				logos[logo.review_id] = logo.image_url;
+			});
+		}
+	}
+
 	return {
 		reviews: (reviews as Review[]) || [],
-		showAwardsHero: awardsHeroSetting?.setting_value?.enabled ?? false
+		showAwardsHero: awardsHeroSetting?.setting_value?.enabled ?? false,
+		logos
 	};
 };
 
@@ -104,9 +123,7 @@ export const actions: Actions = {
 		const rating_atmosphere = parseFloat(formData.get('rating_atmosphere')?.toString() || '0');
 		const rating_value = parseFloat(formData.get('rating_value')?.toString() || '0');
 
-		// Images and social links
-		const cover_image_url = formData.get('cover_image_url')?.toString() || '';
-		const review_image = formData.get('review_image')?.toString() || '';
+		// Social links
 		const website_url = formData.get('website_url')?.toString() || '';
 		const facebook_url = formData.get('facebook_url')?.toString() || '';
 		const instagram_url = formData.get('instagram_url')?.toString() || '';
@@ -156,8 +173,6 @@ export const actions: Actions = {
 				rating_scares,
 				rating_atmosphere,
 				rating_value,
-				cover_image_url,
-				review_image,
 				website_url,
 				facebook_url,
 				instagram_url,
@@ -263,8 +278,6 @@ export const actions: Actions = {
 		const rating_atmosphere = parseFloat(formData.get('rating_atmosphere')?.toString() || '0');
 		const rating_value = parseFloat(formData.get('rating_value')?.toString() || '0');
 
-		const cover_image_url = formData.get('cover_image_url')?.toString() || '';
-		const review_image = formData.get('review_image')?.toString() || '';
 		const website_url = formData.get('website_url')?.toString() || '';
 		const facebook_url = formData.get('facebook_url')?.toString() || '';
 		const instagram_url = formData.get('instagram_url')?.toString() || '';
@@ -302,8 +315,6 @@ export const actions: Actions = {
 				rating_scares,
 				rating_atmosphere,
 				rating_value,
-				cover_image_url,
-				review_image,
 				website_url,
 				facebook_url,
 				instagram_url,
@@ -549,6 +560,223 @@ export const actions: Actions = {
 		return {
 			success: true,
 			showAwardsHero: !currentValue
+		};
+	},
+
+	uploadLogo: async ({ request, cookies }) => {
+		// Verify admin authentication
+		const adminSession = cookies.get('admin_session');
+		if (!adminSession) {
+			return fail(401, { error: 'Unauthorized' });
+		}
+
+		const formData = await request.formData();
+		const id = formData.get('id')?.toString();
+		const logoFile = formData.get('logoFile') as File;
+
+		if (!id) {
+			return fail(400, { error: 'Review ID is required' });
+		}
+
+		if (!logoFile || logoFile.size === 0) {
+			return fail(400, { error: 'Logo file is required' });
+		}
+
+		// Validate file type
+		const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+		if (!allowedTypes.includes(logoFile.type)) {
+			return fail(400, { error: 'Invalid file type. Only PNG, JPEG, JPG, and WEBP are allowed.' });
+		}
+
+		// Validate file size (max 10MB)
+		const maxSize = 10 * 1024 * 1024;
+		if (logoFile.size > maxSize) {
+			return fail(400, { error: 'File size too large. Maximum 10MB allowed.' });
+		}
+
+		const supabase = createServerClient(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+			cookies: {
+				get: (key) => cookies.get(key),
+				set: (key, value, options) => {
+					cookies.set(key, value, { ...options, path: '/' });
+				},
+				remove: (key, options) => {
+					cookies.delete(key, { ...options, path: '/' });
+				}
+			}
+		});
+
+		// Get file extension
+		const fileExt = logoFile.name.split('.').pop();
+		const fileName = `${id}.${fileExt}`;
+
+		// Convert File to ArrayBuffer then to Uint8Array
+		const arrayBuffer = await logoFile.arrayBuffer();
+		const fileBuffer = new Uint8Array(arrayBuffer);
+
+		// Delete old logo from storage if it exists
+		const { data: existingLogo } = await supabase
+			.from('review_images')
+			.select('image_url')
+			.eq('review_id', id)
+			.eq('caption', 'Review Logo')
+			.eq('display_order', 0)
+			.single();
+
+		if (existingLogo?.image_url) {
+			// Extract filename from URL
+			const urlParts = existingLogo.image_url.split('/');
+			const oldFileName = urlParts[urlParts.length - 1];
+
+			// Delete from storage
+			await supabase.storage
+				.from('review-logos')
+				.remove([oldFileName]);
+
+			// Delete from review_images table
+			await supabase
+				.from('review_images')
+				.delete()
+				.eq('review_id', id)
+				.eq('caption', 'Review Logo')
+				.eq('display_order', 0);
+		}
+
+		// Upload to Supabase Storage
+		const { data: uploadData, error: uploadError } = await supabase.storage
+			.from('review-logos')
+			.upload(fileName, fileBuffer, {
+				contentType: logoFile.type,
+				upsert: true
+			});
+
+		if (uploadError) {
+			return fail(500, { error: 'Failed to upload logo: ' + uploadError.message });
+		}
+
+		// Get public URL
+		const { data: { publicUrl } } = supabase.storage
+			.from('review-logos')
+			.getPublicUrl(fileName);
+
+		// Insert into review_images table
+		const { error: insertError } = await supabase
+			.from('review_images')
+			.insert({
+				review_id: id,
+				image_url: publicUrl,
+				caption: 'Review Logo',
+				display_order: 0
+			});
+
+		if (insertError) {
+			return fail(500, { error: 'Failed to save logo record: ' + insertError.message });
+		}
+
+		return {
+			success: true,
+			message: 'Logo uploaded successfully!'
+		};
+	},
+
+	uploadSocialImage: async ({ request, cookies }) => {
+		// Verify admin authentication
+		const adminSession = cookies.get('admin_session');
+		if (!adminSession) {
+			return fail(401, { error: 'Unauthorized' });
+		}
+
+		const formData = await request.formData();
+		const id = formData.get('id')?.toString();
+		const socialImageFile = formData.get('socialImageFile') as File;
+
+		if (!id) {
+			return fail(400, { error: 'Review ID is required' });
+		}
+
+		if (!socialImageFile || socialImageFile.size === 0) {
+			return fail(400, { error: 'Social image file is required' });
+		}
+
+		// Validate file type
+		const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
+		if (!allowedTypes.includes(socialImageFile.type)) {
+			return fail(400, { error: 'Invalid file type. Only PNG, JPEG, JPG, and WEBP are allowed.' });
+		}
+
+		// Validate file size (max 10MB)
+		const maxSize = 10 * 1024 * 1024;
+		if (socialImageFile.size > maxSize) {
+			return fail(400, { error: 'File size too large. Maximum 10MB allowed.' });
+		}
+
+		const supabase = createServerClient(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+			cookies: {
+				get: (key) => cookies.get(key),
+				set: (key, value, options) => {
+					cookies.set(key, value, { ...options, path: '/' });
+				},
+				remove: (key, options) => {
+					cookies.delete(key, { ...options, path: '/' });
+				}
+			}
+		});
+
+		// Get file extension
+		const fileExt = socialImageFile.name.split('.').pop();
+		const fileName = `social-${id}.${fileExt}`;
+
+		// Convert File to ArrayBuffer then to Uint8Array
+		const arrayBuffer = await socialImageFile.arrayBuffer();
+		const fileBuffer = new Uint8Array(arrayBuffer);
+
+		// Get current review to check if there's an existing social image
+		const { data: currentReview } = await supabase
+			.from('reviews')
+			.select('review_image')
+			.eq('id', id)
+			.single();
+
+		// Delete old image from storage if it exists
+		if (currentReview?.review_image) {
+			const urlParts = currentReview.review_image.split('/');
+			const oldFileName = urlParts[urlParts.length - 1];
+
+			await supabase.storage
+				.from('review-social-images')
+				.remove([oldFileName]);
+		}
+
+		// Upload to Supabase Storage
+		const { data: uploadData, error: uploadError } = await supabase.storage
+			.from('review-social-images')
+			.upload(fileName, fileBuffer, {
+				contentType: socialImageFile.type,
+				upsert: true
+			});
+
+		if (uploadError) {
+			return fail(500, { error: 'Failed to upload social image: ' + uploadError.message });
+		}
+
+		// Get public URL
+		const { data: { publicUrl } } = supabase.storage
+			.from('review-social-images')
+			.getPublicUrl(fileName);
+
+		// Update review record with new social image URL
+		const { error: updateError } = await supabase
+			.from('reviews')
+			.update({ review_image: publicUrl })
+			.eq('id', id);
+
+		if (updateError) {
+			return fail(500, { error: 'Failed to save social image record: ' + updateError.message });
+		}
+
+		return {
+			success: true,
+			message: 'Social share image uploaded successfully!'
 		};
 	}
 };
