@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { invalidateAll } from '$app/navigation';
 	import type { PageData, ActionData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -442,6 +443,7 @@
 														}
 														return async ({ update }) => {
 															await update();
+															await invalidateAll();
 														};
 													}}
 												>
