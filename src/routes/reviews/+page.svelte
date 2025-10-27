@@ -136,7 +136,7 @@
 					class="w-full md:w-48 px-4 py-3 rounded-lg bg-neutral-900 border border-neutral-800 text-white focus:outline-none focus:border-haunt-orange"
 				>
 					{#each states as state}
-						<option value={state}>{state === 'all' ? 'All States' : state}</option>
+						<option value={state}>{state === 'all' ? 'All States' : getStateName(state)}</option>
 					{/each}
 				</select>
 			</div>
