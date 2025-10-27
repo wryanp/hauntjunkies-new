@@ -560,14 +560,6 @@
 	<!-- Texture overlay -->
 	<div class="texture-overlay"></div>
 
-	<!-- Animated particles effect -->
-	<div class="absolute inset-0 opacity-10">
-		<div class="hidden md:block absolute top-20 left-10 w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
-		<div class="hidden md:block absolute top-40 right-20 w-3 h-3 bg-yellow-400 rounded-full animate-pulse" style="animation-delay: 0.5s;"></div>
-		<div class="hidden md:block absolute bottom-32 left-1/4 w-2 h-2 bg-yellow-300 rounded-full animate-pulse" style="animation-delay: 1s;"></div>
-		<div class="hidden md:block absolute bottom-20 right-1/3 w-3 h-3 bg-yellow-500 rounded-full animate-pulse" style="animation-delay: 1.5s;"></div>
-	</div>
-
 	<div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 relative z-10">
 		<!-- Striking Header -->
 		<div class="text-center mb-16 px-4 sm:px-0">
