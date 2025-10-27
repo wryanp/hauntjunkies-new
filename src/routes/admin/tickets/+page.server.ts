@@ -4,6 +4,29 @@ import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
 import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
+// Helper function to verify admin authentication
+async function verifyAdminAuth(cookies: any): Promise<boolean> {
+	// Check Supabase session first
+	const supabaseClient = createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+		cookies: {
+			get: (key) => cookies.get(key),
+			set: (key, value, options) => {
+				cookies.set(key, value, { ...options, path: '/' });
+			},
+			remove: (key, options) => {
+				cookies.delete(key, { ...options, path: '/' });
+			}
+		}
+	});
+
+	const { data: { session } } = await supabaseClient.auth.getSession();
+	if (session) return true;
+
+	// Fallback to admin_session cookie
+	const adminSession = cookies.get('admin_session');
+	return !!adminSession;
+}
+
 export const load: PageServerLoad = async ({ cookies, parent }) => {
 	// Get authentication from layout
 	const { session } = await parent();
@@ -38,8 +61,7 @@ export const load: PageServerLoad = async ({ cookies, parent }) => {
 export const actions: Actions = {
 	updateStatus: async ({ request, cookies }) => {
 		// Verify admin authentication
-		const adminSession = cookies.get('admin_session');
-		if (!adminSession) {
+		if (!(await verifyAdminAuth(cookies))) {
 			return fail(401, { error: 'Unauthorized' });
 		}
 
@@ -80,8 +102,7 @@ export const actions: Actions = {
 
 	delete: async ({ request, cookies }) => {
 		// Verify admin authentication
-		const adminSession = cookies.get('admin_session');
-		if (!adminSession) {
+		if (!(await verifyAdminAuth(cookies))) {
 			return fail(401, { error: 'Unauthorized' });
 		}
 
@@ -121,8 +142,7 @@ export const actions: Actions = {
 
 	bulkDelete: async ({ request, cookies }) => {
 		// Verify admin authentication
-		const adminSession = cookies.get('admin_session');
-		if (!adminSession) {
+		if (!(await verifyAdminAuth(cookies))) {
 			return fail(401, { error: 'Unauthorized' });
 		}
 
