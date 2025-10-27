@@ -6,7 +6,6 @@
 	import type { ActionData, PageData } from './$types';
 	import TurnstileWidget from '$lib/components/TurnstileWidget.svelte';
 	import SEO from '$lib/components/SEO.svelte';
-	import { dev } from '$app/environment';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
@@ -19,7 +18,7 @@
 	});
 
 	let submitting = $state(false);
-	let captchaToken = $state(dev ? 'dev-mode' : ''); // Auto-pass in dev mode
+	let captchaToken = $state(''); // Will be set by Turnstile widget after verification
 
 	// Real-time validation errors
 	let firstNameError = $state('');
@@ -247,7 +246,7 @@
 						// Invalidate all data before showing success to ensure fresh data on next visit
 						await invalidateAll();
 						// Reset CAPTCHA only on success
-						captchaToken = dev ? 'dev-mode' : '';
+						captchaToken = '';
 					}
 					await update();
 					submitting = false;
@@ -488,8 +487,8 @@
 						</div>
 					{/if}
 
-					<!-- CAPTCHA Widget (hidden in dev mode) -->
-					{#if !dev && formData.date && formData.tickets > 0 && data.availableDates.length > 0}
+					<!-- CAPTCHA Widget -->
+					{#if formData.date && formData.tickets > 0 && data.availableDates.length > 0}
 						<div class="mt-6">
 							<TurnstileWidget
 								onVerify={(token) => captchaToken = token}
