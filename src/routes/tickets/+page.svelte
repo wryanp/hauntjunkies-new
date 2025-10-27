@@ -187,8 +187,16 @@
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
 					</svg>
 					<h2 class="text-2xl font-bold text-white mb-2">Tickets Confirmed!</h2>
+					{#if form.confirmationNumber}
+						<p class="text-haunt-red text-lg font-bold mb-3">
+							Confirmation: {form.confirmationNumber}
+						</p>
+					{/if}
 					<p class="text-gray-300">
-						Your tickets have been confirmed! Check your email for your digital tickets.
+						Your tickets have been confirmed! A confirmation email has been sent to <span class="text-white font-semibold">{form.ticketDetails?.email}</span>.
+					</p>
+					<p class="text-gray-400 text-sm mt-2">
+						Please check your spam folder if you don't see it within a few minutes.
 					</p>
 				</div>
 
