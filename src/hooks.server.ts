@@ -46,12 +46,12 @@ export const handle: Handle = async ({ event, resolve }) => {
 		//
 		const cspDirectives = [
 			"default-src 'self'",
-			"script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com",
+			"script-src 'self' 'unsafe-inline' 'unsafe-eval' https://challenges.cloudflare.com https://www.googletagmanager.com https://www.google-analytics.com https://snapwidget.com",
 			"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
 			"font-src 'self' https://fonts.gstatic.com data:",
 			"img-src 'self' data: https: blob:", // Allow images from any HTTPS source
-			"connect-src 'self' https://*.supabase.co https://www.google-analytics.com https://challenges.cloudflare.com wss://*.supabase.co", // Added wss for Supabase realtime
-			"frame-src 'self' https://www.youtube.com https://challenges.cloudflare.com",
+			"connect-src 'self' https://*.supabase.co https://www.google-analytics.com https://challenges.cloudflare.com https://snapwidget.com wss://*.supabase.co", // Added wss for Supabase realtime
+			"frame-src 'self' https://www.youtube.com https://challenges.cloudflare.com https://snapwidget.com",
 			"object-src 'none'",
 			"base-uri 'self'",
 			"form-action 'self'",

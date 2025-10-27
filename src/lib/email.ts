@@ -102,6 +102,20 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 			color-scheme: light only;
 			supported-color-schemes: light only;
 		}
+		/* Force colors in dark mode - prevent email client overrides */
+		@media (prefers-color-scheme: dark) {
+			body { background-color: #f4f4f4 !important; background-image: linear-gradient(#f4f4f4, #f4f4f4) !important; color: #333333 !important; -webkit-text-fill-color: #333333 !important; }
+			.email-wrapper { background-color: #f4f4f4 !important; background-image: linear-gradient(#f4f4f4, #f4f4f4) !important; }
+			.email-container { background-color: #fffffe !important; background-image: linear-gradient(#fffffe, #fffffe) !important; }
+			.header-bg { background-color: #000001 !important; background-image: linear-gradient(#000001, #000001) !important; border-bottom-color: #a41214 !important; }
+			.brand-color { color: #a41214 !important; -webkit-text-fill-color: #a41214 !important; }
+			.ticket-count { color: #a41214 !important; -webkit-text-fill-color: #a41214 !important; }
+			.detail-bg { background-color: #f9f9f9 !important; background-image: linear-gradient(#f9f9f9, #f9f9f9) !important; }
+		}
+		/* Outlook dark mode prevention */
+		[data-ogsc] body { background-color: #f4f4f4 !important; background-image: linear-gradient(#f4f4f4, #f4f4f4) !important; }
+		[data-ogsc] .header-bg { background-color: #000001 !important; background-image: linear-gradient(#000001, #000001) !important; }
+		[data-ogsc] .brand-color { color: #a41214 !important; -webkit-text-fill-color: #a41214 !important; }
 		@media only screen and (max-width: 600px) {
 			.responsive-table {
 				width: 100% !important;
@@ -113,7 +127,10 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 				padding: 30px 20px !important;
 			}
 			.mobile-font-xlarge {
-				font-size: 60px !important;
+				font-size: 48px !important;
+			}
+			.mobile-brand-title {
+				font-size: 48px !important;
 			}
 			.mobile-font-large {
 				font-size: 24px !important;
@@ -137,18 +154,18 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 		}
 	</style>
 </head>
-<body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f4f4f4; color: #333333;">
-	<table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f4f4;">
+<body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f4f4f4 !important; background-image: linear-gradient(#f4f4f4, #f4f4f4) !important; color: #333333 !important; -webkit-text-fill-color: #333333 !important;">
+	<table width="100%" cellpadding="0" cellspacing="0" class="email-wrapper" style="background-color: #f4f4f4 !important; background-image: linear-gradient(#f4f4f4, #f4f4f4) !important;">
 		<tr>
 			<td align="center" style="padding: 40px 20px;">
-				<table width="600" cellpadding="0" cellspacing="0" class="responsive-table" style="max-width: 600px; width: 100%; background-color: #ffffff; box-shadow: 0 4px 20px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden;">
+				<table width="600" cellpadding="0" cellspacing="0" class="responsive-table email-container" style="max-width: 600px; width: 100%; background-color: #fffffe !important; background-image: linear-gradient(#fffffe, #fffffe) !important; box-shadow: 0 4px 20px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden;">
 
 					<!-- Header -->
 					<tr>
-						<td align="center" class="mobile-header-padding" style="padding: 50px 40px; background-color: #000000; border-bottom: 4px solid #a41214;">
-							<h1 style="margin: 0; font-size: 110px; font-weight: 700; color: #a41214; font-family: 'Karma', 'Georgia', serif; letter-spacing: 2px; text-transform: uppercase; text-align: center; line-height: 1; white-space: nowrap;">
+						<td align="center" class="mobile-header-padding header-bg" style="padding: 50px 40px 50px 40px; background-color: #000001 !important; background-image: linear-gradient(#000001, #000001) !important; border-bottom: 4px solid #a41214 !important; vertical-align: middle;">
+							<h1 class="brand-color mobile-brand-title" style="margin: 28px 0 0 0; font-size: 110px; font-weight: 700; color: #a41214 !important; -webkit-text-fill-color: #a41214 !important; font-family: 'Karma', 'Georgia', serif; letter-spacing: 2px; text-transform: uppercase; text-align: center; line-height: 1.1; white-space: nowrap;">
 							<span style="display: inline;">MCCLOUD</span>
-							<span style="display: inline; margin-left: 10px;">MANOR</span>
+							<span style="display: inline; margin-left: -10px;">MANOR</span>
 						</h1>
 						</td>
 					</tr>
@@ -156,7 +173,7 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 					<!-- Ticket Intro -->
 					<tr>
 						<td class="mobile-padding" style="padding: 40px 40px 30px 40px; text-align: center;">
-							<h2 class="mobile-font-large" style="margin: 0 0 12px 0; font-size: 28px; font-weight: 700; color: #000000;">Your Tickets Are Confirmed</h2>
+							<h2 class="mobile-font-large" style="margin: 0 0 12px 0; font-size: 28px; font-weight: 700; color: #000001 !important; -webkit-text-fill-color: #000001 !important;">Your Tickets Are Confirmed</h2>
 							<p style="margin: 0 0 8px 0; font-size: 16px; color: #666666; line-height: 1.6;">
 								We're excited to terrify you at McCloud Manor.
 							</p>
@@ -169,13 +186,13 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 					<!-- Event Details -->
 					<tr>
 						<td class="mobile-padding" style="padding: 0 40px 30px 40px;">
-							<table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f9f9f9; border-radius: 6px; overflow: hidden;">
+							<table width="100%" cellpadding="0" cellspacing="0" class="detail-bg" style="background-color: #f9f9f9 !important; background-image: linear-gradient(#f9f9f9, #f9f9f9) !important; border-radius: 6px; overflow: hidden;">
 								<tr>
 									<td style="padding: 20px 24px; border-bottom: 1px solid #e5e5e5;">
 										<table width="100%" cellpadding="0" cellspacing="0">
 											<tr>
-												<td width="40%" style="color: #666666; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Guest Name</td>
-												<td style="color: #000000; font-size: 16px; font-weight: 600; text-align: right;">${ticketData.firstName} ${ticketData.lastName}</td>
+												<td width="40%" style="color: #666666 !important; -webkit-text-fill-color: #666666 !important; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Guest Name</td>
+												<td style="color: #000001 !important; -webkit-text-fill-color: #000001 !important; font-size: 16px; font-weight: 600; text-align: right;">${ticketData.firstName} ${ticketData.lastName}</td>
 											</tr>
 										</table>
 									</td>
@@ -184,8 +201,8 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 									<td style="padding: 20px 24px; border-bottom: 1px solid #e5e5e5;">
 										<table width="100%" cellpadding="0" cellspacing="0">
 											<tr>
-												<td width="40%" style="color: #666666; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Date</td>
-												<td style="color: #000000; font-size: 16px; font-weight: 600; text-align: right;">${dateFormatted}</td>
+												<td width="40%" style="color: #666666 !important; -webkit-text-fill-color: #666666 !important; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Date</td>
+												<td style="color: #000001 !important; -webkit-text-fill-color: #000001 !important; font-size: 16px; font-weight: 600; text-align: right;">${dateFormatted}</td>
 											</tr>
 										</table>
 									</td>
@@ -194,8 +211,8 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 									<td style="padding: 20px 24px; border-bottom: 1px solid #e5e5e5;">
 										<table width="100%" cellpadding="0" cellspacing="0">
 											<tr>
-												<td width="40%" style="color: #666666; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Time</td>
-												<td style="color: #000000; font-size: 16px; font-weight: 600; text-align: right;">${timeStr}</td>
+												<td width="40%" style="color: #666666 !important; -webkit-text-fill-color: #666666 !important; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Time</td>
+												<td style="color: #000001 !important; -webkit-text-fill-color: #000001 !important; font-size: 16px; font-weight: 600; text-align: right;">${timeStr}</td>
 											</tr>
 										</table>
 									</td>
@@ -204,8 +221,8 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 									<td style="padding: 20px 24px;">
 										<table width="100%" cellpadding="0" cellspacing="0">
 											<tr>
-												<td width="40%" style="color: #666666; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Tickets</td>
-												<td style="color: #a41214; font-size: 18px; font-weight: 700; text-align: right;">${ticketData.tickets} ${ticketData.tickets === 1 ? 'Ticket' : 'Tickets'}</td>
+												<td width="40%" style="color: #666666 !important; -webkit-text-fill-color: #666666 !important; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Tickets</td>
+												<td class="ticket-count" style="color: #a41214 !important; -webkit-text-fill-color: #a41214 !important; font-size: 18px; font-weight: 700; text-align: right;">${ticketData.tickets} ${ticketData.tickets === 1 ? 'Ticket' : 'Tickets'}</td>
 											</tr>
 										</table>
 									</td>
@@ -220,12 +237,12 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 							<table width="100%" cellpadding="0" cellspacing="0">
 								<tr>
 									<td class="button-column" width="48%" style="padding-right: 2%;">
-										<a href="https://www.google.com/maps/dir/?api=1&destination=2100+Carlysle+Park+Lane+Lawrenceville+GA+30044" class="button-link" style="display: block; background-color: #a41214; color: #ffffff; text-decoration: none; padding: 14px 24px; border-radius: 4px; text-align: center; font-weight: 600; font-size: 14px;">
+										<a href="https://www.google.com/maps/dir/?api=1&destination=2100+Carlysle+Park+Lane+Lawrenceville+GA+30044" class="button-link" style="display: block; background-color: #a41214 !important; background-image: linear-gradient(#a41214, #a41214) !important; color: #fffffe !important; -webkit-text-fill-color: #fffffe !important; text-decoration: none; padding: 14px 24px; border-radius: 4px; text-align: center; font-weight: 600; font-size: 14px;">
 											Get Directions
 										</a>
 									</td>
 									<td class="button-column" width="48%" style="padding-left: 2%;">
-										<a href="https://hauntjunkies.com/mccloudmanor#faq" class="button-link" style="display: block; background-color: #a41214; color: #ffffff; text-decoration: none; padding: 14px 24px; border-radius: 4px; text-align: center; font-weight: 600; font-size: 14px;">
+										<a href="https://hauntjunkies.com/mccloudmanor#faq" class="button-link" style="display: block; background-color: #a41214 !important; background-image: linear-gradient(#a41214, #a41214) !important; color: #fffffe !important; -webkit-text-fill-color: #fffffe !important; text-decoration: none; padding: 14px 24px; border-radius: 4px; text-align: center; font-weight: 600; font-size: 14px;">
 											View FAQ
 										</a>
 									</td>
@@ -237,20 +254,20 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 					<!-- Important Info -->
 					<tr>
 						<td class="mobile-padding" style="padding: 0 40px 40px 40px;">
-							<div style="background-color: #f9f9f9; border-radius: 6px; padding: 28px 24px;">
-								<h3 class="mobile-font-medium" style="margin: 0 0 16px 0; font-size: 18px; font-weight: 700; color: #000000;">Important Information</h3>
+							<div style="background-color: #f9f9f9 !important; background-image: linear-gradient(#f9f9f9, #f9f9f9) !important; border-radius: 6px; padding: 28px 24px;">
+								<h3 class="mobile-font-medium" style="margin: 0 0 16px 0; font-size: 18px; font-weight: 700; color: #000001 !important; -webkit-text-fill-color: #000001 !important;">Important Information</h3>
 								<table width="100%" cellpadding="0" cellspacing="0">
 									<tr>
 										<td style="padding-bottom: 12px;">
-											<p style="margin: 0; color: #666666; font-size: 14px; line-height: 1.6;">
-												<strong style="color: #000000;">Parking:</strong> Parking is free but EXTREMELY limited! Please carpool or even Uber/Lyft if possible. Do not park in or block any of our neighbors driveways.
+											<p style="margin: 0; color: #666666 !important; -webkit-text-fill-color: #666666 !important; font-size: 14px; line-height: 1.6;">
+												<strong style="color: #000001 !important; -webkit-text-fill-color: #000001 !important;">Parking:</strong> Parking is free but EXTREMELY limited! Please carpool or even Uber/Lyft if possible. Do not park in or block any of our neighbors driveways.
 											</p>
 										</td>
 									</tr>
 									<tr>
 										<td>
-											<p style="margin: 0; color: #666666; font-size: 14px; line-height: 1.6;">
-												<strong style="color: #000000;">Weather:</strong> Open rain or shine (line is not covered)
+											<p style="margin: 0; color: #666666 !important; -webkit-text-fill-color: #666666 !important; font-size: 14px; line-height: 1.6;">
+												<strong style="color: #000001 !important; -webkit-text-fill-color: #000001 !important;">Weather:</strong> Open rain or shine (line is not covered)
 											</p>
 										</td>
 									</tr>
@@ -291,9 +308,18 @@ function createEmailFailureAlertHTML(ticketData: TicketData, errorMessage: strin
 <html>
 <head>
 	<meta charset="utf-8">
+	<meta name="color-scheme" content="light only">
+	<meta name="supported-color-schemes" content="light only">
 	<title>Email Delivery Failure</title>
+	<style type="text/css">
+		:root { color-scheme: light only; }
+		@media (prefers-color-scheme: dark) {
+			body { background-color: #1a1a1a !important; background-image: linear-gradient(#1a1a1a, #1a1a1a) !important; color: #fffffe !important; }
+		}
+		[data-ogsc] body { background-color: #1a1a1a !important; background-image: linear-gradient(#1a1a1a, #1a1a1a) !important; }
+	</style>
 </head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #ffffff; background-color: #1a1a1a; max-width: 600px; margin: 0 auto; padding: 20px;">
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #fffffe !important; -webkit-text-fill-color: #fffffe !important; background-color: #1a1a1a !important; background-image: linear-gradient(#1a1a1a, #1a1a1a) !important; max-width: 600px; margin: 0 auto; padding: 20px;">
 	<h1 style="color: #ff0000; border-bottom: 3px solid #ff0000; padding-bottom: 10px;">⚠️ URGENT: Email Delivery Failed</h1>
 
 	<div style="padding: 20px; background-color: #330000; border: 2px solid #ff0000; border-radius: 5px; margin: 20px 0;">
@@ -361,9 +387,18 @@ function createAdminEmailHTML(ticketData: TicketData): string {
 <html>
 <head>
 	<meta charset="utf-8">
+	<meta name="color-scheme" content="light only">
+	<meta name="supported-color-schemes" content="light only">
 	<title>New Ticket Request</title>
+	<style type="text/css">
+		:root { color-scheme: light only; }
+		@media (prefers-color-scheme: dark) {
+			body { background-color: #1a1a1a !important; background-image: linear-gradient(#1a1a1a, #1a1a1a) !important; color: #fffffe !important; }
+		}
+		[data-ogsc] body { background-color: #1a1a1a !important; background-image: linear-gradient(#1a1a1a, #1a1a1a) !important; }
+	</style>
 </head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #ffffff; background-color: #1a1a1a; max-width: 600px; margin: 0 auto; padding: 20px;">
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #fffffe !important; -webkit-text-fill-color: #fffffe !important; background-color: #1a1a1a !important; background-image: linear-gradient(#1a1a1a, #1a1a1a) !important; max-width: 600px; margin: 0 auto; padding: 20px;">
 	<h1 style="color: #cc0000; border-bottom: 3px solid #cc0000; padding-bottom: 10px;">New Ticket Request</h1>
 
 	<h2 style="color: #cc0000; margin-top: 30px;">Guest Details</h2>
@@ -498,9 +533,20 @@ function createCommentNotificationHTML(commentData: CommentData): string {
 <html>
 <head>
 	<meta charset="utf-8">
+	<meta name="color-scheme" content="light only">
+	<meta name="supported-color-schemes" content="light only">
 	<title>New Comment on Review</title>
+	<style type="text/css">
+		:root { color-scheme: light only; }
+		@media (prefers-color-scheme: dark) {
+			body { background-color: #1a1a1a !important; background-image: linear-gradient(#1a1a1a, #1a1a1a) !important; color: #fffffe !important; }
+			.button { background-color: #FC7403 !important; background-image: linear-gradient(#FC7403, #FC7403) !important; color: #fffffe !important; }
+		}
+		[data-ogsc] body { background-color: #1a1a1a !important; background-image: linear-gradient(#1a1a1a, #1a1a1a) !important; }
+		[data-ogsc] .button { background-color: #FC7403 !important; background-image: linear-gradient(#FC7403, #FC7403) !important; }
+	</style>
 </head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #ffffff; background-color: #1a1a1a; max-width: 600px; margin: 0 auto; padding: 20px;">
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #fffffe !important; -webkit-text-fill-color: #fffffe !important; background-color: #1a1a1a !important; background-image: linear-gradient(#1a1a1a, #1a1a1a) !important; max-width: 600px; margin: 0 auto; padding: 20px;">
 	<h1 style="color: #FC7403; border-bottom: 3px solid #FC7403; padding-bottom: 10px;">New Comment Submitted</h1>
 
 	<h2 style="color: #FC7403; margin-top: 30px;">Review Details</h2>
@@ -543,7 +589,7 @@ function createCommentNotificationHTML(commentData: CommentData): string {
 			<form action="${approvalUrl}" method="POST" style="display: inline-block;">
 				<input type="hidden" name="token" value="${commentData.approvalToken}" />
 				<input type="hidden" name="hmac" value="${hmac}" />
-				<button type="submit" style="display: inline-block; background-color: #FC7403; color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-weight: 600; font-size: 16px; margin: 5px; border: none; cursor: pointer;">
+				<button type="submit" class="button" style="display: inline-block; background-color: #FC7403 !important; background-image: linear-gradient(#FC7403, #FC7403) !important; color: #fffffe !important; -webkit-text-fill-color: #fffffe !important; text-decoration: none; padding: 14px 32px; border-radius: 6px; font-weight: 600; font-size: 16px; margin: 5px; border: none; cursor: pointer;">
 					✅ Approve Comment
 				</button>
 			</form>

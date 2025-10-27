@@ -132,17 +132,29 @@ export const actions: Actions = {
 				<head>
 					<meta charset="UTF-8">
 					<meta name="viewport" content="width=device-width, initial-scale=1.0">
+					<meta name="color-scheme" content="light only">
+					<meta name="supported-color-schemes" content="light only">
 					<title>New Contact Form Submission</title>
+					<style type="text/css">
+						:root { color-scheme: light only; }
+						@media (prefers-color-scheme: dark) {
+							body { background-color: #000001 !important; background-image: linear-gradient(#000001, #000001) !important; }
+							.outer-table { background-color: #000001 !important; background-image: linear-gradient(#000001, #000001) !important; }
+							.header { background-color: #000001 !important; background-image: linear-gradient(#000001, #000001) !important; }
+						}
+						[data-ogsc] body { background-color: #000001 !important; background-image: linear-gradient(#000001, #000001) !important; }
+						[data-ogsc] .outer-table { background-color: #000001 !important; background-image: linear-gradient(#000001, #000001) !important; }
+					</style>
 				</head>
-				<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #000000;">
-					<table width="100%" cellpadding="0" cellspacing="0" style="background-color: #000000;">
+				<body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #000001 !important; background-image: linear-gradient(#000001, #000001) !important;">
+					<table width="100%" cellpadding="0" cellspacing="0" class="outer-table" style="background-color: #000001 !important; background-image: linear-gradient(#000001, #000001) !important;">
 						<tr>
 							<td align="center" style="padding: 50px 20px;">
 								<table width="600" cellpadding="0" cellspacing="0" style="background-color: #1a1a1a; border: 2px solid #FC7403; border-radius: 10px;">
 									<!-- Header -->
 									<tr>
-										<td align="center" style="padding: 40px; background-color: #000000; border-bottom: 4px solid #FC7403; border-radius: 10px 10px 0 0;">
-											<h1 style="margin: 0; color: #FC7403; font-size: 32px; font-weight: bold; text-shadow: 0 0 10px rgba(252, 116, 3, 0.5);">
+										<td align="center" class="header" style="padding: 40px; background-color: #000001 !important; background-image: linear-gradient(#000001, #000001) !important; border-bottom: 4px solid #FC7403; border-radius: 10px 10px 0 0;">
+											<h1 style="margin: 0; color: #FC7403 !important; -webkit-text-fill-color: #FC7403 !important; font-size: 32px; font-weight: bold; text-shadow: 0 0 10px rgba(252, 116, 3, 0.5);">
 												NEW CONTACT MESSAGE
 											</h1>
 										</td>
