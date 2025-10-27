@@ -11,18 +11,13 @@
 	let containerRef: HTMLDivElement;
 	let loading = $state(true);
 	let error = $state(false);
-	let debugInfo = $state('');
 
 	onMount(() => {
-		// Debug: Check if site key is available
 		if (!PUBLIC_TURNSTILE_SITE_KEY) {
-			debugInfo = 'ERROR: Site key not found';
 			error = true;
 			loading = false;
 			return;
 		}
-
-		debugInfo = `Loading Turnstile... (key: ${PUBLIC_TURNSTILE_SITE_KEY.substring(0, 10)}...)`;
 
 		// Load Turnstile script
 		const script = document.createElement('script');
@@ -31,11 +26,9 @@
 		script.defer = true;
 		script.crossOrigin = 'anonymous';
 		script.onload = () => {
-			debugInfo = 'Script loaded, rendering widget...';
 			setTimeout(() => renderWidget(), 100);
 		};
 		script.onerror = () => {
-			debugInfo = 'ERROR: Failed to load Turnstile script';
 			error = true;
 			loading = false;
 		};
@@ -50,15 +43,7 @@
 	});
 
 	function renderWidget() {
-		if (!containerRef) {
-			debugInfo = 'ERROR: Container not ready';
-			error = true;
-			loading = false;
-			return;
-		}
-
-		if (!(window as any).turnstile) {
-			debugInfo = 'ERROR: Turnstile API not available';
+		if (!containerRef || !(window as any).turnstile) {
 			error = true;
 			loading = false;
 			return;
@@ -69,21 +54,17 @@
 				sitekey: PUBLIC_TURNSTILE_SITE_KEY,
 				theme: 'dark',
 				callback: (token: string) => {
-					debugInfo = 'CAPTCHA verified!';
 					loading = false;
 					onVerify(token);
 				},
 				'error-callback': () => {
-					debugInfo = 'ERROR: CAPTCHA verification failed';
 					error = true;
 					loading = false;
 					onError();
 				}
 			});
-			debugInfo = 'Widget rendered successfully';
 			loading = false;
 		} catch (e) {
-			debugInfo = `ERROR: ${e}`;
 			error = true;
 			loading = false;
 		}
@@ -101,12 +82,10 @@
 	{/if}
 	{#if error}
 		<div class="error-state">
-			<p class="text-red-400">⚠️ CAPTCHA Error: {debugInfo}</p>
+			<p class="text-red-400">⚠️ Security verification unavailable. Please try again or contact support.</p>
 		</div>
 	{/if}
 	<div bind:this={containerRef} class="cf-turnstile"></div>
-	<!-- Debug info (remove after fixing) -->
-	<p class="debug-info text-xs text-gray-500 mt-2">{debugInfo}</p>
 </div>
 
 <style>
@@ -170,9 +149,5 @@
 	.cf-turnstile {
 		display: flex;
 		justify-content: center;
-	}
-
-	.debug-info {
-		text-align: center;
 	}
 </style>
