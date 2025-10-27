@@ -192,9 +192,10 @@
 										{message.read ? '✉️' : '📭'}
 									</button>
 								</form>
-								<form method="POST" action="?/delete" use:enhance={() => {
+								<form method="POST" action="?/delete" use:enhance={({ cancel }) => {
 									if (!confirm('Are you sure you want to delete this message?')) {
-										return ({ cancel }) => cancel();
+										cancel();
+										return;
 									}
 									return async ({ update }) => {
 										await update();
@@ -263,9 +264,10 @@
 					</svg>
 					Reply via Email
 				</a>
-				<form method="POST" action="?/delete" use:enhance={() => {
+				<form method="POST" action="?/delete" use:enhance={({ cancel }) => {
 					if (!confirm('Are you sure you want to delete this message?')) {
-						return ({ cancel }) => cancel();
+						cancel();
+						return;
 					}
 					return async ({ update }) => {
 						await update();

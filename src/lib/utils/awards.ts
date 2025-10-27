@@ -1,5 +1,5 @@
 import type { Review, AwardCategory, AwardData } from '$lib/types';
-import { AWARD_CATEGORIES } from '$lib/types';
+import { AWARD_CATEGORIES, getAwardImagePath } from '$lib/types';
 
 /**
  * Extract all Golden Ghost Awards from a review
@@ -59,12 +59,17 @@ export function hasGoldenGhostAwards(review: Review): boolean {
 }
 
 /**
- * Get award info (label, icon, description) for a category
+ * Get award info (label, icon, description, imagePath) for a category
  * @param category - The award category
- * @returns Award information object
+ * @param year - The year the award was won (optional, for year-specific badge images)
+ * @returns Award information object with year-specific image path
  */
-export function getAwardInfo(category: AwardCategory) {
-	return AWARD_CATEGORIES[category];
+export function getAwardInfo(category: AwardCategory, year?: number) {
+	const baseInfo = AWARD_CATEGORIES[category];
+	return {
+		...baseInfo,
+		imagePath: year ? getAwardImagePath(category, year) : baseInfo.imagePath
+	};
 }
 
 /**

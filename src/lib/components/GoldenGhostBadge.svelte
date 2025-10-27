@@ -20,7 +20,7 @@
 		showLabel = true
 	}: Props = $props();
 
-	const awardInfo = $derived(getAwardInfo(category));
+	const awardInfo = $derived(getAwardInfo(category, year));
 
 	// Size classes
 	const sizeClasses = $derived({

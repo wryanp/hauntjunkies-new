@@ -180,44 +180,72 @@ export const AWARD_CATEGORIES: Record<AwardCategory, AwardInfo> = {
 		icon: '🎭',
 		description: 'Outstanding performance and character portrayal',
 		fieldName: 'award_best_actors_year',
-		imagePath: '/Best_Haunt_Actors_Badge.webp'
+		imagePath: '/Best_Haunt_Actors_Badge.webp' // Fallback generic badge
 	},
 	best_makeup: {
 		label: 'Best Haunt Makeup',
 		icon: '💄',
 		description: 'Exceptional makeup and prosthetics artistry',
 		fieldName: 'award_best_makeup_year',
-		imagePath: '/Best_Haunt_Makeup_Badge.webp'
+		imagePath: '/Best_Haunt_Makeup_Badge.webp' // Fallback generic badge
 	},
 	best_set_design: {
 		label: 'Best Set Design',
 		icon: '🏛️',
 		description: 'Immersive environments and scenic design',
 		fieldName: 'award_best_set_design_year',
-		imagePath: '/Best_Set_Design_Badge.webp'
+		imagePath: '/Best_Set_Design_Badge.webp' // Fallback generic badge
 	},
 	best_story: {
 		label: 'Best Haunt Story',
 		icon: '📖',
 		description: 'Compelling narrative and storytelling',
 		fieldName: 'award_best_story_year',
-		imagePath: '/Best_Haunt_Story_Badge.webp'
+		imagePath: '/Best_Haunt_Story_Badge.webp' // Fallback generic badge
 	},
 	scariest: {
 		label: 'Scariest Haunt',
 		icon: '😱',
 		description: 'Most terrifying and intense experience',
 		fieldName: 'award_scariest_year',
-		imagePath: '/Scariest_Haunt_Badge.webp'
+		imagePath: '/Scariest_Haunt_Badge.webp' // Fallback generic badge
 	},
 	best_overall: {
 		label: 'Best Overall Haunt',
 		icon: '👑',
 		description: 'The ultimate haunt experience - our highest honor',
 		fieldName: 'award_best_overall_year',
-		imagePath: '/Best_Overall_Haunt_Badge.webp'
+		imagePath: '/Best_Overall_Haunt_Badge.webp' // Fallback generic badge
 	}
 };
+
+/**
+ * Map award categories to their badge file names in the year directories
+ */
+const BADGE_FILE_NAMES: Record<AwardCategory, string> = {
+	best_actors: 'Best-Haunt-Actors-Badge',
+	best_makeup: 'Best-Haunt-Makeup-Badge',
+	best_set_design: 'Best-Set-Design-Badge',
+	best_story: 'Best-Haunt-Story-Badge',
+	scariest: 'Scariest-Haunt-Badge',
+	best_overall: 'Best-Overall-Haunt-Badge'
+};
+
+/**
+ * Get the image path for an award badge, prioritizing year-specific badges
+ * @param category - The award category
+ * @param year - The year the award was won (optional)
+ * @returns Image path for the badge
+ */
+export function getAwardImagePath(category: AwardCategory, year?: number): string {
+	if (year) {
+		// Try year-specific badge first
+		const badgeFileName = BADGE_FILE_NAMES[category];
+		return `/gga_badge/${year}/${year}-${badgeFileName}.png`;
+	}
+	// Fall back to generic badge
+	return AWARD_CATEGORIES[category].imagePath;
+}
 
 export interface AwardData {
 	category: AwardCategory;

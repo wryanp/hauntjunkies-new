@@ -233,9 +233,10 @@
 						<form
 							method="POST"
 							action="?/delete"
-							use:enhance={() => {
+							use:enhance={({ cancel }) => {
 								if (!confirm('Are you sure you want to delete this comment?')) {
-									return ({ cancel }) => cancel();
+									cancel();
+									return;
 								}
 								return async ({ update }) => {
 									await update();
