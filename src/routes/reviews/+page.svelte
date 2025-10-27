@@ -107,7 +107,7 @@
 	})}</` + `script>`}
 </svelte:head>
 
-<div class="bg-gradient-to-b from-black via-neutral-900 to-black pt-32 pb-12 md:pt-32 md:pb-12" style="min-height: 100vh; min-height: -webkit-fill-available; min-height: 100dvh;">
+<div class="bg-gradient-to-b from-neutral-900 via-black via-30% via-neutral-900 via-60% via-black to-neutral-900 pt-32 pb-12 md:pt-32 md:pb-12" style="min-height: 100vh; min-height: -webkit-fill-available; min-height: 100dvh;">
 	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 		<!-- Header -->
 		<div class="text-center mb-16">
