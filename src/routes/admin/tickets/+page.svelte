@@ -437,8 +437,11 @@
 													action="?/delete"
 													use:enhance={() => {
 														if (!confirm('Are you sure you want to delete this ticket request?')) {
-															return () => {};
+															return ({ cancel }) => cancel();
 														}
+														return async ({ update }) => {
+															await update();
+														};
 													}}
 												>
 													<input type="hidden" name="id" value={ticket.id} />
