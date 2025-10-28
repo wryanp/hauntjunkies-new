@@ -109,49 +109,6 @@ export const actions: Actions = {
 			return fail(400, { error: 'Name, slug, and description are required' });
 		}
 
-		// Parse city and state from address
-		// Expected format: "Street, City, State ZIP" or "City, State ZIP"
-		let city = '';
-		let state = '';
-		let zip = '';
-		let streetAddress = address || ''; // Default to full address or empty string
-
-		if (address && address.trim()) {
-			const addressParts = address.split(',').map(p => p.trim());
-			if (addressParts.length >= 3) {
-				// Format: "Street, City, State ZIP"
-				streetAddress = addressParts[0]; // First part is street address
-				city = addressParts[addressParts.length - 2]; // Second to last is city
-				const lastPart = addressParts[addressParts.length - 1];
-				// Extract state and ZIP (e.g., "CA 12345" or "CA")
-				const stateZipMatch = lastPart.match(/^([A-Z]{2})\s*(\d{5}(?:-\d{4})?)?/i);
-				if (stateZipMatch) {
-					state = stateZipMatch[1].toUpperCase();
-					zip = stateZipMatch[2] || '';
-				}
-			} else if (addressParts.length === 2) {
-				// Format: "City, State ZIP" - no street address
-				city = addressParts[0];
-				const lastPart = addressParts[1];
-				const stateZipMatch = lastPart.match(/^([A-Z]{2})\s*(\d{5}(?:-\d{4})?)?/i);
-				if (stateZipMatch) {
-					state = stateZipMatch[1].toUpperCase();
-					zip = stateZipMatch[2] || '';
-				}
-				streetAddress = ''; // No street address provided
-			} else if (addressParts.length === 1) {
-				// If only one part, try to extract state from it
-				const stateMatch = addressParts[0].match(/([A-Z]{2})\s*(\d{5}(?:-\d{4})?)?/i);
-				if (stateMatch) {
-					state = stateMatch[1].toUpperCase();
-					zip = stateMatch[2] || '';
-				}
-			}
-		}
-
-		// Extract year from review name (e.g., "Haunt Name 2024")
-		const yearMatch = name?.match(/(\d{4})/);
-		const year = yearMatch ? parseInt(yearMatch[1]) : new Date().getFullYear();
 		const review_text = formData.get('review_text')?.toString() || formData.get('description')?.toString() || '';
 		const featured = formData.get('featured') === 'true';
 
@@ -200,11 +157,7 @@ export const actions: Actions = {
 				name,
 				slug,
 				caption,
-				address: streetAddress,
-				city,
-				state,
-				zip,
-				year,
+				address,
 				description,
 				review_text,
 				featured,
@@ -283,50 +236,6 @@ export const actions: Actions = {
 			return fail(400, { error: 'Name, slug, and description are required' });
 		}
 
-		// Parse city and state from address
-		// Expected format: "Street, City, State ZIP" or "City, State ZIP"
-		let city = '';
-		let state = '';
-		let zip = '';
-		let streetAddress = address || ''; // Default to full address or empty string
-
-		if (address && address.trim()) {
-			const addressParts = address.split(',').map(p => p.trim());
-			if (addressParts.length >= 3) {
-				// Format: "Street, City, State ZIP"
-				streetAddress = addressParts[0]; // First part is street address
-				city = addressParts[addressParts.length - 2]; // Second to last is city
-				const lastPart = addressParts[addressParts.length - 1];
-				// Extract state and ZIP (e.g., "CA 12345" or "CA")
-				const stateZipMatch = lastPart.match(/^([A-Z]{2})\s*(\d{5}(?:-\d{4})?)?/i);
-				if (stateZipMatch) {
-					state = stateZipMatch[1].toUpperCase();
-					zip = stateZipMatch[2] || '';
-				}
-			} else if (addressParts.length === 2) {
-				// Format: "City, State ZIP" - no street address
-				city = addressParts[0];
-				const lastPart = addressParts[1];
-				const stateZipMatch = lastPart.match(/^([A-Z]{2})\s*(\d{5}(?:-\d{4})?)?/i);
-				if (stateZipMatch) {
-					state = stateZipMatch[1].toUpperCase();
-					zip = stateZipMatch[2] || '';
-				}
-				streetAddress = ''; // No street address provided
-			} else if (addressParts.length === 1) {
-				// If only one part, try to extract state from it
-				const stateMatch = addressParts[0].match(/([A-Z]{2})\s*(\d{5}(?:-\d{4})?)?/i);
-				if (stateMatch) {
-					state = stateMatch[1].toUpperCase();
-					zip = stateMatch[2] || '';
-				}
-			}
-		}
-
-		// Extract year from review name (e.g., "Haunt Name 2024")
-		const yearMatch = name?.match(/(\d{4})/);
-		const year = yearMatch ? parseInt(yearMatch[1]) : new Date().getFullYear();
-
 		const review_text = formData.get('review_text')?.toString() || formData.get('description')?.toString() || '';
 		const featured = formData.get('featured') === 'true';
 
@@ -361,11 +270,7 @@ export const actions: Actions = {
 				name,
 				slug,
 				caption,
-				address: streetAddress,
-				city,
-				state,
-				zip,
-				year,
+				address,
 				description,
 				review_text,
 				featured,
