@@ -65,26 +65,26 @@
 			);
 		}
 
-		// Group by state and year
+		// Group by year and state (note: year first, then state)
 		const grouped: Record<string, Record<string, Review[]>> = {};
 
 		reviews.forEach(review => {
 			const state = getState(review.address);
 			const year = getYear(review.name);
 
-			if (!grouped[state]) {
-				grouped[state] = {};
+			if (!grouped[year]) {
+				grouped[year] = {};
 			}
-			if (!grouped[state][year]) {
-				grouped[state][year] = [];
+			if (!grouped[year][state]) {
+				grouped[year][state] = [];
 			}
-			grouped[state][year].push(review);
+			grouped[year][state].push(review);
 		});
 
-		// Sort reviews within each year by review_date (most recent first)
-		Object.keys(grouped).forEach(state => {
-			Object.keys(grouped[state]).forEach(year => {
-				grouped[state][year].sort((a, b) => {
+		// Sort reviews within each state by review_date (most recent first)
+		Object.keys(grouped).forEach(year => {
+			Object.keys(grouped[year]).forEach(state => {
+				grouped[year][state].sort((a, b) => {
 					const dateA = a.review_date ? new Date(a.review_date).getTime() : 0;
 					const dateB = b.review_date ? new Date(b.review_date).getTime() : 0;
 					return dateB - dateA;
@@ -95,34 +95,18 @@
 		return grouped;
 	});
 
-	// Get most recent review date for a state
-	function getMostRecentDateForState(state: string): number {
-		let mostRecent = 0;
-		Object.keys(groupedReviews[state]).forEach(year => {
-			groupedReviews[state][year].forEach(review => {
-				const reviewDate = review.review_date ? new Date(review.review_date).getTime() : 0;
-				if (reviewDate > mostRecent) {
-					mostRecent = reviewDate;
-				}
-			});
-		});
-		return mostRecent;
-	}
-
-	// Get sorted states (by most recent review)
-	const sortedStates = $derived(
+	// Get sorted years (most recent first)
+	const sortedYears = $derived(
 		Object.keys(groupedReviews).sort((a, b) => {
-			return getMostRecentDateForState(b) - getMostRecentDateForState(a);
-		})
-	);
-
-	// Get sorted years for a state (most recent first)
-	function getSortedYears(state: string): string[] {
-		return Object.keys(groupedReviews[state]).sort((a, b) => {
 			if (a === 'Unknown') return 1;
 			if (b === 'Unknown') return 1;
 			return parseInt(b) - parseInt(a);
-		});
+		})
+	);
+
+	// Get sorted states for a year (alphabetically)
+	function getSortedStates(year: string): string[] {
+		return Object.keys(groupedReviews[year]).sort();
 	}
 </script>
 
@@ -184,23 +168,23 @@
 		</div>
 
 		<!-- Reviews Grid -->
-		{#if sortedStates.length > 0}
-			{#each sortedStates as state}
-				<!-- State Header -->
+		{#if sortedYears.length > 0}
+			{#each sortedYears as year}
+				<!-- Year Header -->
 				<div class="mb-12">
 					<h2 class="text-4xl font-bold text-haunt-orange mb-8 pb-4 border-b-2 border-haunt-orange/30">
-						{state}
+						{year}
 					</h2>
 
-					{#each getSortedYears(state) as year}
-						<!-- Year Subheader -->
+					{#each getSortedStates(year) as state}
+						<!-- State Subheader -->
 						<div class="mb-10">
 							<h3 class="text-2xl font-semibold text-gray-300 mb-6 pl-4 border-l-4 border-haunt-orange/50">
-								{year}
+								{state}
 							</h3>
 
 							<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-								{#each groupedReviews[state][year] as review}
+								{#each groupedReviews[year][state] as review}
 					{@const logo = data.logos[review.id]}
 					{@const imageUrl = logo || (isValidImageUrl(review.cover_image_url)
 						? review.cover_image_url
