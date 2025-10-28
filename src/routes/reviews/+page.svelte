@@ -188,16 +188,22 @@
 		{#if sortedYears.length > 0}
 			{#each sortedYears as year}
 				<!-- Year Header -->
-				<div class="mb-12">
-					<h2 class="text-4xl font-bold text-haunt-orange mb-8 pb-4 border-b-2 border-haunt-orange/30">
-						{year}
+				<div class="mb-16">
+					<h2 class="text-5xl md:text-6xl font-extrabold text-center mb-8 relative">
+						<span class="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-haunt-orange to-red-600 drop-shadow-[0_0_20px_rgba(255,0,0,0.5)]" style="font-family: 'Creepster', cursive; letter-spacing: 0.1em; text-shadow: 0 0 30px rgba(255,0,0,0.8), 0 0 60px rgba(255,107,0,0.4);">
+							{year}
+						</span>
+						<div class="absolute inset-0 blur-xl opacity-30 bg-gradient-to-r from-red-600 via-haunt-orange to-red-600"></div>
 					</h2>
 
 					{#each getSortedStates(year) as state}
 						<!-- State Subheader -->
-						<div class="mb-10">
-							<h3 class="text-2xl font-semibold text-gray-300 mb-6 pl-4 border-l-4 border-haunt-orange/50">
-								{state}
+						<div class="mb-12">
+							<h3 class="text-3xl md:text-4xl font-bold text-gray-200 mb-8 pl-6 relative">
+								<span class="relative z-10" style="font-family: 'Creepster', cursive; text-shadow: 0 0 15px rgba(255,107,0,0.6), 2px 2px 4px rgba(0,0,0,0.8);">
+									{state}
+								</span>
+								<div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-red-600 via-haunt-orange to-red-900 shadow-[0_0_10px_rgba(255,107,0,0.8)]"></div>
 							</h3>
 
 							<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
