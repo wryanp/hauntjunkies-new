@@ -27,6 +27,29 @@
 			new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
 		);
 	});
+
+	// Extract city and state from full address
+	function getCityState(address: string | undefined): string {
+		if (!address) return '';
+
+		// Address format: "Street, City, State ZIP"
+		const parts = address.split(',').map(p => p.trim());
+
+		if (parts.length >= 3) {
+			// Has street, city, state
+			const city = parts[parts.length - 2];
+			const stateZip = parts[parts.length - 1];
+			const stateMatch = stateZip.match(/^([A-Z]{2})/);
+			return stateMatch ? `${city}, ${stateMatch[1]}` : city;
+		} else if (parts.length === 2) {
+			// Has city, state
+			const stateZip = parts[1];
+			const stateMatch = stateZip.match(/^([A-Z]{2})/);
+			return stateMatch ? `${parts[0]}, ${stateMatch[1]}` : parts[0];
+		}
+
+		return address;
+	}
 </script>
 
 <SEO
@@ -123,12 +146,13 @@
 							<h4 class="text-2xl font-bold text-white group-hover:text-haunt-orange transition-colors mb-2">
 								{review.name}
 							</h4>
-							{#if review.address}
+							{@const cityState = getCityState(review.address)}
+							{#if cityState}
 								<p class="text-gray-400 mb-3 flex items-center gap-1">
 									<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
 										<path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
 									</svg>
-									{review.address}
+									{cityState}
 								</p>
 							{/if}
 											{#if review.rating_overall}
