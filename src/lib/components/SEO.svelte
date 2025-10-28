@@ -18,7 +18,7 @@
 	let {
 		title,
 		description,
-		image = 'https://hauntjunkies.com/og.png',
+		image = 'https://hauntjunkies.com/hauntjunkies-og.png',
 		url,
 		type = 'website',
 		article,
@@ -65,6 +65,9 @@
 	<meta property="og:title" content={metaTitle} />
 	<meta property="og:description" content={description} />
 	<meta property="og:image" content={fullImageUrl} />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta property="og:image:alt" content="Haunt Junkies - Home Haunt & Haunted House Reviews" />
 	<meta property="og:site_name" content="Haunt Junkies" />
 
 	{#if article}
