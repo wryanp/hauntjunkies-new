@@ -239,7 +239,7 @@
 
 <SEO
 	title={data.review.name}
-	description={data.review.caption || `Expert review of ${data.review.name}. Ratings for scares, atmosphere, and value. Located in ${data.review.city}, ${data.review.state}. Read our full review and see photos.`}
+	description={data.review.caption || `Expert review of ${data.review.name}. Ratings for scares, atmosphere, and value.${data.review.address ? ` Located at ${data.review.address}.` : ''} Read our full review and see photos.`}
 	url={`/reviews/${data.review.slug}`}
 	image={data.review.review_image || data.review.cover_image_url || '/hauntjunkies-only.jpg'}
 	type="article"
@@ -248,9 +248,7 @@
 		modifiedTime: data.review.updated_at,
 		section: 'Haunt Reviews',
 		tags: [
-			data.review.state || '',
-			data.review.city || '',
-			data.review.year?.toString() || '',
+			...(data.review.address ? [data.review.address] : []),
 			'haunted house',
 			'halloween'
 		].filter(Boolean)
@@ -320,9 +318,9 @@
 			</div>
 
 			<div class="flex flex-wrap gap-4 items-center text-gray-400 mb-4">
-				{#if data.review.city || data.review.state || data.review.address}
+				{#if data.review.address}
 					<a
-						href="https://www.google.com/maps/search/?api=1&query={encodeURIComponent([data.review.address, data.review.city, data.review.state, data.review.zip].filter(Boolean).join(', '))}"
+						href="https://www.google.com/maps/search/?api=1&query={encodeURIComponent(data.review.address)}"
 						target="_blank"
 						rel="noopener noreferrer"
 						class="flex items-center gap-1 hover:text-haunt-orange transition-colors"
@@ -331,26 +329,7 @@
 						<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
 							<path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
 						</svg>
-						<span>
-						{#if data.review.address}
-							{data.review.address}
-							{#if data.review.city || data.review.state}
-								,
-							{/if}
-						{/if}
-						{#if data.review.city}
-							{data.review.city}
-							{#if data.review.state}
-								,
-							{/if}
-						{/if}
-						{#if data.review.state}
-							{data.review.state}
-						{/if}
-						{#if data.review.zip}
-							{data.review.zip}
-						{/if}
-					</span>
+						<span>{data.review.address}</span>
 					</a>
 				{/if}
 			</div>
