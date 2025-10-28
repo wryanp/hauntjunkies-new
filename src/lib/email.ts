@@ -465,7 +465,11 @@ export async function sendTicketConfirmation(ticketData: TicketData) {
 			]
 		});
 
-		console.log('Customer email result:', customerEmailResult);
+		console.log('Customer email sent successfully:', {
+			id: customerEmailResult.data?.id,
+			to: ticketData.email,
+			error: customerEmailResult.error
+		});
 
 		// Check if customer email failed
 		if (customerEmailResult.error) {
@@ -492,12 +496,18 @@ export async function sendTicketConfirmation(ticketData: TicketData) {
 			html: createAdminEmailHTML(ticketData)
 		});
 
+		console.log('Admin email sent successfully:', {
+			id: adminEmailResult.data?.id,
+			error: adminEmailResult.error
+		});
+
 		// Check if admin email failed
 		if (adminEmailResult.error) {
 			// Don't throw here - customer email succeeded, that's more important
+			console.error('Admin email failed but customer email succeeded');
 		}
 
-		return { success: true };
+		return { success: true, customerEmailId: customerEmailResult.data?.id };
 	} catch (error) {
 		return { success: false, error };
 	}
