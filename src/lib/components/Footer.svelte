@@ -18,7 +18,7 @@
 					<img src="/logo-transback.PNG" alt="Haunt Junkies" class="h-16 sm:h-20 md:h-20 w-auto drop-shadow-xl mb-4 hover:opacity-80 transition-opacity cursor-pointer" />
 				</a>
 				<p class="text-gray-400 mb-4 text-sm sm:text-base bg-black/40 md:bg-transparent p-3 md:p-0 rounded-lg">
-					Your trusted source for haunted attraction reviews and the home of McCloud Manor.
+					Haunted attraction reviews and the home of McCloud Manor
 				</p>
 			</div>
 

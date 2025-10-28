@@ -203,8 +203,8 @@
 </script>
 
 <SEO
-	title="Haunt Junkies - Your Source for Haunted Attraction Reviews"
-	description="Expert reviews of haunted houses, haunted attractions, and home haunts. Find the best scares near you! Featuring McCloud Manor and top haunts across the country."
+	title="Haunt Junkies - Haunted Attraction Reviews and the Home of McCloud Manor"
+	description="Haunted attraction reviews and the home of McCloud Manor Expert reviews of haunted houses, haunted attractions, and home haunts. Find the best scares near you!"
 	url="/"
 	type="website"
 />
