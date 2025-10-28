@@ -113,29 +113,33 @@ export const actions: Actions = {
 		// Expected format: "Street, City, State ZIP" or "City, State ZIP"
 		let city = '';
 		let state = '';
+		let zip = '';
 		if (address) {
 			const addressParts = address.split(',').map(p => p.trim());
 			if (addressParts.length >= 2) {
 				// Last part should contain "State ZIP"
 				const lastPart = addressParts[addressParts.length - 1];
-				// Extract state (first word/letters before ZIP)
-				const stateMatch = lastPart.match(/^([A-Z]{2})/i);
-				if (stateMatch) {
-					state = stateMatch[1].toUpperCase();
+				// Extract state and ZIP (e.g., "CA 12345" or "CA")
+				const stateZipMatch = lastPart.match(/^([A-Z]{2})\s*(\d{5}(?:-\d{4})?)?/i);
+				if (stateZipMatch) {
+					state = stateZipMatch[1].toUpperCase();
+					zip = stateZipMatch[2] || '';
 				}
 				// Second to last part is the city
 				city = addressParts[addressParts.length - 2];
 			} else if (addressParts.length === 1) {
 				// If only one part, try to extract state from it
-				const stateMatch = addressParts[0].match(/([A-Z]{2})\s*\d{5}/i);
+				const stateMatch = addressParts[0].match(/([A-Z]{2})\s*(\d{5}(?:-\d{4})?)?/i);
 				if (stateMatch) {
 					state = stateMatch[1].toUpperCase();
+					zip = stateMatch[2] || '';
 				}
 			}
 		}
 
-		// Extract other fields
-		const year = new Date().getFullYear(); // Default to current year
+		// Extract year from review name (e.g., "Haunt Name 2024")
+		const yearMatch = name?.match(/(\d{4})/);
+		const year = yearMatch ? parseInt(yearMatch[1]) : new Date().getFullYear();
 		const review_text = formData.get('review_text')?.toString() || formData.get('description')?.toString() || '';
 		const featured = formData.get('featured') === 'true';
 
@@ -187,6 +191,7 @@ export const actions: Actions = {
 				address,
 				city,
 				state,
+				zip,
 				year,
 				description,
 				review_text,
@@ -270,27 +275,34 @@ export const actions: Actions = {
 		// Expected format: "Street, City, State ZIP" or "City, State ZIP"
 		let city = '';
 		let state = '';
+		let zip = '';
 		if (address) {
 			const addressParts = address.split(',').map(p => p.trim());
 			if (addressParts.length >= 2) {
 				// Last part should contain "State ZIP"
 				const lastPart = addressParts[addressParts.length - 1];
-				// Extract state (first word/letters before ZIP)
-				const stateMatch = lastPart.match(/^([A-Z]{2})/i);
-				if (stateMatch) {
-					state = stateMatch[1].toUpperCase();
+				// Extract state and ZIP (e.g., "CA 12345" or "CA")
+				const stateZipMatch = lastPart.match(/^([A-Z]{2})\s*(\d{5}(?:-\d{4})?)?/i);
+				if (stateZipMatch) {
+					state = stateZipMatch[1].toUpperCase();
+					zip = stateZipMatch[2] || '';
 				}
 				// Second to last part is the city
 				city = addressParts[addressParts.length - 2];
 			} else if (addressParts.length === 1) {
 				// If only one part, try to extract state from it
-				const stateMatch = addressParts[0].match(/([A-Z]{2})\s*\d{5}/i);
+				const stateMatch = addressParts[0].match(/([A-Z]{2})\s*(\d{5}(?:-\d{4})?)?/i);
 				if (stateMatch) {
 					state = stateMatch[1].toUpperCase();
+					zip = stateMatch[2] || '';
 				}
 			}
 		}
-		const year = parseInt(formData.get('year')?.toString() || new Date().getFullYear().toString());
+
+		// Extract year from review name (e.g., "Haunt Name 2024")
+		const yearMatch = name?.match(/(\d{4})/);
+		const year = yearMatch ? parseInt(yearMatch[1]) : new Date().getFullYear();
+
 		const review_text = formData.get('review_text')?.toString() || formData.get('description')?.toString() || '';
 		const featured = formData.get('featured') === 'true';
 
@@ -328,6 +340,7 @@ export const actions: Actions = {
 				address,
 				city,
 				state,
+				zip,
 				year,
 				description,
 				review_text,
