@@ -68,14 +68,14 @@ export const load: PageServerLoad = async ({ setHeaders, cookies }) => {
 
 export const actions = {
 	default: async ({ request, cookies }) => {
-		// Rate limiting - 5 ticket purchases per hour per IP (skip only in explicit development mode)
+		// Rate limiting - 25 ticket purchases per hour per IP (skip only in explicit development mode)
 		// SECURITY FIX: Fail-safe default - security checks are ON unless explicitly in development
 		// This prevents accidental bypass if NODE_ENV is misconfigured (e.g., 'staging', undefined, etc.)
 		if (process.env.NODE_ENV !== 'development') {
 			const clientIP = getClientIP(request);
 			const rateLimit = await checkRateLimit(clientIP, {
 				identifier: 'ticket-purchase',
-				maxRequests: 5,
+				maxRequests: 25,
 				windowMs: 60 * 60 * 1000 // 1 hour
 			});
 
