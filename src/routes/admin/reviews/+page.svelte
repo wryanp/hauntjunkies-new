@@ -46,7 +46,7 @@
 	let uploadingLogo = $state(false); // Track logo upload
 
 	// Compress image before upload
-	async function compressImage(file: File, maxSizeMB = 3): Promise<File> {
+	async function compressImage(file: File, maxSizeMB = 2): Promise<File> {
 		return new Promise((resolve, reject) => {
 			console.log(`[Compression] Starting compression for file: ${file.name}, size: ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
 
@@ -448,53 +448,59 @@
 					method="POST"
 					action="?/uploadSocialImage"
 					enctype="multipart/form-data"
-					use:enhance={() => {
-						console.log('[Upload] Form enhance triggered');
+					onsubmit={async (e) => {
+						e.preventDefault();
+
+						console.log('[Upload] Form submitted');
 						uploadingSocialImage = true;
 
-						return async ({ formData, cancel }) => {
-							console.log('[Upload] Form submit handler called');
-							const fileInput = formData.get('socialImageFile') as File;
+						const form = e.currentTarget as HTMLFormElement;
+						const formData = new FormData(form);
+						const fileInput = formData.get('socialImageFile') as File;
 
-							console.log('[Upload] File input:', fileInput ? `${fileInput.name} (${(fileInput.size / 1024).toFixed(2)}KB)` : 'none');
+						console.log('[Upload] File input:', fileInput ? `${fileInput.name} (${(fileInput.size / 1024).toFixed(2)}KB)` : 'none');
 
-							if (!fileInput || fileInput.size === 0) {
-								console.error('[Upload] No file selected');
-								alert('Please select an image file to upload.');
-								uploadingSocialImage = false;
-								cancel();
-								return;
-							}
+						if (!fileInput || fileInput.size === 0) {
+							console.error('[Upload] No file selected');
+							alert('Please select an image file to upload.');
+							uploadingSocialImage = false;
+							return;
+						}
 
-							try {
-								console.log('[Upload] Starting compression...');
-								// Compress image before upload (max 3MB to stay under Vercel's 4.5MB limit)
-								const compressed = await compressImage(fileInput, 3);
-								console.log(`[Upload] Compression complete. Final size: ${(compressed.size / (1024 * 1024)).toFixed(2)}MB`);
-								formData.set('socialImageFile', compressed);
-							} catch (err) {
-								console.error('[Upload] Compression failed:', err);
-								alert('Failed to compress image: ' + (err instanceof Error ? err.message : 'Unknown error'));
-								uploadingSocialImage = false;
-								cancel();
-								return;
-							}
+						try {
+							console.log('[Upload] Starting compression...');
+							const compressed = await compressImage(fileInput, 2); // Target 2MB
+							console.log(`[Upload] Compression complete. Final size: ${(compressed.size / (1024 * 1024)).toFixed(2)}MB`);
+
+							// Create new FormData with compressed file
+							const newFormData = new FormData();
+							newFormData.set('id', formData.get('id') as string);
+							newFormData.set('socialImageFile', compressed);
 
 							console.log('[Upload] Submitting to server...');
-							return async ({ result, update }) => {
-								console.log('[Upload] Server response:', result);
-								uploadingSocialImage = false;
-								await update();
-								if (result.type === 'success') {
-									console.log('[Upload] Success! Refreshing data...');
-									await invalidateAll();
-									alert('Social share image uploaded successfully!');
-								} else if (result.type === 'failure') {
-									console.error('[Upload] Upload failed:', result);
-									alert('Upload failed: ' + (result.data?.error || 'Unknown error'));
-								}
-							};
-						};
+
+							const response = await fetch('?/uploadSocialImage', {
+								method: 'POST',
+								body: newFormData
+							});
+
+							console.log('[Upload] Response status:', response.status);
+
+							if (response.ok) {
+								console.log('[Upload] Success! Refreshing...');
+								alert('Social share image uploaded successfully!');
+								window.location.reload();
+							} else {
+								const text = await response.text();
+								console.error('[Upload] Upload failed:', text);
+								alert('Upload failed. Please try again.');
+							}
+						} catch (err) {
+							console.error('[Upload] Error:', err);
+							alert('Failed to upload image: ' + (err instanceof Error ? err.message : 'Unknown error'));
+						} finally {
+							uploadingSocialImage = false;
+						}
 					}}
 				>
 					<input type="hidden" name="id" value={editingReview} />
@@ -555,53 +561,59 @@
 					method="POST"
 					action="?/uploadLogo"
 					enctype="multipart/form-data"
-					use:enhance={() => {
-						console.log('[Logo] Form enhance triggered');
+					onsubmit={async (e) => {
+						e.preventDefault();
+
+						console.log('[Logo] Form submitted');
 						uploadingLogo = true;
 
-						return async ({ formData, cancel }) => {
-							console.log('[Logo] Form submit handler called');
-							const fileInput = formData.get('logoFile') as File;
+						const form = e.currentTarget as HTMLFormElement;
+						const formData = new FormData(form);
+						const fileInput = formData.get('logoFile') as File;
 
-							console.log('[Logo] File input:', fileInput ? `${fileInput.name} (${(fileInput.size / 1024).toFixed(2)}KB)` : 'none');
+						console.log('[Logo] File input:', fileInput ? `${fileInput.name} (${(fileInput.size / 1024).toFixed(2)}KB)` : 'none');
 
-							if (!fileInput || fileInput.size === 0) {
-								console.error('[Logo] No file selected');
-								alert('Please select a logo file to upload.');
-								uploadingLogo = false;
-								cancel();
-								return;
-							}
+						if (!fileInput || fileInput.size === 0) {
+							console.error('[Logo] No file selected');
+							alert('Please select a logo file to upload.');
+							uploadingLogo = false;
+							return;
+						}
 
-							try {
-								console.log('[Logo] Starting compression...');
-								// Compress image before upload (max 3MB to stay under Vercel's 4.5MB limit)
-								const compressed = await compressImage(fileInput, 3);
-								console.log(`[Logo] Compression complete. Final size: ${(compressed.size / (1024 * 1024)).toFixed(2)}MB`);
-								formData.set('logoFile', compressed);
-							} catch (err) {
-								console.error('[Logo] Compression failed:', err);
-								alert('Failed to compress logo: ' + (err instanceof Error ? err.message : 'Unknown error'));
-								uploadingLogo = false;
-								cancel();
-								return;
-							}
+						try {
+							console.log('[Logo] Starting compression...');
+							const compressed = await compressImage(fileInput, 2); // Target 2MB
+							console.log(`[Logo] Compression complete. Final size: ${(compressed.size / (1024 * 1024)).toFixed(2)}MB`);
+
+							// Create new FormData with compressed file
+							const newFormData = new FormData();
+							newFormData.set('id', formData.get('id') as string);
+							newFormData.set('logoFile', compressed);
 
 							console.log('[Logo] Submitting to server...');
-							return async ({ result, update }) => {
-								console.log('[Logo] Server response:', result);
-								uploadingLogo = false;
-								await update();
-								if (result.type === 'success') {
-									console.log('[Logo] Success! Refreshing data...');
-									await invalidateAll();
-									alert('Logo uploaded successfully!');
-								} else if (result.type === 'failure') {
-									console.error('[Logo] Upload failed:', result);
-									alert('Upload failed: ' + (result.data?.error || 'Unknown error'));
-								}
-							};
-						};
+
+							const response = await fetch('?/uploadLogo', {
+								method: 'POST',
+								body: newFormData
+							});
+
+							console.log('[Logo] Response status:', response.status);
+
+							if (response.ok) {
+								console.log('[Logo] Success! Refreshing...');
+								alert('Logo uploaded successfully!');
+								window.location.reload();
+							} else {
+								const text = await response.text();
+								console.error('[Logo] Upload failed:', text);
+								alert('Upload failed. Please try again.');
+							}
+						} catch (err) {
+							console.error('[Logo] Error:', err);
+							alert('Failed to upload logo: ' + (err instanceof Error ? err.message : 'Unknown error'));
+						} finally {
+							uploadingLogo = false;
+						}
 					}}
 				>
 					<input type="hidden" name="id" value={editingReview} />
