@@ -164,7 +164,7 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 					<!-- Header -->
 					<tr>
 						<td align="center" class="mobile-header-padding header-bg" style="padding: 50px 40px 50px 40px; background-color: #000001 !important; background-image: linear-gradient(#000001, #000001) !important; border-bottom: 4px solid #a41214 !important; vertical-align: middle;">
-							<h1 class="brand-color mobile-brand-title" style="margin: 28px 0 0 0; font-size: 110px; font-weight: 700; color: #a41214 !important; -webkit-text-fill-color: #a41214 !important; font-family: 'Karma', 'Georgia', serif; letter-spacing: 2px; text-transform: uppercase; text-align: center; line-height: 1.1;">
+							<h1 class="brand-color mobile-brand-title" style="margin: 28px 0 0 0; font-size: 110px; font-weight: 700; color: #a41214 !important; -webkit-text-fill-color: #a41214 !important; font-family: 'Karma', 'Palatino Linotype', 'Book Antiqua', Palatino, 'Times New Roman', Georgia, serif; letter-spacing: 2px; text-transform: uppercase; text-align: center; line-height: 1.1;">
 							MCCLOUD&nbsp;MANOR
 						</h1>
 						</td>
