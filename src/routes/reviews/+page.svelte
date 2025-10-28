@@ -8,18 +8,18 @@
 	let { data }: { data: PageData } = $props();
 
 	let searchQuery = $state('');
+	let selectedYear = $state('all');
+	let selectedState = $state('all');
 
 	// Extract state from address
 	function getState(address: string | undefined): string {
 		if (!address) return 'Unknown';
-
 		const parts = address.split(',').map(p => p.trim());
 		if (parts.length >= 2) {
 			const stateZip = parts[parts.length - 1];
 			const stateMatch = stateZip.match(/^([A-Z]{2})/);
 			return stateMatch ? stateMatch[1] : 'Unknown';
 		}
-
 		return 'Unknown';
 	}
 
@@ -32,45 +32,59 @@
 	// Extract city and state from full address
 	function getCityState(address: string | undefined): string {
 		if (!address) return '';
-
-		// Address format: "Street, City, State ZIP"
 		const parts = address.split(',').map(p => p.trim());
-
 		if (parts.length >= 3) {
-			// Has street, city, state
 			const city = parts[parts.length - 2];
 			const stateZip = parts[parts.length - 1];
 			const stateMatch = stateZip.match(/^([A-Z]{2})/);
 			return stateMatch ? `${city}, ${stateMatch[1]}` : city;
 		} else if (parts.length === 2) {
-			// Has city, state
 			const stateZip = parts[1];
 			const stateMatch = stateZip.match(/^([A-Z]{2})/);
 			return stateMatch ? `${parts[0]}, ${stateMatch[1]}` : parts[0];
 		}
-
 		return address;
 	}
 
-	// Filter and group reviews
-	const groupedReviews = $derived.by(() => {
-		// First filter by search query
-		let reviews = data.reviews;
-		if (searchQuery.trim()) {
-			const query = searchQuery.toLowerCase();
-			reviews = reviews.filter(review =>
-				review.name.toLowerCase().includes(query) ||
-				review.address?.toLowerCase().includes(query) ||
-				review.description?.toLowerCase().includes(query)
-			);
+	// Get unique years from reviews
+	const years = $derived.by(() => {
+		const yearSet = new Set(data.reviews.map(r => getYear(r.name)));
+		return ['all', ...Array.from(yearSet).filter(y => y !== 'Unknown').sort((a, b) => Number(b) - Number(a))] as string[];
+	});
+
+	// Get unique states from reviews
+	const states = $derived.by(() => {
+		const stateSet = new Set(data.reviews.map(r => getState(r.address)));
+		return ['all', ...Array.from(stateSet).filter(s => s !== 'Unknown').sort()] as string[];
+	});
+
+	// Filter reviews based on search and filters
+	const filteredReviews = $derived.by(() => {
+		return data.reviews.filter(review => {
+			const reviewYear = getYear(review.name);
+			const reviewState = getState(review.address);
+			const matchesSearch = review.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+			                     review.address?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+			                     review.description?.toLowerCase().includes(searchQuery.toLowerCase());
+			const matchesYear = selectedYear === 'all' || reviewYear === selectedYear;
+			const matchesState = selectedState === 'all' || reviewState === selectedState;
+			return matchesSearch && matchesYear && matchesState;
+		});
+	});
+
+	// Group reviews by year first, then by state
+	type GroupedReviews = {
+		[year: string]: {
+			[state: string]: Review[]
 		}
+	};
 
-		// Group by year and state (note: year first, then state)
-		const grouped: Record<string, Record<string, Review[]>> = {};
+	const groupedReviews = $derived.by(() => {
+		const grouped: GroupedReviews = {};
 
-		reviews.forEach(review => {
-			const state = getState(review.address);
+		filteredReviews.forEach(review => {
 			const year = getYear(review.name);
+			const state = getState(review.address);
 
 			if (!grouped[year]) {
 				grouped[year] = {};
@@ -78,10 +92,11 @@
 			if (!grouped[year][state]) {
 				grouped[year][state] = [];
 			}
+
 			grouped[year][state].push(review);
 		});
 
-		// Sort reviews within each state by review_date (most recent first)
+		// Sort reviews within each state by review_date
 		Object.keys(grouped).forEach(year => {
 			Object.keys(grouped[year]).forEach(state => {
 				grouped[year][state].sort((a, b) => {
@@ -95,14 +110,14 @@
 		return grouped;
 	});
 
-	// Get sorted years (most recent first)
-	const sortedYears = $derived(
-		Object.keys(groupedReviews).sort((a, b) => {
+	// Get sorted year keys (most recent first)
+	const sortedYears = $derived.by(() => {
+		return Object.keys(groupedReviews).sort((a, b) => {
 			if (a === 'Unknown') return 1;
 			if (b === 'Unknown') return 1;
-			return parseInt(b) - parseInt(a);
-		})
-	);
+			return Number(b) - Number(a);
+		});
+	});
 
 	// Get most recent review date for a state within a year
 	function getMostRecentDateForStateInYear(year: string, state: string): number {
@@ -120,7 +135,7 @@
 	}
 
 	// Get sorted states for a year (by most recent review date)
-	function getSortedStates(year: string): string[] {
+	function getSortedStatesForYear(year: string): string[] {
 		return Object.keys(groupedReviews[year]).sort((a, b) => {
 			return getMostRecentDateForStateInYear(year, b) - getMostRecentDateForStateInYear(year, a);
 		});
@@ -174,84 +189,104 @@
 			</a>
 		</div>
 
-		<!-- Search Filter -->
-		<div class="mb-12">
-			<input
-				type="text"
-				bind:value={searchQuery}
-				placeholder="Search by name or location..."
-				class="w-full px-4 py-3 rounded-lg bg-neutral-900 border border-neutral-800 text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange"
-			/>
+		<!-- Filters -->
+		<div class="mb-12 flex flex-col md:flex-row gap-4">
+			<div class="flex-1">
+				<input
+					type="text"
+					bind:value={searchQuery}
+					placeholder="Search by name or location..."
+					class="w-full px-4 py-3 rounded-lg bg-neutral-900 border border-neutral-800 text-white placeholder-gray-500 focus:outline-none focus:border-haunt-orange"
+				/>
+			</div>
+			<div>
+				<select
+					bind:value={selectedState}
+					class="w-full md:w-48 px-4 py-3 rounded-lg bg-neutral-900 border border-neutral-800 text-white focus:outline-none focus:border-haunt-orange"
+				>
+					{#each states as state}
+						<option value={state}>{state === 'all' ? 'All States' : state}</option>
+					{/each}
+				</select>
+			</div>
+			<div>
+				<select
+					bind:value={selectedYear}
+					class="w-full md:w-48 px-4 py-3 rounded-lg bg-neutral-900 border border-neutral-800 text-white focus:outline-none focus:border-haunt-orange"
+				>
+					{#each years as year}
+						<option value={year}>{year === 'all' ? 'All Years' : year}</option>
+					{/each}
+				</select>
+			</div>
 		</div>
 
-		<!-- Reviews Grid -->
-		{#if sortedYears.length > 0}
+		<!-- Reviews organized by Year and State -->
+		{#if filteredReviews.length > 0}
 			{#each sortedYears as year}
-				<!-- Year Header -->
 				<div class="mb-16">
-					<div class="flex items-center justify-center mb-12">
-						<div class="flex-1 h-px bg-gradient-to-r from-transparent via-red-900 to-red-900"></div>
-						<h2 class="text-5xl md:text-6xl font-black text-red-900 px-8 tracking-wider uppercase">
+					<!-- Year Header -->
+					<div class="mb-8">
+						<h2 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-haunt-orange via-orange-500 to-haunt-orange mb-2">
 							{year}
 						</h2>
-						<div class="flex-1 h-px bg-gradient-to-l from-transparent via-red-900 to-red-900"></div>
+						<div class="w-24 h-1 bg-gradient-to-r from-haunt-orange to-transparent"></div>
 					</div>
 
-					{#each getSortedStates(year) as state}
-						<!-- State Subheader -->
+					<!-- States within this year -->
+					{#each getSortedStatesForYear(year) as state}
 						<div class="mb-12">
-							<div class="flex items-center gap-4 mb-8">
-								<div class="w-12 h-px bg-gradient-to-r from-red-900 to-transparent"></div>
-								<h3 class="text-3xl md:text-4xl font-bold text-gray-300 uppercase tracking-wide">
-									{state}
-								</h3>
-								<div class="flex-1 h-px bg-gradient-to-r from-transparent via-red-900/50 to-transparent"></div>
-							</div>
+							<!-- State subheader -->
+							<h3 class="text-2xl md:text-3xl font-bold text-white mb-6 flex items-center gap-3">
+								<span class="text-haunt-orange">{state}</span>
+								<div class="h-px flex-1 bg-gradient-to-r from-gray-700 to-transparent"></div>
+							</h3>
 
+							<!-- Reviews grid for this state -->
 							<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 								{#each groupedReviews[year][state] as review}
-					{@const logo = data.logos[review.id]}
-					{@const imageUrl = logo || (isValidImageUrl(review.cover_image_url)
-						? review.cover_image_url
-						: getFallbackReviewImage())}
-					<a
-						href="/reviews/{review.slug}"
-						class="group bg-neutral-900/50 rounded-lg overflow-hidden hover:bg-neutral-900 transition-all duration-300 relative border border-neutral-800 {hasGoldenGhostAwards(review) ? 'hover:border-yellow-500' : 'hover:border-haunt-orange'} transform hover:scale-105 flex flex-col h-full"
-					>
-						{#if hasGoldenGhostAwards(review)}
-							{@const yearMatch = review.name.match(/(\d{4})/)}
-							{@const displayYear = yearMatch ? yearMatch[1] : new Date().getFullYear().toString()}
-							<div class="bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-600 px-2 py-2 flex items-center justify-center gap-1.5 relative overflow-hidden">
-								<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50"></div>
-								<img src="/golden-ghost-award.webp" alt="Golden Ghost Award" loading="lazy" class="w-6 h-6 md:w-8 md:h-8 relative z-10 flex-shrink-0" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)) contrast(1.1) brightness(1.05);" />
-								<span class="text-black font-bold text-xs md:text-sm uppercase tracking-tighter relative z-10 whitespace-nowrap">
-									{displayYear} Golden Ghost Award Winner
-								</span>
-							</div>
-						{/if}
+									{@const logo = data.logos[review.id]}
+									{@const imageUrl = logo || (isValidImageUrl(review.cover_image_url)
+										? review.cover_image_url
+										: getFallbackReviewImage())}
+									<a
+										href="/reviews/{review.slug}"
+										class="group bg-neutral-900/50 rounded-lg overflow-hidden hover:bg-neutral-900 transition-all duration-300 relative border border-neutral-800 {hasGoldenGhostAwards(review) ? 'hover:border-yellow-500' : 'hover:border-haunt-orange'} transform hover:scale-105 flex flex-col h-full"
+									>
+										{#if hasGoldenGhostAwards(review)}
+											{@const yearMatch = review.name.match(/(\d{4})/)}
+											{@const displayYear = yearMatch ? yearMatch[1] : new Date().getFullYear().toString()}
+											<div class="bg-gradient-to-r from-yellow-500 via-yellow-400 to-yellow-600 px-2 py-2 flex items-center justify-center gap-1.5 relative overflow-hidden">
+												<div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-50"></div>
+												<img src="/golden-ghost-award.webp" alt="Golden Ghost Award" loading="lazy" class="w-6 h-6 md:w-8 md:h-8 relative z-10 flex-shrink-0" style="image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4)) contrast(1.1) brightness(1.05);" />
+												<span class="text-black font-bold text-xs md:text-sm uppercase tracking-tighter relative z-10 whitespace-nowrap">
+													{displayYear} Golden Ghost Award Winner
+												</span>
+											</div>
+										{/if}
 
-						<div class="aspect-video overflow-hidden bg-gray-900">
-							<img
-								src={imageUrl}
-								alt={review.name}
-								loading="lazy"
-								class="w-full h-full {logo || isValidImageUrl(review.cover_image_url) ? 'object-contain' : 'object-cover'} transition-transform duration-300"
-							/>
-						</div>
+										<div class="aspect-video overflow-hidden bg-gray-900">
+											<img
+												src={imageUrl}
+												alt={review.name}
+												loading="lazy"
+												class="w-full h-full {logo || isValidImageUrl(review.cover_image_url) ? 'object-contain' : 'object-cover'} transition-transform duration-300"
+											/>
+										</div>
 
-						<div class="p-6 flex-1 flex flex-col">
-							<h4 class="text-2xl font-bold text-white group-hover:text-haunt-orange transition-colors mb-2">
-								{review.name}
-							</h4>
-							{#if review.address}
-								{@const cityState = getCityState(review.address)}
-								<p class="text-gray-400 mb-3 flex items-center gap-1">
-									<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-										<path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-									</svg>
-									{cityState}
-								</p>
-							{/if}
+										<div class="p-6 flex-1 flex flex-col">
+											<h4 class="text-2xl font-bold text-white group-hover:text-haunt-orange transition-colors mb-2">
+												{review.name}
+											</h4>
+											{#if review.address}
+												{@const cityState = getCityState(review.address)}
+												<p class="text-gray-400 mb-3 flex items-center gap-1">
+													<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+														<path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+													</svg>
+													{cityState}
+												</p>
+											{/if}
 											{#if review.rating_overall}
 												<div class="flex items-center gap-3 mb-3">
 													<div class="flex items-center gap-0.5">
@@ -297,13 +332,13 @@
 													<span class="text-gray-400 font-medium text-lg leading-none">{review.rating_overall.toFixed(1)}</span>
 												</div>
 											{/if}
-							{#if review.caption}
-								<p class="text-gray-300 italic line-clamp-3 leading-relaxed pl-3 border-l-2 border-haunt-orange/30 min-h-[4.5rem] mt-auto">
-									{review.caption}
-								</p>
-							{/if}
-						</div>
-					</a>
+											{#if review.caption}
+												<p class="text-gray-300 italic line-clamp-3 leading-relaxed pl-3 border-l-2 border-haunt-orange/30 min-h-[4.5rem] mt-auto">
+													{review.caption}
+												</p>
+											{/if}
+										</div>
+									</a>
 								{/each}
 							</div>
 						</div>
