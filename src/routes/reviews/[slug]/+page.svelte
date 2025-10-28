@@ -241,7 +241,7 @@
 	title={data.review.name}
 	description={data.review.caption || `Expert review of ${data.review.name}. Ratings for scares, atmosphere, and value. Located in ${data.review.city}, ${data.review.state}. Read our full review and see photos.`}
 	url={`/reviews/${data.review.slug}`}
-	image={data.review.review_image || data.review.cover_image_url || '/og.png'}
+	image={data.review.review_image || data.review.cover_image_url || '/og.jpg'}
 	type="article"
 	article={{
 		publishedTime: data.review.created_at,
