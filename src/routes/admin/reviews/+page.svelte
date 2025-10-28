@@ -43,6 +43,72 @@
 	let showForm = $state(false); // Track whether the form should be shown
 	let togglingAwards = $state(false); // Track awards hero toggle state
 
+	// Compress image before upload
+	async function compressImage(file: File, maxSizeMB = 4): Promise<File> {
+		return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onload = (e) => {
+				const img = new Image();
+				img.src = e.target?.result as string;
+				img.onload = () => {
+					const canvas = document.createElement('canvas');
+					let width = img.width;
+					let height = img.height;
+
+					// Resize if too large (max 1200px width for social images)
+					const maxWidth = 1200;
+					if (width > maxWidth) {
+						height = (height * maxWidth) / width;
+						width = maxWidth;
+					}
+
+					canvas.width = width;
+					canvas.height = height;
+
+					const ctx = canvas.getContext('2d');
+					ctx?.drawImage(img, 0, 0, width, height);
+
+					// Start with quality 0.85, reduce if needed
+					let quality = 0.85;
+					const tryCompress = () => {
+						canvas.toBlob(
+							(blob) => {
+								if (!blob) {
+									reject(new Error('Compression failed'));
+									return;
+								}
+
+								const sizeMB = blob.size / (1024 * 1024);
+
+								// If still too large and quality can be reduced, try again
+								if (sizeMB > maxSizeMB && quality > 0.5) {
+									quality -= 0.1;
+									tryCompress();
+									return;
+								}
+
+								// Create new file with compressed blob
+								const compressedFile = new File([blob], file.name, {
+									type: 'image/jpeg',
+									lastModified: Date.now()
+								});
+
+								resolve(compressedFile);
+							},
+							'image/jpeg',
+							quality
+						);
+					};
+
+					tryCompress();
+				};
+				img.onerror = () => reject(new Error('Failed to load image'));
+			};
+			reader.onerror = () => reject(new Error('Failed to read file'));
+		});
+	}
+
 	function generateSlug() {
 		reviewData.slug = reviewData.title
 			.toLowerCase()
@@ -369,11 +435,27 @@
 				{/if}
 
 				<form method="POST" action="?/uploadSocialImage" enctype="multipart/form-data" use:enhance={() => {
-					return async ({ result, update }) => {
-						await update();
-						if (result.type === 'success') {
-							await invalidateAll();
+					return async ({ formData, cancel }) => {
+						const fileInput = formData.get('socialImageFile') as File;
+						if (fileInput && fileInput.size > 0) {
+							try {
+								// Compress image before upload
+								const compressed = await compressImage(fileInput, 4);
+								formData.set('socialImageFile', compressed);
+							} catch (err) {
+								console.error('Compression failed:', err);
+								alert('Failed to compress image. Please try a different image.');
+								cancel();
+								return;
+							}
 						}
+
+						return async ({ result, update }) => {
+							await update();
+							if (result.type === 'success') {
+								await invalidateAll();
+							}
+						};
 					};
 				}}>
 					<input type="hidden" name="id" value={editingReview} />
@@ -422,11 +504,27 @@
 				{/if}
 
 				<form method="POST" action="?/uploadLogo" enctype="multipart/form-data" use:enhance={() => {
-					return async ({ result, update }) => {
-						await update();
-						if (result.type === 'success') {
-							await invalidateAll();
+					return async ({ formData, cancel }) => {
+						const fileInput = formData.get('logoFile') as File;
+						if (fileInput && fileInput.size > 0) {
+							try {
+								// Compress image before upload
+								const compressed = await compressImage(fileInput, 4);
+								formData.set('logoFile', compressed);
+							} catch (err) {
+								console.error('Compression failed:', err);
+								alert('Failed to compress image. Please try a different image.');
+								cancel();
+								return;
+							}
 						}
+
+						return async ({ result, update }) => {
+							await update();
+							if (result.type === 'success') {
+								await invalidateAll();
+							}
+						};
 					};
 				}}>
 					<input type="hidden" name="id" value={editingReview} />
