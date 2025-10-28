@@ -9,24 +9,25 @@
 
 	let searchQuery = $state('');
 
-	// Filter reviews based on search query (name or address)
-	const filteredReviews = $derived.by(() => {
-		if (!searchQuery.trim()) {
-			// Sort by most recent when no search query
-			return [...data.reviews].sort((a, b) =>
-				new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-			);
+	// Extract state from address
+	function getState(address: string | undefined): string {
+		if (!address) return 'Unknown';
+
+		const parts = address.split(',').map(p => p.trim());
+		if (parts.length >= 2) {
+			const stateZip = parts[parts.length - 1];
+			const stateMatch = stateZip.match(/^([A-Z]{2})/);
+			return stateMatch ? stateMatch[1] : 'Unknown';
 		}
 
-		return data.reviews.filter(review => {
-			const query = searchQuery.toLowerCase();
-			return review.name.toLowerCase().includes(query) ||
-			       review.address?.toLowerCase().includes(query) ||
-			       review.description?.toLowerCase().includes(query);
-		}).sort((a, b) =>
-			new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-		);
-	});
+		return 'Unknown';
+	}
+
+	// Extract year from review name
+	function getYear(name: string): string {
+		const yearMatch = name.match(/(\d{4})/);
+		return yearMatch ? yearMatch[1] : 'Unknown';
+	}
 
 	// Extract city and state from full address
 	function getCityState(address: string | undefined): string {
@@ -49,6 +50,59 @@
 		}
 
 		return address;
+	}
+
+	// Filter and group reviews
+	const groupedReviews = $derived.by(() => {
+		// First filter by search query
+		let reviews = data.reviews;
+		if (searchQuery.trim()) {
+			const query = searchQuery.toLowerCase();
+			reviews = reviews.filter(review =>
+				review.name.toLowerCase().includes(query) ||
+				review.address?.toLowerCase().includes(query) ||
+				review.description?.toLowerCase().includes(query)
+			);
+		}
+
+		// Group by state and year
+		const grouped: Record<string, Record<string, Review[]>> = {};
+
+		reviews.forEach(review => {
+			const state = getState(review.address);
+			const year = getYear(review.name);
+
+			if (!grouped[state]) {
+				grouped[state] = {};
+			}
+			if (!grouped[state][year]) {
+				grouped[state][year] = [];
+			}
+			grouped[state][year].push(review);
+		});
+
+		// Sort reviews within each year by created_at (most recent first)
+		Object.keys(grouped).forEach(state => {
+			Object.keys(grouped[state]).forEach(year => {
+				grouped[state][year].sort((a, b) =>
+					new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+				);
+			});
+		});
+
+		return grouped;
+	});
+
+	// Get sorted states (alphabetically)
+	const sortedStates = $derived(Object.keys(groupedReviews).sort());
+
+	// Get sorted years for a state (most recent first)
+	function getSortedYears(state: string): string[] {
+		return Object.keys(groupedReviews[state]).sort((a, b) => {
+			if (a === 'Unknown') return 1;
+			if (b === 'Unknown') return 1;
+			return parseInt(b) - parseInt(a);
+		});
 	}
 </script>
 
@@ -110,9 +164,23 @@
 		</div>
 
 		<!-- Reviews Grid -->
-		{#if filteredReviews.length > 0}
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-				{#each filteredReviews as review}
+		{#if sortedStates.length > 0}
+			{#each sortedStates as state}
+				<!-- State Header -->
+				<div class="mb-12">
+					<h2 class="text-4xl font-bold text-haunt-orange mb-8 pb-4 border-b-2 border-haunt-orange/30">
+						{state}
+					</h2>
+
+					{#each getSortedYears(state) as year}
+						<!-- Year Subheader -->
+						<div class="mb-10">
+							<h3 class="text-2xl font-semibold text-gray-300 mb-6 pl-4 border-l-4 border-haunt-orange/50">
+								{year}
+							</h3>
+
+							<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+								{#each groupedReviews[state][year] as review}
 					{@const logo = data.logos[review.id]}
 					{@const imageUrl = logo || (isValidImageUrl(review.cover_image_url)
 						? review.cover_image_url
@@ -207,8 +275,12 @@
 							{/if}
 						</div>
 					</a>
-				{/each}
-			</div>
+								{/each}
+							</div>
+						</div>
+					{/each}
+				</div>
+			{/each}
 		{:else}
 			<div class="text-center py-20">
 				<div class="text-6xl mb-4">🔍</div>
