@@ -93,8 +93,26 @@
 		return grouped;
 	});
 
-	// Get sorted states (alphabetically)
-	const sortedStates = $derived(Object.keys(groupedReviews).sort());
+	// Get most recent review date for a state
+	function getMostRecentDateForState(state: string): number {
+		let mostRecent = 0;
+		Object.keys(groupedReviews[state]).forEach(year => {
+			groupedReviews[state][year].forEach(review => {
+				const reviewDate = new Date(review.created_at).getTime();
+				if (reviewDate > mostRecent) {
+					mostRecent = reviewDate;
+				}
+			});
+		});
+		return mostRecent;
+	}
+
+	// Get sorted states (by most recent review)
+	const sortedStates = $derived(
+		Object.keys(groupedReviews).sort((a, b) => {
+			return getMostRecentDateForState(b) - getMostRecentDateForState(a);
+		})
+	);
 
 	// Get sorted years for a state (most recent first)
 	function getSortedYears(state: string): string[] {
