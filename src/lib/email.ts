@@ -158,16 +158,14 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 <body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f4f4f4 !important; background-image: linear-gradient(#f4f4f4, #f4f4f4) !important; color: #333333 !important; -webkit-text-fill-color: #333333 !important;">
 	<table width="100%" cellpadding="0" cellspacing="0" class="email-wrapper" style="background-color: #f4f4f4 !important; background-image: linear-gradient(#f4f4f4, #f4f4f4) !important;">
 		<tr>
-			<td align="center" style="padding: 40px 20px;">
+			<td align="center" style="padding: 0;">
+				<!-- McCloud Manor Logo - Full Width -->
+				<img src="https://hauntjunkies.com/mccloudmanor-logo.jpg" alt="McCloud Manor" style="max-width: 600px; width: 100%; height: auto; display: block; margin: 0 auto;" />
+			</td>
+		</tr>
+		<tr>
+			<td align="center" style="padding: 20px 20px 40px 20px;">
 				<table width="600" cellpadding="0" cellspacing="0" class="responsive-table email-container" style="max-width: 600px; width: 100%; background-color: #fffffe !important; background-image: linear-gradient(#fffffe, #fffffe) !important; box-shadow: 0 4px 20px rgba(0,0,0,0.1); border-radius: 8px; overflow: hidden;">
-
-					<!-- Header -->
-					<tr>
-						<td align="center" class="mobile-header-padding header-bg" style="padding: 50px 40px 50px 40px; background-color: #000001 !important; background-image: linear-gradient(#000001, #000001) !important; border-bottom: 4px solid #a41214 !important; vertical-align: middle;">
-							<!-- McCloud Manor Logo -->
-							<img src="https://hauntjunkies.com/mccloudmanor-logo.jpg" alt="McCloud Manor" style="max-width: 350px; width: 100%; height: auto; display: block; margin: 0 auto;" />
-						</td>
-					</tr>
 
 					<!-- Ticket Intro -->
 					<tr>
