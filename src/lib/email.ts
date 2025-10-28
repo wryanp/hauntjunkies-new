@@ -105,13 +105,17 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 		}
 		/* Force colors in dark mode - prevent email client overrides */
 		@media (prefers-color-scheme: dark) {
-			body { background-color: #f4f4f4 !important; background-image: linear-gradient(#f4f4f4, #f4f4f4) !important; color: #333333 !important; -webkit-text-fill-color: #333333 !important; }
+			body, table, td, p, h1, h2, h3, div, span, a {
+				background-color: transparent !important;
+				color: #1a1a1a !important;
+				-webkit-text-fill-color: #1a1a1a !important;
+			}
 			.email-wrapper { background-color: #f4f4f4 !important; background-image: linear-gradient(#f4f4f4, #f4f4f4) !important; }
 			.email-container { background-color: #fffffe !important; background-image: linear-gradient(#fffffe, #fffffe) !important; }
-			.header-bg { background-color: #000001 !important; background-image: linear-gradient(#000001, #000001) !important; border-bottom-color: #a41214 !important; }
-			.brand-color { color: #a41214 !important; -webkit-text-fill-color: #a41214 !important; }
-			.ticket-count { color: #a41214 !important; -webkit-text-fill-color: #a41214 !important; }
 			.detail-bg { background-color: #f9f9f9 !important; background-image: linear-gradient(#f9f9f9, #f9f9f9) !important; }
+			.brand-color { color: #a41214 !important; -webkit-text-fill-color: #a41214 !important; }
+			.ticket-count { color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-weight: 700 !important; }
+			strong { color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-weight: 700 !important; }
 		}
 		/* Outlook dark mode prevention */
 		[data-ogsc] body { background-color: #f4f4f4 !important; background-image: linear-gradient(#f4f4f4, #f4f4f4) !important; }
@@ -155,7 +159,7 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 		}
 	</style>
 </head>
-<body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f4f4f4 !important; background-image: linear-gradient(#f4f4f4, #f4f4f4) !important; color: #333333 !important; -webkit-text-fill-color: #333333 !important;">
+<body style="margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; background-color: #f4f4f4 !important; background-image: linear-gradient(#f4f4f4, #f4f4f4) !important; color: #333333 !important; -webkit-text-fill-color: #333333 !important; color-scheme: light only;">
 	<table width="100%" cellpadding="0" cellspacing="0" class="email-wrapper" style="background-color: #f4f4f4 !important; background-image: linear-gradient(#f4f4f4, #f4f4f4) !important;">
 		<tr>
 			<td align="center" style="padding: 0;">
@@ -170,7 +174,7 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 					<!-- Ticket Intro -->
 					<tr>
 						<td class="mobile-padding" style="padding: 40px 40px 30px 40px; text-align: center;">
-							<h2 class="mobile-font-large" style="margin: 0 0 12px 0; font-size: 28px; font-weight: 700; color: #000001 !important; -webkit-text-fill-color: #000001 !important;">Your Tickets Are Confirmed</h2>
+							<h2 class="mobile-font-large" style="margin: 0 0 12px 0; font-size: 28px; font-weight: 700; color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important;">Your Tickets Are Confirmed</h2>
 							<p style="margin: 0 0 8px 0; font-size: 16px; color: #666666; line-height: 1.6;">
 								We're excited to terrify you at McCloud Manor.
 							</p>
@@ -188,8 +192,8 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 									<td style="padding: 20px 24px; border-bottom: 1px solid #e5e5e5;">
 										<table width="100%" cellpadding="0" cellspacing="0">
 											<tr>
-												<td width="40%" style="color: #000001 !important; -webkit-text-fill-color: #000001 !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Guest Name</td>
-												<td style="color: #000001 !important; -webkit-text-fill-color: #000001 !important; font-size: 16px; font-weight: 600; text-align: right;">${ticketData.firstName} ${ticketData.lastName}</td>
+												<td width="40%" style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Guest Name</td>
+												<td style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-size: 16px; font-weight: 600; text-align: right;">${ticketData.firstName} ${ticketData.lastName}</td>
 											</tr>
 										</table>
 									</td>
@@ -198,8 +202,8 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 									<td style="padding: 20px 24px; border-bottom: 1px solid #e5e5e5;">
 										<table width="100%" cellpadding="0" cellspacing="0">
 											<tr>
-												<td width="40%" style="color: #000001 !important; -webkit-text-fill-color: #000001 !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Date</td>
-												<td style="color: #000001 !important; -webkit-text-fill-color: #000001 !important; font-size: 16px; font-weight: 600; text-align: right;">${dateFormatted}</td>
+												<td width="40%" style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Date</td>
+												<td style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-size: 16px; font-weight: 600; text-align: right;">${dateFormatted}</td>
 											</tr>
 										</table>
 									</td>
@@ -208,8 +212,8 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 									<td style="padding: 20px 24px; border-bottom: 1px solid #e5e5e5;">
 										<table width="100%" cellpadding="0" cellspacing="0">
 											<tr>
-												<td width="40%" style="color: #000001 !important; -webkit-text-fill-color: #000001 !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Time</td>
-												<td style="color: #000001 !important; -webkit-text-fill-color: #000001 !important; font-size: 16px; font-weight: 600; text-align: right;">${timeStr}</td>
+												<td width="40%" style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Time</td>
+												<td style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-size: 16px; font-weight: 600; text-align: right;">${timeStr}</td>
 											</tr>
 										</table>
 									</td>
@@ -218,8 +222,8 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 									<td style="padding: 20px 24px;">
 										<table width="100%" cellpadding="0" cellspacing="0">
 											<tr>
-												<td width="40%" style="color: #000001 !important; -webkit-text-fill-color: #000001 !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Tickets</td>
-												<td class="ticket-count" style="color: #000001 !important; -webkit-text-fill-color: #000001 !important; font-size: 18px; font-weight: 700; text-align: right;">${ticketData.tickets} ${ticketData.tickets === 1 ? 'Ticket' : 'Tickets'}</td>
+												<td width="40%" style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Tickets</td>
+												<td class="ticket-count" style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-size: 18px; font-weight: 700; text-align: right;">${ticketData.tickets} ${ticketData.tickets === 1 ? 'Ticket' : 'Tickets'}</td>
 											</tr>
 										</table>
 									</td>
@@ -252,19 +256,19 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 					<tr>
 						<td class="mobile-padding" style="padding: 0 40px 40px 40px;">
 							<div style="background-color: #f9f9f9 !important; background-image: linear-gradient(#f9f9f9, #f9f9f9) !important; border-radius: 6px; padding: 28px 24px;">
-								<h3 class="mobile-font-medium" style="margin: 0 0 16px 0; font-size: 18px; font-weight: 700; color: #000001 !important; -webkit-text-fill-color: #000001 !important;">Important Information</h3>
+								<h3 class="mobile-font-medium" style="margin: 0 0 16px 0; font-size: 18px; font-weight: 700; color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important;">Important Information</h3>
 								<table width="100%" cellpadding="0" cellspacing="0">
 									<tr>
 										<td style="padding-bottom: 12px;">
 											<p style="margin: 0; color: #666666 !important; -webkit-text-fill-color: #666666 !important; font-size: 14px; line-height: 1.6;">
-												<strong style="color: #000001 !important; -webkit-text-fill-color: #000001 !important;">Parking:</strong> Parking is free but EXTREMELY limited! Please carpool or even Uber/Lyft if possible. Do not park in or block any of our neighbors driveways.
+												<strong style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important;">Parking:</strong> Parking is free but EXTREMELY limited! Please carpool or even Uber/Lyft if possible. Do not park in or block any of our neighbors driveways.
 											</p>
 										</td>
 									</tr>
 									<tr>
 										<td>
 											<p style="margin: 0; color: #666666 !important; -webkit-text-fill-color: #666666 !important; font-size: 14px; line-height: 1.6;">
-												<strong style="color: #000001 !important; -webkit-text-fill-color: #000001 !important;">Weather:</strong> Open rain or shine (line is not covered)
+												<strong style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important;">Weather:</strong> Open rain or shine (line is not covered)
 											</p>
 										</td>
 									</tr>
