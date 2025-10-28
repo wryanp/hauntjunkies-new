@@ -113,29 +113,6 @@
 
 	const formattedReviewText = $derived(sanitize(parseReviewText(data.review.review_text)));
 
-	// Extract YouTube video ID from URL
-	function getYouTubeEmbedUrl(url: string): string | null {
-		if (!url) return null;
-
-		// Handle various YouTube URL formats
-		const patterns = [
-			/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/,
-			/youtube\.com\/embed\/([^&\s]+)/,
-			/youtube\.com\/v\/([^&\s]+)/
-		];
-
-		for (const pattern of patterns) {
-			const match = url.match(pattern);
-			if (match && match[1]) {
-				return `https://www.youtube.com/embed/${match[1]}`;
-			}
-		}
-
-		return null;
-	}
-
-	const youtubeEmbedUrl = $derived(data.review.youtube_url ? getYouTubeEmbedUrl(data.review.youtube_url) : null);
-
 	// Social sharing
 	const shareUrl = $derived(`https://hauntjunkies.com/reviews/${data.review.slug}`);
 	let showCopyToast = $state(false);
@@ -528,30 +505,6 @@
 				{/if}
 			</div>
 		</div>
-
-		<!-- YouTube Video -->
-		{#if youtubeEmbedUrl}
-			<div class="mb-6">
-				<div class="bg-gray-800/50 rounded-lg p-6 border border-gray-700">
-					<h2 class="text-2xl font-bold text-haunt-orange mb-4 font-creepster flex items-center gap-2">
-						<svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-							<path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-						</svg>
-						Video
-					</h2>
-					<div class="relative w-full" style="padding-bottom: 56.25%;">
-						<iframe
-							src={youtubeEmbedUrl}
-							title="YouTube video"
-							class="absolute top-0 left-0 w-full h-full rounded-lg"
-							frameborder="0"
-							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-							allowfullscreen
-						></iframe>
-					</div>
-				</div>
-			</div>
-		{/if}
 
 		<!-- Review Text with Inline Images -->
 		{#if data.review.review_text}
