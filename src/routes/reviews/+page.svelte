@@ -189,22 +189,24 @@
 			{#each sortedYears as year}
 				<!-- Year Header -->
 				<div class="mb-16">
-					<h2 class="text-5xl md:text-6xl font-extrabold text-center mb-8 relative">
-						<span class="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-haunt-orange to-red-600 drop-shadow-[0_0_20px_rgba(255,0,0,0.5)]" style="font-family: 'Creepster', cursive; letter-spacing: 0.1em; text-shadow: 0 0 30px rgba(255,0,0,0.8), 0 0 60px rgba(255,107,0,0.4);">
+					<div class="flex items-center justify-center mb-12">
+						<div class="flex-1 h-px bg-gradient-to-r from-transparent via-red-900 to-red-900"></div>
+						<h2 class="text-5xl md:text-6xl font-black text-red-900 px-8 tracking-wider uppercase">
 							{year}
-						</span>
-						<div class="absolute inset-0 blur-xl opacity-30 bg-gradient-to-r from-red-600 via-haunt-orange to-red-600"></div>
-					</h2>
+						</h2>
+						<div class="flex-1 h-px bg-gradient-to-l from-transparent via-red-900 to-red-900"></div>
+					</div>
 
 					{#each getSortedStates(year) as state}
 						<!-- State Subheader -->
 						<div class="mb-12">
-							<h3 class="text-3xl md:text-4xl font-bold text-gray-200 mb-8 pl-6 relative">
-								<span class="relative z-10" style="font-family: 'Creepster', cursive; text-shadow: 0 0 15px rgba(255,107,0,0.6), 2px 2px 4px rgba(0,0,0,0.8);">
+							<div class="flex items-center gap-4 mb-8">
+								<div class="w-12 h-px bg-gradient-to-r from-red-900 to-transparent"></div>
+								<h3 class="text-3xl md:text-4xl font-bold text-gray-300 uppercase tracking-wide">
 									{state}
-								</span>
-								<div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-red-600 via-haunt-orange to-red-900 shadow-[0_0_10px_rgba(255,107,0,0.8)]"></div>
-							</h3>
+								</h3>
+								<div class="flex-1 h-px bg-gradient-to-r from-transparent via-red-900/50 to-transparent"></div>
+							</div>
 
 							<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 								{#each groupedReviews[year][state] as review}
