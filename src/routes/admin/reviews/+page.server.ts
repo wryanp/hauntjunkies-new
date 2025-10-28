@@ -647,11 +647,16 @@ export const actions: Actions = {
 			return fail(400, { error: 'File size too large. Maximum 10MB allowed.' });
 		}
 
-		// Use createClient with service role key to bypass RLS
-		const supabase = createClient(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-			auth: {
-				autoRefreshToken: false,
-				persistSession: false
+		// Use createServerClient with service role key to bypass RLS
+		const supabase = createServerClient(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+			cookies: {
+				get: (key) => cookies.get(key),
+				set: (key, value, options) => {
+					cookies.set(key, value, { ...options, path: '/' });
+				},
+				remove: (key, options) => {
+					cookies.delete(key, { ...options, path: '/' });
+				}
 			}
 		});
 
@@ -758,11 +763,16 @@ export const actions: Actions = {
 			return fail(400, { error: 'File size too large. Maximum 10MB allowed.' });
 		}
 
-		// Use createClient with service role key to bypass RLS
-		const supabase = createClient(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-			auth: {
-				autoRefreshToken: false,
-				persistSession: false
+		// Use createServerClient with service role key to bypass RLS
+		const supabase = createServerClient(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+			cookies: {
+				get: (key) => cookies.get(key),
+				set: (key, value, options) => {
+					cookies.set(key, value, { ...options, path: '/' });
+				},
+				remove: (key, options) => {
+					cookies.delete(key, { ...options, path: '/' });
+				}
 			}
 		});
 
