@@ -114,10 +114,14 @@ export const actions: Actions = {
 		let city = '';
 		let state = '';
 		let zip = '';
-		if (address) {
+		let streetAddress = address || ''; // Default to full address or empty string
+
+		if (address && address.trim()) {
 			const addressParts = address.split(',').map(p => p.trim());
-			if (addressParts.length >= 2) {
-				// Last part should contain "State ZIP"
+			if (addressParts.length >= 3) {
+				// Format: "Street, City, State ZIP"
+				streetAddress = addressParts[0]; // First part is street address
+				city = addressParts[addressParts.length - 2]; // Second to last is city
 				const lastPart = addressParts[addressParts.length - 1];
 				// Extract state and ZIP (e.g., "CA 12345" or "CA")
 				const stateZipMatch = lastPart.match(/^([A-Z]{2})\s*(\d{5}(?:-\d{4})?)?/i);
@@ -125,8 +129,16 @@ export const actions: Actions = {
 					state = stateZipMatch[1].toUpperCase();
 					zip = stateZipMatch[2] || '';
 				}
-				// Second to last part is the city
-				city = addressParts[addressParts.length - 2];
+			} else if (addressParts.length === 2) {
+				// Format: "City, State ZIP" - no street address
+				city = addressParts[0];
+				const lastPart = addressParts[1];
+				const stateZipMatch = lastPart.match(/^([A-Z]{2})\s*(\d{5}(?:-\d{4})?)?/i);
+				if (stateZipMatch) {
+					state = stateZipMatch[1].toUpperCase();
+					zip = stateZipMatch[2] || '';
+				}
+				streetAddress = ''; // No street address provided
 			} else if (addressParts.length === 1) {
 				// If only one part, try to extract state from it
 				const stateMatch = addressParts[0].match(/([A-Z]{2})\s*(\d{5}(?:-\d{4})?)?/i);
@@ -188,7 +200,7 @@ export const actions: Actions = {
 				name,
 				slug,
 				caption,
-				address,
+				address: streetAddress,
 				city,
 				state,
 				zip,
@@ -276,10 +288,14 @@ export const actions: Actions = {
 		let city = '';
 		let state = '';
 		let zip = '';
-		if (address) {
+		let streetAddress = address || ''; // Default to full address or empty string
+
+		if (address && address.trim()) {
 			const addressParts = address.split(',').map(p => p.trim());
-			if (addressParts.length >= 2) {
-				// Last part should contain "State ZIP"
+			if (addressParts.length >= 3) {
+				// Format: "Street, City, State ZIP"
+				streetAddress = addressParts[0]; // First part is street address
+				city = addressParts[addressParts.length - 2]; // Second to last is city
 				const lastPart = addressParts[addressParts.length - 1];
 				// Extract state and ZIP (e.g., "CA 12345" or "CA")
 				const stateZipMatch = lastPart.match(/^([A-Z]{2})\s*(\d{5}(?:-\d{4})?)?/i);
@@ -287,8 +303,16 @@ export const actions: Actions = {
 					state = stateZipMatch[1].toUpperCase();
 					zip = stateZipMatch[2] || '';
 				}
-				// Second to last part is the city
-				city = addressParts[addressParts.length - 2];
+			} else if (addressParts.length === 2) {
+				// Format: "City, State ZIP" - no street address
+				city = addressParts[0];
+				const lastPart = addressParts[1];
+				const stateZipMatch = lastPart.match(/^([A-Z]{2})\s*(\d{5}(?:-\d{4})?)?/i);
+				if (stateZipMatch) {
+					state = stateZipMatch[1].toUpperCase();
+					zip = stateZipMatch[2] || '';
+				}
+				streetAddress = ''; // No street address provided
 			} else if (addressParts.length === 1) {
 				// If only one part, try to extract state from it
 				const stateMatch = addressParts[0].match(/([A-Z]{2})\s*(\d{5}(?:-\d{4})?)?/i);
@@ -337,7 +361,7 @@ export const actions: Actions = {
 				name,
 				slug,
 				caption,
-				address,
+				address: streetAddress,
 				city,
 				state,
 				zip,
