@@ -71,3 +71,4 @@ coverage
 # Generated files
 .svelte-kit/
 .vercel/
+email-preview.html
