@@ -18,7 +18,7 @@
 	let {
 		title,
 		description,
-		image = 'https://hauntjunkies.com/hauntjunkies-og.png',
+		image = 'https://hauntjunkies.com/hauntjunkies-og.jpg',
 		url,
 		type = 'website',
 		article,
@@ -100,7 +100,7 @@
 
 	<!-- WhatsApp / iMessage / Link Previews -->
 	<meta property="og:image:secure_url" content={fullImageUrl} />
-	<meta property="og:image:type" content="image/png" />
+	<meta property="og:image:type" content="image/jpeg" />
 	<link rel="image_src" href={fullImageUrl} />
 
 	<!-- Additional Meta -->
