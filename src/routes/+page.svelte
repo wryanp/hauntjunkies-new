@@ -206,6 +206,7 @@
 	title="Haunt Junkies - Haunted Attraction Reviews and the Home of McCloud Manor"
 	description="Haunted attraction reviews and the home of McCloud Manor Expert reviews of haunted houses, haunted attractions, and home haunts. Find the best scares near you!"
 	url="/"
+	image="/hauntjunkies-only.jpg"
 	type="website"
 />
 
