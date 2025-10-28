@@ -442,31 +442,53 @@
 					</div>
 				{/if}
 
-				<form method="POST" action="?/uploadSocialImage" enctype="multipart/form-data" use:enhance={() => {
-					return async ({ formData, cancel }) => {
-						const fileInput = formData.get('socialImageFile') as File;
-						if (fileInput && fileInput.size > 0) {
-							try {
-								// Compress image before upload (max 3MB to stay under Vercel's 4.5MB limit)
-								const compressed = await compressImage(fileInput, 3);
-								console.log(`[Upload] Uploading compressed image: ${(compressed.size / (1024 * 1024)).toFixed(2)}MB`);
-								formData.set('socialImageFile', compressed);
-							} catch (err) {
-								console.error('Compression failed:', err);
-								alert('Failed to compress image. Please try a different image.');
+				<form
+					method="POST"
+					action="?/uploadSocialImage"
+					enctype="multipart/form-data"
+					use:enhance={() => {
+						let isCompressing = false;
+						return async ({ formData, cancel }) => {
+							const fileInput = formData.get('socialImageFile') as File;
+
+							// Check if file exists and isn't already compressed
+							if (fileInput && fileInput.size > 0 && !isCompressing) {
+								isCompressing = true;
+								console.log('[Upload] Starting compression process...');
+
+								try {
+									// Compress image before upload (max 3MB to stay under Vercel's 4.5MB limit)
+									const compressed = await compressImage(fileInput, 3);
+									console.log(`[Upload] Compression complete. Uploading: ${(compressed.size / (1024 * 1024)).toFixed(2)}MB`);
+									formData.set('socialImageFile', compressed);
+								} catch (err) {
+									console.error('[Upload] Compression failed:', err);
+									alert('Failed to compress image. Please try a different image.');
+									isCompressing = false;
+									cancel();
+									return;
+								}
+
+								isCompressing = false;
+							} else if (!fileInput || fileInput.size === 0) {
+								console.error('[Upload] No file selected');
+								alert('Please select an image file to upload.');
 								cancel();
 								return;
 							}
-						}
 
-						return async ({ result, update }) => {
-							await update();
-							if (result.type === 'success') {
-								await invalidateAll();
-							}
+							console.log('[Upload] Submitting form...');
+							return async ({ result, update }) => {
+								console.log('[Upload] Form submission result:', result.type);
+								await update();
+								if (result.type === 'success') {
+									console.log('[Upload] Upload successful, refreshing data...');
+									await invalidateAll();
+								}
+							};
 						};
-					};
-				}}>
+					}}
+				>
 					<input type="hidden" name="id" value={editingReview} />
 					<div class="space-y-3">
 						<input
@@ -512,31 +534,53 @@
 					</div>
 				{/if}
 
-				<form method="POST" action="?/uploadLogo" enctype="multipart/form-data" use:enhance={() => {
-					return async ({ formData, cancel }) => {
-						const fileInput = formData.get('logoFile') as File;
-						if (fileInput && fileInput.size > 0) {
-							try {
-								// Compress image before upload (max 3MB to stay under Vercel's 4.5MB limit)
-								const compressed = await compressImage(fileInput, 3);
-								console.log(`[Upload] Uploading compressed logo: ${(compressed.size / (1024 * 1024)).toFixed(2)}MB`);
-								formData.set('logoFile', compressed);
-							} catch (err) {
-								console.error('Compression failed:', err);
-								alert('Failed to compress image. Please try a different image.');
+				<form
+					method="POST"
+					action="?/uploadLogo"
+					enctype="multipart/form-data"
+					use:enhance={() => {
+						let isCompressing = false;
+						return async ({ formData, cancel }) => {
+							const fileInput = formData.get('logoFile') as File;
+
+							// Check if file exists and isn't already compressed
+							if (fileInput && fileInput.size > 0 && !isCompressing) {
+								isCompressing = true;
+								console.log('[Logo Upload] Starting compression process...');
+
+								try {
+									// Compress image before upload (max 3MB to stay under Vercel's 4.5MB limit)
+									const compressed = await compressImage(fileInput, 3);
+									console.log(`[Logo Upload] Compression complete. Uploading: ${(compressed.size / (1024 * 1024)).toFixed(2)}MB`);
+									formData.set('logoFile', compressed);
+								} catch (err) {
+									console.error('[Logo Upload] Compression failed:', err);
+									alert('Failed to compress logo. Please try a different image.');
+									isCompressing = false;
+									cancel();
+									return;
+								}
+
+								isCompressing = false;
+							} else if (!fileInput || fileInput.size === 0) {
+								console.error('[Logo Upload] No file selected');
+								alert('Please select a logo file to upload.');
 								cancel();
 								return;
 							}
-						}
 
-						return async ({ result, update }) => {
-							await update();
-							if (result.type === 'success') {
-								await invalidateAll();
-							}
+							console.log('[Logo Upload] Submitting form...');
+							return async ({ result, update }) => {
+								console.log('[Logo Upload] Form submission result:', result.type);
+								await update();
+								if (result.type === 'success') {
+									console.log('[Logo Upload] Upload successful, refreshing data...');
+									await invalidateAll();
+								}
+							};
 						};
-					};
-				}}>
+					}}
+				>
 					<input type="hidden" name="id" value={editingReview} />
 					<div class="space-y-3">
 						<input
