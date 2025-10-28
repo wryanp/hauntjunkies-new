@@ -96,6 +96,12 @@
 	<meta name="twitter:title" content={metaTitle} />
 	<meta name="twitter:description" content={description} />
 	<meta name="twitter:image" content={fullImageUrl} />
+	<meta name="twitter:image:alt" content="Haunt Junkies - Home Haunt & Haunted House Reviews" />
+
+	<!-- WhatsApp / iMessage / Link Previews -->
+	<meta property="og:image:secure_url" content={fullImageUrl} />
+	<meta property="og:image:type" content="image/png" />
+	<link rel="image_src" href={fullImageUrl} />
 
 	<!-- Additional Meta -->
 	<meta name="theme-color" content="#FC7403" />
