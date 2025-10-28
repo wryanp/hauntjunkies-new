@@ -42,6 +42,8 @@
 	let managingAwards = $state<any>(null); // Track which review's awards are being managed
 	let showForm = $state(false); // Track whether the form should be shown
 	let togglingAwards = $state(false); // Track awards hero toggle state
+	let uploadingSocialImage = $state(false); // Track social image upload
+	let uploadingLogo = $state(false); // Track logo upload
 
 	// Compress image before upload
 	async function compressImage(file: File, maxSizeMB = 3): Promise<File> {
@@ -447,43 +449,49 @@
 					action="?/uploadSocialImage"
 					enctype="multipart/form-data"
 					use:enhance={() => {
-						let isCompressing = false;
+						console.log('[Upload] Form enhance triggered');
+						uploadingSocialImage = true;
+
 						return async ({ formData, cancel }) => {
+							console.log('[Upload] Form submit handler called');
 							const fileInput = formData.get('socialImageFile') as File;
 
-							// Check if file exists and isn't already compressed
-							if (fileInput && fileInput.size > 0 && !isCompressing) {
-								isCompressing = true;
-								console.log('[Upload] Starting compression process...');
+							console.log('[Upload] File input:', fileInput ? `${fileInput.name} (${(fileInput.size / 1024).toFixed(2)}KB)` : 'none');
 
-								try {
-									// Compress image before upload (max 3MB to stay under Vercel's 4.5MB limit)
-									const compressed = await compressImage(fileInput, 3);
-									console.log(`[Upload] Compression complete. Uploading: ${(compressed.size / (1024 * 1024)).toFixed(2)}MB`);
-									formData.set('socialImageFile', compressed);
-								} catch (err) {
-									console.error('[Upload] Compression failed:', err);
-									alert('Failed to compress image. Please try a different image.');
-									isCompressing = false;
-									cancel();
-									return;
-								}
-
-								isCompressing = false;
-							} else if (!fileInput || fileInput.size === 0) {
+							if (!fileInput || fileInput.size === 0) {
 								console.error('[Upload] No file selected');
 								alert('Please select an image file to upload.');
+								uploadingSocialImage = false;
 								cancel();
 								return;
 							}
 
-							console.log('[Upload] Submitting form...');
+							try {
+								console.log('[Upload] Starting compression...');
+								// Compress image before upload (max 3MB to stay under Vercel's 4.5MB limit)
+								const compressed = await compressImage(fileInput, 3);
+								console.log(`[Upload] Compression complete. Final size: ${(compressed.size / (1024 * 1024)).toFixed(2)}MB`);
+								formData.set('socialImageFile', compressed);
+							} catch (err) {
+								console.error('[Upload] Compression failed:', err);
+								alert('Failed to compress image: ' + (err instanceof Error ? err.message : 'Unknown error'));
+								uploadingSocialImage = false;
+								cancel();
+								return;
+							}
+
+							console.log('[Upload] Submitting to server...');
 							return async ({ result, update }) => {
-								console.log('[Upload] Form submission result:', result.type);
+								console.log('[Upload] Server response:', result);
+								uploadingSocialImage = false;
 								await update();
 								if (result.type === 'success') {
-									console.log('[Upload] Upload successful, refreshing data...');
+									console.log('[Upload] Success! Refreshing data...');
 									await invalidateAll();
+									alert('Social share image uploaded successfully!');
+								} else if (result.type === 'failure') {
+									console.error('[Upload] Upload failed:', result);
+									alert('Upload failed: ' + (result.data?.error || 'Unknown error'));
 								}
 							};
 						};
@@ -499,12 +507,21 @@
 						/>
 						<button
 							type="submit"
-							class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-all font-semibold bg-haunt-orange/20 hover:bg-haunt-orange/30 text-haunt-orange border-haunt-orange/50"
+							disabled={uploadingSocialImage}
+							class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed bg-haunt-orange/20 hover:bg-haunt-orange/30 text-haunt-orange border-haunt-orange/50"
 						>
-							<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-							</svg>
-							{reviewData.reviewImage ? 'Replace Social Share Image' : 'Upload Social Share Image'}
+							{#if uploadingSocialImage}
+								<svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+									<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+									<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+								</svg>
+								Uploading...
+							{:else}
+								<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+								</svg>
+								{reviewData.reviewImage ? 'Replace Social Share Image' : 'Upload Social Share Image'}
+							{/if}
 						</button>
 					</div>
 				</form>
@@ -539,43 +556,49 @@
 					action="?/uploadLogo"
 					enctype="multipart/form-data"
 					use:enhance={() => {
-						let isCompressing = false;
+						console.log('[Logo] Form enhance triggered');
+						uploadingLogo = true;
+
 						return async ({ formData, cancel }) => {
+							console.log('[Logo] Form submit handler called');
 							const fileInput = formData.get('logoFile') as File;
 
-							// Check if file exists and isn't already compressed
-							if (fileInput && fileInput.size > 0 && !isCompressing) {
-								isCompressing = true;
-								console.log('[Logo Upload] Starting compression process...');
+							console.log('[Logo] File input:', fileInput ? `${fileInput.name} (${(fileInput.size / 1024).toFixed(2)}KB)` : 'none');
 
-								try {
-									// Compress image before upload (max 3MB to stay under Vercel's 4.5MB limit)
-									const compressed = await compressImage(fileInput, 3);
-									console.log(`[Logo Upload] Compression complete. Uploading: ${(compressed.size / (1024 * 1024)).toFixed(2)}MB`);
-									formData.set('logoFile', compressed);
-								} catch (err) {
-									console.error('[Logo Upload] Compression failed:', err);
-									alert('Failed to compress logo. Please try a different image.');
-									isCompressing = false;
-									cancel();
-									return;
-								}
-
-								isCompressing = false;
-							} else if (!fileInput || fileInput.size === 0) {
-								console.error('[Logo Upload] No file selected');
+							if (!fileInput || fileInput.size === 0) {
+								console.error('[Logo] No file selected');
 								alert('Please select a logo file to upload.');
+								uploadingLogo = false;
 								cancel();
 								return;
 							}
 
-							console.log('[Logo Upload] Submitting form...');
+							try {
+								console.log('[Logo] Starting compression...');
+								// Compress image before upload (max 3MB to stay under Vercel's 4.5MB limit)
+								const compressed = await compressImage(fileInput, 3);
+								console.log(`[Logo] Compression complete. Final size: ${(compressed.size / (1024 * 1024)).toFixed(2)}MB`);
+								formData.set('logoFile', compressed);
+							} catch (err) {
+								console.error('[Logo] Compression failed:', err);
+								alert('Failed to compress logo: ' + (err instanceof Error ? err.message : 'Unknown error'));
+								uploadingLogo = false;
+								cancel();
+								return;
+							}
+
+							console.log('[Logo] Submitting to server...');
 							return async ({ result, update }) => {
-								console.log('[Logo Upload] Form submission result:', result.type);
+								console.log('[Logo] Server response:', result);
+								uploadingLogo = false;
 								await update();
 								if (result.type === 'success') {
-									console.log('[Logo Upload] Upload successful, refreshing data...');
+									console.log('[Logo] Success! Refreshing data...');
 									await invalidateAll();
+									alert('Logo uploaded successfully!');
+								} else if (result.type === 'failure') {
+									console.error('[Logo] Upload failed:', result);
+									alert('Upload failed: ' + (result.data?.error || 'Unknown error'));
 								}
 							};
 						};
@@ -591,12 +614,21 @@
 						/>
 						<button
 							type="submit"
-							class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-all font-semibold bg-haunt-orange/20 hover:bg-haunt-orange/30 text-haunt-orange border-haunt-orange/50"
+							disabled={uploadingLogo}
+							class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg border transition-all font-semibold disabled:opacity-50 disabled:cursor-not-allowed bg-haunt-orange/20 hover:bg-haunt-orange/30 text-haunt-orange border-haunt-orange/50"
 						>
-							<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-							</svg>
-							{data.logos[editingReview] ? 'Replace Logo' : 'Upload Logo'}
+							{#if uploadingLogo}
+								<svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
+									<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+									<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+								</svg>
+								Uploading...
+							{:else}
+								<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+								</svg>
+								{data.logos[editingReview] ? 'Replace Logo' : 'Upload Logo'}
+							{/if}
 						</button>
 					</div>
 				</form>
