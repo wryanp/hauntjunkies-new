@@ -81,12 +81,14 @@
 			grouped[state][year].push(review);
 		});
 
-		// Sort reviews within each year by created_at (most recent first)
+		// Sort reviews within each year by review_date (most recent first)
 		Object.keys(grouped).forEach(state => {
 			Object.keys(grouped[state]).forEach(year => {
-				grouped[state][year].sort((a, b) =>
-					new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-				);
+				grouped[state][year].sort((a, b) => {
+					const dateA = a.review_date ? new Date(a.review_date).getTime() : 0;
+					const dateB = b.review_date ? new Date(b.review_date).getTime() : 0;
+					return dateB - dateA;
+				});
 			});
 		});
 
@@ -98,7 +100,7 @@
 		let mostRecent = 0;
 		Object.keys(groupedReviews[state]).forEach(year => {
 			groupedReviews[state][year].forEach(review => {
-				const reviewDate = new Date(review.created_at).getTime();
+				const reviewDate = review.review_date ? new Date(review.review_date).getTime() : 0;
 				if (reviewDate > mostRecent) {
 					mostRecent = reviewDate;
 				}
