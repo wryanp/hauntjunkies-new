@@ -44,8 +44,10 @@
 	let togglingAwards = $state(false); // Track awards hero toggle state
 
 	// Compress image before upload
-	async function compressImage(file: File, maxSizeMB = 4): Promise<File> {
+	async function compressImage(file: File, maxSizeMB = 3): Promise<File> {
 		return new Promise((resolve, reject) => {
+			console.log(`[Compression] Starting compression for file: ${file.name}, size: ${(file.size / (1024 * 1024)).toFixed(2)}MB`);
+
 			const reader = new FileReader();
 			reader.readAsDataURL(file);
 			reader.onload = (e) => {
@@ -56,11 +58,14 @@
 					let width = img.width;
 					let height = img.height;
 
+					console.log(`[Compression] Original dimensions: ${width}x${height}`);
+
 					// Resize if too large (max 1200px width for social images)
 					const maxWidth = 1200;
 					if (width > maxWidth) {
 						height = (height * maxWidth) / width;
 						width = maxWidth;
+						console.log(`[Compression] Resizing to: ${width}x${height}`);
 					}
 
 					canvas.width = width;
@@ -69,8 +74,8 @@
 					const ctx = canvas.getContext('2d');
 					ctx?.drawImage(img, 0, 0, width, height);
 
-					// Start with quality 0.85, reduce if needed
-					let quality = 0.85;
+					// Start with quality 0.8, reduce if needed
+					let quality = 0.8;
 					const tryCompress = () => {
 						canvas.toBlob(
 							(blob) => {
@@ -80,10 +85,12 @@
 								}
 
 								const sizeMB = blob.size / (1024 * 1024);
+								console.log(`[Compression] Current size: ${sizeMB.toFixed(2)}MB at quality ${quality.toFixed(2)}`);
 
 								// If still too large and quality can be reduced, try again
-								if (sizeMB > maxSizeMB && quality > 0.5) {
+								if (sizeMB > maxSizeMB && quality > 0.4) {
 									quality -= 0.1;
+									console.log(`[Compression] Reducing quality to ${quality.toFixed(2)}`);
 									tryCompress();
 									return;
 								}
@@ -94,6 +101,7 @@
 									lastModified: Date.now()
 								});
 
+								console.log(`[Compression] Final compressed size: ${(compressedFile.size / (1024 * 1024)).toFixed(2)}MB`);
 								resolve(compressedFile);
 							},
 							'image/jpeg',
@@ -439,8 +447,9 @@
 						const fileInput = formData.get('socialImageFile') as File;
 						if (fileInput && fileInput.size > 0) {
 							try {
-								// Compress image before upload
-								const compressed = await compressImage(fileInput, 4);
+								// Compress image before upload (max 3MB to stay under Vercel's 4.5MB limit)
+								const compressed = await compressImage(fileInput, 3);
+								console.log(`[Upload] Uploading compressed image: ${(compressed.size / (1024 * 1024)).toFixed(2)}MB`);
 								formData.set('socialImageFile', compressed);
 							} catch (err) {
 								console.error('Compression failed:', err);
@@ -508,8 +517,9 @@
 						const fileInput = formData.get('logoFile') as File;
 						if (fileInput && fileInput.size > 0) {
 							try {
-								// Compress image before upload
-								const compressed = await compressImage(fileInput, 4);
+								// Compress image before upload (max 3MB to stay under Vercel's 4.5MB limit)
+								const compressed = await compressImage(fileInput, 3);
+								console.log(`[Upload] Uploading compressed logo: ${(compressed.size / (1024 * 1024)).toFixed(2)}MB`);
 								formData.set('logoFile', compressed);
 							} catch (err) {
 								console.error('Compression failed:', err);
