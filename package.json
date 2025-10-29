@@ -23,6 +23,7 @@
 		"@sveltejs/kit": "^2.43.2",
 		"@sveltejs/vite-plugin-svelte": "^6.2.0",
 		"@types/bcryptjs": "^2.4.6",
+		"@types/qrcode": "^1.5.6",
 		"autoprefixer": "^10.4.21",
 		"postcss": "^8.5.6",
 		"sharp": "^0.34.4",
