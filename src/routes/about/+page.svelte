@@ -84,7 +84,7 @@
 					<div class="w-24 h-1 bg-haunt-orange mb-4"></div>
 
 					<p class="mb-4">
-						We're <strong>Haunt Junkies</strong> — a thrill-chasing, scream-loving duo obsessed with all things horror: movies, books, video games, and especially haunted attractions!
+						We're <strong>Haunt Junkies</strong> — a thrill-chasing, scream-loving duo obsessed with all things horror: movies, books, video games, and <strong>especially</strong> haunted attractions!
 					</p>
 
 					<p>
