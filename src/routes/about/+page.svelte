@@ -78,8 +78,7 @@
 			<div class="space-y-8 text-gray-300 text-lg leading-relaxed">
 				<!-- Who We Are -->
 				<div>
-					<h2 class="text-3xl md:text-4xl font-extrabold text-haunt-orange mb-4 flex items-center gap-3">
-						<span class="text-4xl">👻</span>
+					<h2 class="text-3xl md:text-4xl font-extrabold text-haunt-orange mb-4">
 						Who We Are
 					</h2>
 					<div class="w-24 h-1 bg-haunt-orange mb-4"></div>
@@ -95,8 +94,7 @@
 
 				<!-- What We Do -->
 				<div>
-					<h2 class="text-3xl md:text-4xl font-extrabold text-haunt-orange mb-4 flex items-center gap-3">
-						<span class="text-4xl">💀</span>
+					<h2 class="text-3xl md:text-4xl font-extrabold text-haunt-orange mb-4">
 						What We Do
 					</h2>
 					<div class="w-24 h-1 bg-haunt-orange mb-4"></div>
@@ -107,14 +105,13 @@
 
 					<p>
 						We don't rate based on budgets or big names. We care about one thing: <strong>"Was it scary or not?"</strong><br>
-						The most terrifying attractions earn our coveted <strong>Golden Ghost Award 👻✨</strong>
+						The most terrifying attractions earn our coveted <strong>Golden Ghost Award</strong>
 					</p>
 				</div>
 
 				<!-- Our Own Haunt -->
 				<div>
-					<h2 class="text-3xl md:text-4xl font-extrabold text-haunt-orange mb-4 flex items-center gap-3">
-						<span class="text-4xl">🏚️</span>
+					<h2 class="text-3xl md:text-4xl font-extrabold text-haunt-orange mb-4">
 						Our Own Haunt
 					</h2>
 					<div class="w-24 h-1 bg-haunt-orange mb-4"></div>
@@ -126,8 +123,7 @@
 
 				<!-- Want Us to Visit -->
 				<div>
-					<h2 class="text-3xl md:text-4xl font-extrabold text-haunt-orange mb-4 flex items-center gap-3">
-						<span class="text-4xl">🕸️</span>
+					<h2 class="text-3xl md:text-4xl font-extrabold text-haunt-orange mb-4">
 						Want Us to Visit?
 					</h2>
 					<div class="w-24 h-1 bg-haunt-orange mb-4"></div>
