@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { invalidateAll } from '$app/navigation';
 	import type { PageData, ActionData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -60,7 +61,13 @@
 				<p class="text-sm sm:text-base text-gray-400">Manage messages from your contact form</p>
 			</div>
 			{#if unreadCount > 0}
-				<form method="POST" action="?/markAllRead" use:enhance>
+				<form method="POST" action="?/markAllRead" use:enhance={() => {
+					return async ({ result }) => {
+						if (result.type === 'success') {
+							await invalidateAll();
+						}
+					};
+				}}>
 					<button
 						type="submit"
 						class="px-3 sm:px-4 py-2 bg-haunt-orange/20 hover:bg-haunt-orange/30 text-haunt-orange rounded-lg border border-haunt-orange/50 font-semibold transition-all text-sm sm:text-base whitespace-nowrap shrink-0"
@@ -180,7 +187,13 @@
 								>
 									View
 								</button>
-								<form method="POST" action="?/toggleRead" use:enhance>
+								<form method="POST" action="?/toggleRead" use:enhance={() => {
+									return async ({ result }) => {
+										if (result.type === 'success') {
+											await invalidateAll();
+										}
+									};
+								}}>
 									<input type="hidden" name="id" value={message.id} />
 									<button
 										type="submit"
