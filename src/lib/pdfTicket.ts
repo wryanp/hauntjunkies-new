@@ -189,7 +189,7 @@ export async function generateTicketPDF(ticketData: TicketPDFData): Promise<Buff
 			doc.fontSize(8)
 				.fillColor(hauntRed)
 				.font('Helvetica-Bold')
-				.text('⚠ ONE-TIME USE ONLY', qrLeft - 30, cardY, { width: qrSize + 60, align: 'center' });
+				.text('ONE-TIME USE ONLY', qrLeft - 30, cardY, { width: qrSize + 60, align: 'center' });
 
 			cardY += 22;
 
@@ -205,19 +205,19 @@ export async function generateTicketPDF(ticketData: TicketPDFData): Promise<Buff
 			let detailY = cardY;
 			const drawDetail = (label: string, value: string, icon: string) => {
 				// Icon/emoji
-				doc.fontSize(13).fillColor('#000000').font('Helvetica').text(icon, detailsLeft, detailY - 2);
+				doc.fontSize(12).fillColor('#000000').font('Helvetica').text(icon, detailsLeft, detailY - 1);
 
 				// Label (small, gray)
-				doc.fontSize(8).fillColor(textGray).font('Helvetica').text(label, detailsLeft + 23, detailY);
+				doc.fontSize(8).fillColor(textGray).font('Helvetica').text(label, detailsLeft + 28, detailY);
 
 				// Value (larger, bold, black)
-				doc.fontSize(10).fillColor('#000000').font('Helvetica-Bold').text(value, detailsLeft + 23, detailY + 11, { width: detailsWidth - 23 });
+				doc.fontSize(10).fillColor('#000000').font('Helvetica-Bold').text(value, detailsLeft + 28, detailY + 11, { width: detailsWidth - 28 });
 
 				detailY += 32;
 			};
 
 			// Guest Name
-			drawDetail('Guest Name', `${ticketData.firstName} ${ticketData.lastName}`, '👤');
+			drawDetail('Guest Name', `${ticketData.firstName} ${ticketData.lastName}`, '●');
 
 			// Date
 			const dateObj = new Date(ticketData.date + 'T00:00:00');
@@ -227,7 +227,7 @@ export async function generateTicketPDF(ticketData: TicketPDFData): Promise<Buff
 				day: 'numeric',
 				year: 'numeric'
 			});
-			drawDetail('Date', formattedDate, '📅');
+			drawDetail('Date', formattedDate, '●');
 
 			// Time
 			const formatTime = (time: string) => {
@@ -238,11 +238,11 @@ export async function generateTicketPDF(ticketData: TicketPDFData): Promise<Buff
 				return `${displayHour}:${minutes} ${ampm}`;
 			};
 			const timeStr = `${formatTime(ticketData.startTime)} - ${formatTime(ticketData.endTime)}`;
-			drawDetail('Time', timeStr, '🕐');
+			drawDetail('Time', timeStr, '●');
 
 			// Tickets
 			const ticketStr = `${ticketData.tickets} Ticket${ticketData.tickets > 1 ? 's' : ''}`;
-			drawDetail('Tickets', ticketStr, '🎫');
+			drawDetail('Tickets', ticketStr, '●');
 
 			// Move current Y to below card
 			currentY = cardStartY + cardHeight + 25;
@@ -259,7 +259,7 @@ export async function generateTicketPDF(ticketData: TicketPDFData): Promise<Buff
 
 			// Address card content
 			let addressY = currentY + 12;
-			doc.fontSize(9).fillColor(textGray).font('Helvetica').text('📍 Address', addressCardLeft + 12, addressY);
+			doc.fontSize(9).fillColor(textGray).font('Helvetica-Bold').text('ADDRESS', addressCardLeft + 12, addressY);
 			addressY += 16;
 			doc.fontSize(9).fillColor('#000000').font('Helvetica-Bold').text('2100 Carlysle Park Lane', addressCardLeft + 12, addressY, { width: infoCardWidth - 24 });
 			addressY += 12;
@@ -279,7 +279,7 @@ export async function generateTicketPDF(ticketData: TicketPDFData): Promise<Buff
 
 			// Parking card content
 			let parkingY = currentY + 12;
-			doc.fontSize(9).fillColor(textGray).font('Helvetica').text('🅿️ Parking', parkingCardLeft + 12, parkingY);
+			doc.fontSize(9).fillColor(textGray).font('Helvetica-Bold').text('PARKING', parkingCardLeft + 12, parkingY);
 			parkingY += 16;
 			doc.fontSize(8).fillColor('#000000').font('Helvetica').text('Free but limited. Please carpool or use rideshare. Do not block driveways.', parkingCardLeft + 12, parkingY, {
 				width: infoCardWidth - 24,
