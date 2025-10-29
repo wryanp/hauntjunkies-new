@@ -100,9 +100,9 @@ export async function generateTicketPDF(ticketData: TicketPDFData): Promise<Buff
 			const headerHeight = 140;
 			doc.rect(0, 0, 612, headerHeight).fill('#000000');
 
-			// McCloud Manor Logo - centered and appropriately sized
-			const logoFitWidth = 380;
-			const logoFitHeight = 120;
+			// McCloud Manor Logo - centered and much larger
+			const logoFitWidth = 550;
+			const logoFitHeight = 130;
 			const logoX = (612 - logoFitWidth) / 2;
 			const logoY = (headerHeight - logoFitHeight) / 2;
 
@@ -291,7 +291,7 @@ export async function generateTicketPDF(ticketData: TicketPDFData): Promise<Buff
 			let parkingY = currentY + 12;
 			doc.fontSize(9).fillColor(textGray).font('Helvetica-Bold').text('PARKING', parkingCardLeft + 12, parkingY);
 			parkingY += 16;
-			doc.fontSize(8).fillColor('#000000').font('Helvetica').text('Free but limited. Please carpool or Uber/Lyft. Do not block driveways.', parkingCardLeft + 12, parkingY, {
+			doc.fontSize(8).fillColor('#000000').font('Helvetica').text('Free but limited. Please carpool or Uber/Lyft if possible. Do not park in or block any of our neighbors driveways.', parkingCardLeft + 12, parkingY, {
 				width: infoCardWidth - 24,
 				lineGap: 1.5
 			});
@@ -300,12 +300,12 @@ export async function generateTicketPDF(ticketData: TicketPDFData): Promise<Buff
 
 			// Modern footer
 			doc.fontSize(8)
-				.fillColor(hauntRed)
+				.fillColor('#000000')
 				.font('Helvetica')
-				.text('hauntjunkies@gmail.com', 0, currentY, {
-					align: 'center',
-					width: 612,
-					link: 'mailto:hauntjunkies@gmail.com',
+				.text('Questions? ', 0, currentY, { align: 'center', width: 612, continued: true })
+				.fillColor(hauntRed)
+				.text('Contact us', {
+					link: 'https://hauntjunkies.com/mccloudmanor#contact',
 					underline: true
 				});
 
