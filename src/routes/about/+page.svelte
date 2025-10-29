@@ -104,7 +104,7 @@
 					</p>
 
 					<p>
-						We don't rate based on budgets or big names. We care about one thing: <strong>"Was it scary or not?"</strong> The most terrifying attractions earn our coveted <strong>Golden Ghost Award!</strong>
+						We don't rate based on budgets or big names. We care about one thing: <strong>"Was it scary or not?"</strong> and the most terrifying attractions earn our coveted <strong>Golden Ghost Award!</strong>
 					</p>
 				</div>
 
