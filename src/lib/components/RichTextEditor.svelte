@@ -10,6 +10,24 @@
 	let editor: any;
 	let editorElement: HTMLDivElement;
 
+	// Convert plain text with newlines to HTML paragraphs
+	function textToHtml(text: string): string {
+		if (!text) return '';
+
+		// If already HTML (contains tags), return as is
+		if (/<[a-z][\s\S]*>/i.test(text)) {
+			return text;
+		}
+
+		// Convert plain text: split by double newlines for paragraphs
+		return text
+			.split(/\n\n+/)
+			.map(para => para.trim())
+			.filter(para => para.length > 0)
+			.map(para => `<p>${para.replace(/\n/g, '<br>')}</p>`)
+			.join('');
+	}
+
 	onMount(() => {
 		if (editorElement) {
 			editor = new Editor({
@@ -33,7 +51,7 @@
 						}
 					})
 				],
-				content: value,
+				content: textToHtml(value),
 				editorProps: {
 					attributes: {
 						class: 'prose prose-invert max-w-none focus:outline-none min-h-[400px] p-4'
