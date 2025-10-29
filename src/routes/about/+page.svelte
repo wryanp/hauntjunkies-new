@@ -75,33 +75,73 @@
 			</div>
 
 			<!-- Right: Content -->
-			<div class="space-y-6 text-gray-300 text-lg leading-relaxed">
-				<h2 class="text-3xl md:text-4xl font-extrabold text-haunt-orange mb-6">
-					WE ARE THE HAUNT JUNKIES!
-				</h2>
+			<div class="space-y-8 text-gray-300 text-lg leading-relaxed">
+				<!-- Who We Are -->
+				<div>
+					<h2 class="text-3xl md:text-4xl font-extrabold text-haunt-orange mb-4 flex items-center gap-3">
+						<span class="text-4xl">👻</span>
+						Who We Are
+					</h2>
+					<div class="w-24 h-1 bg-haunt-orange mb-4"></div>
 
-				<p>
-					Extremely passionate and die-hard fans of all things horror - movies, books, video games, you name it - but especially haunted attractions! We travel all over the country visiting and reviewing haunted attractions and we also do one of our own.
-				</p>
+					<p class="mb-4">
+						We're <strong>Haunt Junkies</strong> — a thrill-chasing, scream-loving duo obsessed with all things horror: movies, books, video games, and especially haunted attractions!
+					</p>
 
-				<p>
-					Started by Megan Johnson and Vilonte McCloud, Haunt Junkies is more than just a home haunt and haunt review team... it's a LIFESTYLE! We're based outside of Atlanta, GA, but (as of 2021) have visited over 100 haunted attractions across 16 states, and we're just getting started! We pride ourselves in giving honest reviews, and we don't have any kind of weird ranking system. We try to keep our reviews interesting, conversational, and to the point versus making you feel like you're reading an editorial or dissertation... boringgggg!
-				</p>
+					<p>
+						Founded by <strong>Megan Johnson</strong> and <strong>Vilonte McCloud</strong>, we've turned our passion into a full-blown lifestyle. Based just outside Atlanta, GA, we've hit <strong>100+ haunts across 16 states</strong> (and counting) — chasing chills, jump scares, and unforgettable nights.
+					</p>
+				</div>
 
-				<p>
-					Every haunt is unique and offers its own special scares, so we reset our perceptions and expectations each time when rating them. We don't care about the size or amount of money spent, at the end of the day, all that matters to us is "was it scary or not?" The best of the best will have the honor of receiving a Golden Ghost Award.
-				</p>
+				<!-- What We Do -->
+				<div>
+					<h2 class="text-3xl md:text-4xl font-extrabold text-haunt-orange mb-4 flex items-center gap-3">
+						<span class="text-4xl">💀</span>
+						What We Do
+					</h2>
+					<div class="w-24 h-1 bg-haunt-orange mb-4"></div>
 
-				<p>
-					We were so inspired from visiting haunted attractions that in 2017 we decided to do one of our own. After a few trips to Spirit Halloween, Dollar Tree, and other local seasonal Halloween retailers, we had a quick walkthrough for trick or treaters. We had so much fun and received such great feedback from the community that we REALLY got to work to make the second go-round official AF! We learned how to build our own props from raw materials found at The Home Depot and other hardware stores and discovered professional haunted attraction retailers like FrightProps and Dapper Cadaver. Now Haunt Junkies Haunted House features props and effects that would rival any haunted attraction and gets better every year!
-				</p>
+					<p class="mb-4">
+						We travel the country visiting and reviewing haunted attractions — from massive scream parks to small-town gems. Our reviews are honest, conversational, and zero fluff (because who wants to read a 10-page essay when you could be running from a chainsaw?).
+					</p>
 
-				<p>
-					We are always in need of our next fear fix so if you're a haunt owner who would like for us to come visit, hit us up!
-				</p>
+					<p>
+						We don't rate based on budgets or big names. We care about one thing: <strong>"Was it scary or not?"</strong><br>
+						The most terrifying attractions earn our coveted <strong>Golden Ghost Award 👻✨</strong>
+					</p>
+				</div>
+
+				<!-- Our Own Haunt -->
+				<div>
+					<h2 class="text-3xl md:text-4xl font-extrabold text-haunt-orange mb-4 flex items-center gap-3">
+						<span class="text-4xl">🏚️</span>
+						Our Own Haunt
+					</h2>
+					<div class="w-24 h-1 bg-haunt-orange mb-4"></div>
+
+					<p>
+						After visiting so many killer attractions, we decided to build our own back in 2017 — starting with a few props from Spirit Halloween and a big imagination. Fast forward to now, and <strong>McCloud Manor</strong> features hand-built props, pro-level effects, and a dedicated fanbase that grows every year!
+					</p>
+				</div>
+
+				<!-- Want Us to Visit -->
+				<div>
+					<h2 class="text-3xl md:text-4xl font-extrabold text-haunt-orange mb-4 flex items-center gap-3">
+						<span class="text-4xl">🕸️</span>
+						Want Us to Visit?
+					</h2>
+					<div class="w-24 h-1 bg-haunt-orange mb-4"></div>
+
+					<p class="mb-2">
+						Got a haunt that'll make us scream? We're always hunting for our next fear fix.
+					</p>
+					<p class="font-bold text-xl text-haunt-orange">
+						Invite us out — if you dare.
+					</p>
+				</div>
 
 				<div class="pt-6">
-					<p class="text-haunt-orange font-bold text-xl mb-4">
+					<p class="text-white font-bold text-xl mb-4">
 						Are you a Haunt Junkie too? Send us a message! We'd love to hear from you!
 					</p>
 					<a
