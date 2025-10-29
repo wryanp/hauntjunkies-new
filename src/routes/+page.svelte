@@ -5,6 +5,7 @@
 	import QuoteSection from '$lib/components/QuoteSection.svelte';
 	import SEO from '$lib/components/SEO.svelte';
 	import GoldenGhostAwards from '$lib/components/GoldenGhostAwards.svelte';
+	import InstagramGrid from '$lib/components/InstagramGrid.svelte';
 	import { getAwardCount, hasGoldenGhostAwards } from '$lib/utils/awards';
 	import { isValidImageUrl, getFallbackReviewImage } from '$lib/imageUtils';
 	import { getStateName } from '$lib/utils/states';
@@ -211,8 +212,6 @@
 />
 
 <svelte:head>
-	<!-- SnapWidget Script for Instagram Feed -->
-	<script src="https://snapwidget.com/js/snapwidget.js"></script>
 
 	{@html `<script type="application/ld+json">${JSON.stringify({
 		'@context': 'https://schema.org',
@@ -648,19 +647,18 @@
 			</p>
 		</div>
 
-		<!-- Instagram Embed Container -->
+		<!-- Instagram Grid Container -->
 		<div class="relative w-full sm:max-w-5xl mx-auto">
 			<!-- Glow effect behind feed -->
 			<div class="absolute -inset-2 md:-inset-4 bg-gradient-to-r from-haunt-orange/20 via-orange-600/25 to-haunt-orange/20 blur-2xl opacity-50"></div>
 
-		<!-- Feed container -->
-		<div class="relative bg-gradient-to-br from-gray-900/80 via-black/80 to-gray-900/80 rounded-2xl border-4 border-haunt-orange/50 p-0.5 sm:p-2 md:p-4" style="box-shadow: 0 0 30px rgba(255,107,0,0.3), inset 0 0 20px rgba(0,0,0,0.8);">
-
-			<!-- Instagram Wrapper -->
-			<div class="relative rounded-2xl overflow-hidden h-[260px] md:h-[650px] flex items-center justify-center" style="box-shadow: 0 10px 40px rgba(0,0,0,0.8);">
-				<iframe src="https://snapwidget.com/embed/1110765" class="snapwidget-widget absolute inset-0 w-full h-full" frameborder="0" scrolling="no" style="border:none; overflow:hidden;" title="Posts from Instagram"></iframe>
+			<!-- Grid container -->
+			<div class="relative bg-gradient-to-br from-gray-900/80 via-black/80 to-gray-900/80 rounded-2xl border-4 border-haunt-orange/50 p-4 md:p-6" style="box-shadow: 0 0 30px rgba(255,107,0,0.3), inset 0 0 20px rgba(0,0,0,0.8);">
+				<!-- Instagram Grid Component -->
+				<div class="relative rounded-2xl overflow-hidden" style="box-shadow: 0 10px 40px rgba(0,0,0,0.8);">
+					<InstagramGrid />
+				</div>
 			</div>
-		</div>
 		</div>
 	</div>
 </section>
