@@ -19,13 +19,12 @@
 			return text;
 		}
 
-		// Convert plain text: split by double newlines for paragraphs
-		return text
-			.split(/\n\n+/)
-			.map(para => para.trim())
-			.filter(para => para.length > 0)
-			.map(para => `<p>${para.replace(/\n/g, '<br>')}</p>`)
-			.join('');
+		// Convert plain text: treat each line as a potential paragraph
+		// First, normalize line breaks and split into sentences/blocks
+		const lines = text.split(/\n+/).map(line => line.trim()).filter(line => line.length > 0);
+
+		// Wrap each line in a paragraph tag
+		return lines.map(line => `<p>${line}</p>`).join('');
 	}
 
 	onMount(() => {
