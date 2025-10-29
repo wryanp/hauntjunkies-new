@@ -152,14 +152,21 @@ async function createCustomerEmailHTML(ticketData: TicketData): Promise<string> 
 	// Generate unique QR token and store in database (if ticketRequestId is provided)
 	let qrCodeImage = '';
 	if (ticketData.ticketRequestId) {
+		console.log('Generating QR code for ticket ID:', ticketData.ticketRequestId);
 		const qrToken = generateQRToken();
 		const stored = await storeQRToken(ticketData.ticketRequestId, qrToken);
 
 		if (stored) {
 			// Generate QR code with validation URL
 			const qrValidationUrl = `https://hauntjunkies.com/api/validate-qr?token=${qrToken}`;
+			console.log('QR validation URL:', qrValidationUrl);
 			qrCodeImage = await generateQRCode(qrValidationUrl);
+			console.log('QR code generated:', qrCodeImage ? 'Success' : 'Failed');
+		} else {
+			console.error('Failed to store QR token in database');
 		}
+	} else {
+		console.warn('No ticketRequestId provided, skipping QR code generation');
 	}
 
 	return `
