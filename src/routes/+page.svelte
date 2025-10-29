@@ -643,7 +643,7 @@
 				<div class="w-48 h-1 bg-gradient-to-r from-transparent via-haunt-orange to-transparent mx-auto mb-6"></div>
 			</div>
 
-			<p class="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto font-light">
+			<p class="text-sm md:text-lg lg:text-xl text-gray-300 max-w-2xl mx-auto font-light">
 				Follow us on Instagram to join in our adventures to haunted attractions across the country and for updates on McCloud Manor
 			</p>
 		</div>
