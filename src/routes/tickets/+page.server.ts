@@ -253,6 +253,10 @@ export const actions = {
 
 		// We already have dateInfo from the earlier availability check, no need to fetch again
 
+		// Log the result from purchase_tickets function
+		console.log('Purchase tickets result:', JSON.stringify(result));
+		console.log('Ticket ID for QR code:', result.ticket_id);
+
 		// Send confirmation emails
 		const emailResult = await sendTicketConfirmation({
 			confirmationNumber,
