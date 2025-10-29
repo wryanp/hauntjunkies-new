@@ -233,7 +233,7 @@
 						Back to McCloud Manor
 					</a>
 					<a
-						href="/haunt#faq-section"
+						href="/mccloudmanor#faq-section"
 						class="px-6 py-3 bg-black/50 hover:bg-black/70 text-haunt-red font-bold rounded-xl border-2 border-haunt-red/50 hover:border-haunt-red transition-all text-center"
 					>
 						View FAQ
