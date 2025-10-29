@@ -312,7 +312,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 	title="McCloud Manor"
 	description="Lawrenceville's Most Terrifying Home Haunt Experience"
 	url="/mccloudmanor"
-	image="/mccloudmanor-1200w.webp"
+	image="/mccloudmanor-logo.jpg"
 	type="website"
 />
 
