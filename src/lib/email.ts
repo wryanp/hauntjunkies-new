@@ -78,6 +78,9 @@ function generateQRToken(): string {
  */
 async function storeQRToken(ticketRequestId: string, qrToken: string): Promise<boolean> {
 	try {
+		console.log('[QR] Storing QR token for ticket:', ticketRequestId);
+		console.log('[QR] Token (first 20 chars):', qrToken.substring(0, 20));
+
 		// Set expiration to event date + 30 days (for grace period)
 		const { error } = await supabase
 			.from('ticket_qr_codes')
@@ -88,13 +91,14 @@ async function storeQRToken(ticketRequestId: string, qrToken: string): Promise<b
 			});
 
 		if (error) {
-			console.error('Error storing QR token:', error);
+			console.error('[QR] Error storing QR token in database:', error);
 			return false;
 		}
 
+		console.log('[QR] Successfully stored QR token in database');
 		return true;
 	} catch (error) {
-		console.error('Error storing QR token:', error);
+		console.error('[QR] Exception storing QR token:', error);
 		return false;
 	}
 }
@@ -104,6 +108,10 @@ async function storeQRToken(ticketRequestId: string, qrToken: string): Promise<b
  */
 async function generateQRCode(url: string): Promise<string> {
 	try {
+		console.log('[QR] Attempting to generate QR code for URL:', url);
+		console.log('[QR] QRCode module type:', typeof QRCode);
+		console.log('[QR] QRCode.toDataURL type:', typeof QRCode.toDataURL);
+
 		// Generate QR code as data URL (base64 encoded PNG)
 		const qrCodeDataUrl = await QRCode.toDataURL(url, {
 			width: 200,
@@ -113,9 +121,12 @@ async function generateQRCode(url: string): Promise<string> {
 				light: '#FFFFFF'
 			}
 		});
+
+		console.log('[QR] Successfully generated QR code, length:', qrCodeDataUrl.length);
 		return qrCodeDataUrl;
 	} catch (error) {
-		console.error('Error generating QR code:', error);
+		console.error('[QR] Error generating QR code:', error);
+		console.error('[QR] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
 		// Return empty string if QR code generation fails
 		return '';
 	}
