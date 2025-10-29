@@ -7,6 +7,9 @@
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
+	// Find the McCloud Manor logo from photos
+	const logo = $derived(data.photos?.find(photo => photo.caption === 'McCloud Manor Logo' && photo.display_order === 0));
+
 	// Calculate the next haunt season year (October-November)
 	// If we're currently before August, use current year; otherwise use next year
 	const now = new Date();
@@ -309,7 +312,7 @@ It has been said that the tortured spirit of Dr. William McCloud lives on, and t
 	title="McCloud Manor"
 	description="Lawrenceville's Most Terrifying Home Haunt Experience"
 	url="/mccloudmanor"
-	image="/mccloudmanor-logo.jpg"
+	image={logo?.image_url || '/hauntjunkies-only.jpg'}
 	type="website"
 />
 
