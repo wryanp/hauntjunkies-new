@@ -162,22 +162,32 @@ async function createCustomerEmailHTML(ticketData: TicketData): Promise<string> 
 
 	// Generate unique QR token and store in database (if ticketRequestId is provided)
 	let qrCodeImage = '';
+	console.log('[EMAIL] Starting QR code generation process');
+	console.log('[EMAIL] ticketRequestId:', ticketData.ticketRequestId);
+	console.log('[EMAIL] ticketRequestId type:', typeof ticketData.ticketRequestId);
+	console.log('[EMAIL] Full ticketData:', JSON.stringify(ticketData, null, 2));
+
 	if (ticketData.ticketRequestId) {
-		console.log('Generating QR code for ticket ID:', ticketData.ticketRequestId);
+		console.log('[EMAIL] ✓ ticketRequestId provided, generating QR code');
 		const qrToken = generateQRToken();
+		console.log('[EMAIL] Generated token (first 20):', qrToken.substring(0, 20));
+
 		const stored = await storeQRToken(ticketData.ticketRequestId, qrToken);
+		console.log('[EMAIL] Token storage result:', stored);
 
 		if (stored) {
 			// Generate QR code with validation URL
 			const qrValidationUrl = `https://hauntjunkies.com/api/validate-qr?token=${qrToken}`;
-			console.log('QR validation URL:', qrValidationUrl);
+			console.log('[EMAIL] QR validation URL:', qrValidationUrl);
 			qrCodeImage = await generateQRCode(qrValidationUrl);
-			console.log('QR code generated:', qrCodeImage ? 'Success' : 'Failed');
+			console.log('[EMAIL] QR code generated, length:', qrCodeImage.length);
+			console.log('[EMAIL] QR code prefix:', qrCodeImage.substring(0, 50));
 		} else {
-			console.error('Failed to store QR token in database');
+			console.error('[EMAIL] ✗ Failed to store QR token in database');
 		}
 	} else {
-		console.warn('No ticketRequestId provided, skipping QR code generation');
+		console.warn('[EMAIL] ✗ No ticketRequestId provided, skipping QR code generation');
+		console.warn('[EMAIL] This means the QR code will NOT appear in the email');
 	}
 
 	return `
