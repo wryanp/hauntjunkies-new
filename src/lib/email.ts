@@ -184,44 +184,6 @@ async function createCustomerEmailHTML(ticketData: TicketData): Promise<string> 
 						</td>
 					</tr>
 
-					<!-- Event Details -->
-					<tr>
-						<td class="mobile-padding" style="padding: 0 40px 30px 40px;">
-							<table width="100%" cellpadding="0" cellspacing="0" class="detail-bg" style="background-color: #f9f9f9 !important; background-image: linear-gradient(#f9f9f9, #f9f9f9) !important; border-radius: 6px; overflow: hidden;">
-								<tr>
-									<td style="padding: 20px 24px; border-bottom: 1px solid #e5e5e5;">
-										<table width="100%" cellpadding="0" cellspacing="0">
-											<tr>
-												<td width="40%" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; -apple-color-filter: none !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Date</td>
-												<td style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; -apple-color-filter: none !important; font-size: 16px; font-weight: 600; text-align: right;">${dateFormatted}</td>
-											</tr>
-										</table>
-									</td>
-								</tr>
-								<tr>
-									<td style="padding: 20px 24px; border-bottom: 1px solid #e5e5e5;">
-										<table width="100%" cellpadding="0" cellspacing="0">
-											<tr>
-												<td width="40%" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; -apple-color-filter: none !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Time</td>
-												<td style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; -apple-color-filter: none !important; font-size: 16px; font-weight: 600; text-align: right;">${timeStr}</td>
-											</tr>
-										</table>
-									</td>
-								</tr>
-								<tr>
-									<td style="padding: 20px 24px;">
-										<table width="100%" cellpadding="0" cellspacing="0">
-											<tr>
-												<td width="40%" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; -apple-color-filter: none !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Tickets</td>
-												<td class="ticket-count" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; -apple-color-filter: none !important; font-size: 18px; font-weight: 700; text-align: right;">${ticketData.tickets} ${ticketData.tickets === 1 ? 'Ticket' : 'Tickets'}</td>
-											</tr>
-										</table>
-									</td>
-								</tr>
-							</table>
-						</td>
-					</tr>
-
 					<!-- Action Buttons -->
 					<tr>
 						<td class="mobile-padding" style="padding: 0 40px 40px 40px;">
