@@ -14,14 +14,26 @@
 	function textToHtml(text: string): string {
 		if (!text) return '';
 
+		console.log('[RichTextEditor] Original text:', text.substring(0, 200));
+		console.log('[RichTextEditor] Has newlines:', text.includes('\n'));
+		console.log('[RichTextEditor] Has HTML tags:', /<[a-z][\s\S]*>/i.test(text));
+
 		// If already HTML (contains tags), return as is
 		if (/<[a-z][\s\S]*>/i.test(text)) {
+			console.log('[RichTextEditor] Detected HTML, returning as-is');
 			return text;
 		}
 
+		// Check if there are any newlines at all
+		if (!text.includes('\n')) {
+			// No newlines - just wrap the entire text in one paragraph
+			console.log('[RichTextEditor] No newlines detected, wrapping in single paragraph');
+			return `<p>${text}</p>`;
+		}
+
 		// Convert plain text: treat each line as a potential paragraph
-		// First, normalize line breaks and split into sentences/blocks
 		const lines = text.split(/\n+/).map(line => line.trim()).filter(line => line.length > 0);
+		console.log('[RichTextEditor] Split into', lines.length, 'lines');
 
 		// Wrap each line in a paragraph tag
 		return lines.map(line => `<p>${line}</p>`).join('');
