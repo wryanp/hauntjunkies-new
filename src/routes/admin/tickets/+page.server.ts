@@ -47,10 +47,15 @@ export const load: PageServerLoad = async ({ cookies, parent }) => {
 		}
 	});
 
-	// Fetch all ticket requests
+	// Fetch all ticket requests with QR code scan status
 	const { data: tickets, error } = await supabase
 		.from('ticket_requests')
-		.select('*')
+		.select(`
+			*,
+			ticket_qr_codes (
+				used_at
+			)
+		`)
 		.order('created_at', { ascending: false });
 
 	return {

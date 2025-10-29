@@ -1,8 +1,11 @@
 import { Resend } from 'resend';
 import { RESEND_API_KEY, RESEND_FROM_EMAIL, SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
+import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 import ical from 'ical-generator';
-import { createHmac } from 'crypto';
+import { createHmac, randomBytes } from 'crypto';
 import { logEmailError, logError } from './logger';
+import QRCode from 'qrcode';
+import { createClient } from '@supabase/supabase-js';
 
 // Validate API key before initializing Resend client
 if (!RESEND_API_KEY || RESEND_API_KEY === 'your_resend_api_key') {
@@ -16,6 +19,14 @@ if (!RESEND_FROM_EMAIL) {
 
 const resend = new Resend(RESEND_API_KEY);
 
+// Initialize Supabase client with service role key
+const supabase = createClient(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+	auth: {
+		autoRefreshToken: false,
+		persistSession: false
+	}
+});
+
 interface TicketData {
 	confirmationNumber: string;
 	firstName: string;
@@ -26,6 +37,7 @@ interface TicketData {
 	endTime?: string;
 	tickets: number;
 	specialRequests?: string;
+	ticketRequestId?: string;  // UUID from ticket_requests table
 }
 
 function generateConfirmationNumber(): string {
@@ -54,6 +66,61 @@ function formatTime(timeString: string): string {
 	});
 }
 
+/**
+ * Generate a unique secure token for QR code
+ */
+function generateQRToken(): string {
+	return randomBytes(32).toString('hex'); // 64-character hex string
+}
+
+/**
+ * Store QR token in database and link to ticket request
+ */
+async function storeQRToken(ticketRequestId: string, qrToken: string): Promise<boolean> {
+	try {
+		// Set expiration to event date + 30 days (for grace period)
+		const { error } = await supabase
+			.from('ticket_qr_codes')
+			.insert({
+				ticket_request_id: ticketRequestId,
+				qr_token: qrToken,
+				expires_at: null  // No expiration for now, can be added later
+			});
+
+		if (error) {
+			console.error('Error storing QR token:', error);
+			return false;
+		}
+
+		return true;
+	} catch (error) {
+		console.error('Error storing QR token:', error);
+		return false;
+	}
+}
+
+/**
+ * Generate QR code image from URL
+ */
+async function generateQRCode(url: string): Promise<string> {
+	try {
+		// Generate QR code as data URL (base64 encoded PNG)
+		const qrCodeDataUrl = await QRCode.toDataURL(url, {
+			width: 200,
+			margin: 2,
+			color: {
+				dark: '#000000',
+				light: '#FFFFFF'
+			}
+		});
+		return qrCodeDataUrl;
+	} catch (error) {
+		console.error('Error generating QR code:', error);
+		// Return empty string if QR code generation fails
+		return '';
+	}
+}
+
 function generateCalendarInvite(ticketData: TicketData): string {
 	const calendar = ical({ name: 'McCloud Manor Ticket' });
 
@@ -76,11 +143,24 @@ function generateCalendarInvite(ticketData: TicketData): string {
 	return calendar.toString();
 }
 
-function createCustomerEmailHTML(ticketData: TicketData): string {
+async function createCustomerEmailHTML(ticketData: TicketData): Promise<string> {
 	const dateFormatted = formatDate(ticketData.date);
 	const timeStr = ticketData.startTime && ticketData.endTime
 		? `${formatTime(ticketData.startTime)} - ${formatTime(ticketData.endTime)}`
 		: 'See details below';
+
+	// Generate unique QR token and store in database (if ticketRequestId is provided)
+	let qrCodeImage = '';
+	if (ticketData.ticketRequestId) {
+		const qrToken = generateQRToken();
+		const stored = await storeQRToken(ticketData.ticketRequestId, qrToken);
+
+		if (stored) {
+			// Generate QR code with validation URL
+			const qrValidationUrl = `https://hauntjunkies.com/api/validate-qr?token=${qrToken}`;
+			qrCodeImage = await generateQRCode(qrValidationUrl);
+		}
+	}
 
 	return `
 <!DOCTYPE html>
@@ -178,9 +258,16 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 							<p style="margin: 0 0 8px 0; font-size: 16px; color: #666666; line-height: 1.6;">
 								We're excited to terrify you at McCloud Manor.
 							</p>
-							<p style="margin: 0; font-size: 16px; color: #666666; line-height: 1.6;">
+							<p style="margin: 0 0 20px 0; font-size: 16px; color: #666666; line-height: 1.6;">
 								Please review your event details below.
 							</p>
+							${qrCodeImage ? `
+							<!-- QR Code -->
+							<div style="margin: 20px auto; padding: 20px; background-color: #ffffff; border-radius: 8px; display: inline-block; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+								<img src="${qrCodeImage}" alt="Ticket QR Code" style="display: block; width: 200px; height: 200px; margin: 0 auto;" />
+								<p style="margin: 12px 0 0 0; font-size: 12px; color: #999999; text-align: center;">Scan at entry</p>
+							</div>
+							` : ''}
 						</td>
 					</tr>
 
@@ -457,7 +544,7 @@ export async function sendTicketConfirmation(ticketData: TicketData) {
 			from: fromEmail,
 			to: ticketData.email,
 			subject: 'Your McCloud Manor Tickets',
-			html: createCustomerEmailHTML(ticketData),
+			html: await createCustomerEmailHTML(ticketData),
 			attachments: [
 				{
 					filename: 'mccloud-manor-ticket.ics',

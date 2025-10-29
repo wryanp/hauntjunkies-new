@@ -57,9 +57,10 @@
 	const stats = $derived.by(() => {
 		const total = data.tickets.length;
 		const confirmed = data.tickets.filter(t => t.status === 'confirmed').length;
+		const scanned = data.tickets.filter(t => t.ticket_qr_codes && t.ticket_qr_codes[0]?.used_at).length;
 		const totalTickets = data.tickets.reduce((sum, t) => sum + (t.tickets || t.quantity || t.number_of_tickets || 0), 0);
 
-		return { total, confirmed, totalTickets };
+		return { total, confirmed, scanned, totalTickets };
 	});
 
 	// Group by date
@@ -194,7 +195,7 @@
 	{/if}
 
 	<!-- Stats Overview -->
-	<div class="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 mb-6">
+	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
 		<!-- Total Requests -->
 		<div class="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-haunt-orange/30 p-4 sm:p-6">
 			<div class="flex items-center justify-between">
@@ -221,14 +222,27 @@
 			</div>
 		</div>
 
-		<!-- Total Tickets -->
+		<!-- Scanned -->
 		<div class="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-blue-500/30 p-4 sm:p-6">
 			<div class="flex items-center justify-between">
 				<div>
-					<p class="text-gray-400 text-xs sm:text-sm font-semibold uppercase mb-1">Total Tickets</p>
-					<p class="text-2xl sm:text-3xl font-bold text-blue-400">{stats.totalTickets}</p>
+					<p class="text-gray-400 text-xs sm:text-sm font-semibold uppercase mb-1">Scanned</p>
+					<p class="text-2xl sm:text-3xl font-bold text-blue-400">{stats.scanned}</p>
 				</div>
 				<svg class="w-8 h-8 sm:w-12 sm:h-12 text-blue-400/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
+				</svg>
+			</div>
+		</div>
+
+		<!-- Total Tickets -->
+		<div class="bg-gradient-to-br from-gray-900/80 to-black/80 backdrop-blur-sm rounded-xl border-2 border-purple-500/30 p-4 sm:p-6">
+			<div class="flex items-center justify-between">
+				<div>
+					<p class="text-gray-400 text-xs sm:text-sm font-semibold uppercase mb-1">Total Tickets</p>
+					<p class="text-2xl sm:text-3xl font-bold text-purple-400">{stats.totalTickets}</p>
+				</div>
+				<svg class="w-8 h-8 sm:w-12 sm:h-12 text-purple-400/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
 				</svg>
 			</div>
@@ -406,9 +420,15 @@
 
 										<!-- Status -->
 										<td class="px-4 sm:px-6 py-3 sm:py-4">
-											<span class="px-2 sm:px-3 py-1 bg-green-900/30 text-green-400 text-xs font-semibold rounded-full border border-green-500/50 whitespace-nowrap">
-												Confirmed
-											</span>
+											{#if ticket.ticket_qr_codes && ticket.ticket_qr_codes[0]?.used_at}
+												<span class="px-2 sm:px-3 py-1 bg-blue-900/30 text-blue-400 text-xs font-semibold rounded-full border border-blue-500/50 whitespace-nowrap">
+													✓ Scanned
+												</span>
+											{:else}
+												<span class="px-2 sm:px-3 py-1 bg-green-900/30 text-green-400 text-xs font-semibold rounded-full border border-green-500/50 whitespace-nowrap">
+													Confirmed
+												</span>
+											{/if}
 										</td>
 
 										<!-- Requested Date -->

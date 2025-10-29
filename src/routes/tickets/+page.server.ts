@@ -262,7 +262,8 @@ export const actions = {
 			date,
 			startTime: dateInfo.start_time,
 			endTime: dateInfo.end_time,
-			tickets
+			tickets,
+			ticketRequestId: result.ticket_id  // Pass ticket ID for QR code generation
 		});
 
 		if (!emailResult.success) {
