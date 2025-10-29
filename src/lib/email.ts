@@ -114,8 +114,8 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 			.email-container { background-color: #fffffe !important; background-image: linear-gradient(#fffffe, #fffffe) !important; }
 			.detail-bg { background-color: #f9f9f9 !important; background-image: linear-gradient(#f9f9f9, #f9f9f9) !important; }
 			.brand-color { color: #a41214 !important; -webkit-text-fill-color: #a41214 !important; }
-			.ticket-count { color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-weight: 700 !important; }
-			strong { color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-weight: 700 !important; }
+			.ticket-count { color: #000000 !important; -webkit-text-fill-color: #000000 !important; -apple-color-filter: none !important; font-weight: 700 !important; }
+			strong { color: #000000 !important; -webkit-text-fill-color: #000000 !important; -apple-color-filter: none !important; font-weight: 700 !important; }
 		}
 		/* Outlook dark mode prevention */
 		[data-ogsc] body { background-color: #f4f4f4 !important; background-image: linear-gradient(#f4f4f4, #f4f4f4) !important; }
@@ -192,8 +192,8 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 									<td style="padding: 20px 24px; border-bottom: 1px solid #e5e5e5;">
 										<table width="100%" cellpadding="0" cellspacing="0">
 											<tr>
-												<td width="40%" style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Guest Name</td>
-												<td style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-size: 16px; font-weight: 600; text-align: right;">${ticketData.firstName} ${ticketData.lastName}</td>
+												<td width="40%" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; -apple-color-filter: none !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Guest Name</td>
+												<td style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; -apple-color-filter: none !important; font-size: 16px; font-weight: 600; text-align: right;">${ticketData.firstName} ${ticketData.lastName}</td>
 											</tr>
 										</table>
 									</td>
@@ -202,8 +202,8 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 									<td style="padding: 20px 24px; border-bottom: 1px solid #e5e5e5;">
 										<table width="100%" cellpadding="0" cellspacing="0">
 											<tr>
-												<td width="40%" style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Date</td>
-												<td style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-size: 16px; font-weight: 600; text-align: right;">${dateFormatted}</td>
+												<td width="40%" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; -apple-color-filter: none !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Date</td>
+												<td style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; -apple-color-filter: none !important; font-size: 16px; font-weight: 600; text-align: right;">${dateFormatted}</td>
 											</tr>
 										</table>
 									</td>
@@ -212,8 +212,8 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 									<td style="padding: 20px 24px; border-bottom: 1px solid #e5e5e5;">
 										<table width="100%" cellpadding="0" cellspacing="0">
 											<tr>
-												<td width="40%" style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Time</td>
-												<td style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-size: 16px; font-weight: 600; text-align: right;">${timeStr}</td>
+												<td width="40%" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; -apple-color-filter: none !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Time</td>
+												<td style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; -apple-color-filter: none !important; font-size: 16px; font-weight: 600; text-align: right;">${timeStr}</td>
 											</tr>
 										</table>
 									</td>
@@ -222,8 +222,8 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 									<td style="padding: 20px 24px;">
 										<table width="100%" cellpadding="0" cellspacing="0">
 											<tr>
-												<td width="40%" style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Tickets</td>
-												<td class="ticket-count" style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-size: 18px; font-weight: 700; text-align: right;">${ticketData.tickets} ${ticketData.tickets === 1 ? 'Ticket' : 'Tickets'}</td>
+												<td width="40%" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; -apple-color-filter: none !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Tickets</td>
+												<td class="ticket-count" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; -apple-color-filter: none !important; font-size: 18px; font-weight: 700; text-align: right;">${ticketData.tickets} ${ticketData.tickets === 1 ? 'Ticket' : 'Tickets'}</td>
 											</tr>
 										</table>
 									</td>
