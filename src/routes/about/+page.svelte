@@ -99,12 +99,8 @@
 					</h2>
 					<div class="w-24 h-1 bg-haunt-orange mb-4"></div>
 
-					<p class="mb-4">
-						We travel the country visiting and reviewing haunted attractions — from massive scream parks to small-town gems. Our reviews are honest, conversational, and zero fluff (because who wants to read a 10-page essay when you could be running from a chainsaw?).
-					</p>
-
 					<p>
-						We don't rate based on budgets or big names. We care about one thing: <strong>"Was it scary or not?"</strong> and the most terrifying attractions earn our coveted <strong>Golden Ghost Award!</strong>
+						We travel the country visiting and reviewing haunted attractions — from massive scream parks to small-town gems. Our reviews are honest, conversational, and zero fluff (because who wants to read a 10-page essay when you could be running from a chainsaw?).
 					</p>
 				</div>
 
