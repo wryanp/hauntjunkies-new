@@ -1,13 +1,18 @@
-import { INSTAGRAM_ACCESS_TOKEN } from '$env/static/private';
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { env } from '$env/dynamic/private';
 
 export const GET: RequestHandler = async () => {
 	try {
 		// Check if token is configured
+		const INSTAGRAM_ACCESS_TOKEN = env.INSTAGRAM_ACCESS_TOKEN;
+
 		if (!INSTAGRAM_ACCESS_TOKEN) {
 			console.error('[Instagram API] Access token not configured');
-			return json({ error: 'Instagram API not configured' }, { status: 500 });
+			return json({
+				posts: [],
+				error: 'Instagram API not configured. Please add INSTAGRAM_ACCESS_TOKEN to environment variables.'
+			}, { status: 200 });
 		}
 
 		// Fetch posts from Instagram Graph API
