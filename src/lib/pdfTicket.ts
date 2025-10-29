@@ -100,9 +100,9 @@ export async function generateTicketPDF(ticketData: TicketPDFData): Promise<Buff
 			const headerHeight = 140;
 			doc.rect(0, 0, 612, headerHeight).fill('#000000');
 
-			// McCloud Manor Logo - as large as possible, centered
-			const logoWidth = 600;
-			const logoHeight = 130;
+			// McCloud Manor Logo - centered
+			const logoWidth = 520;
+			const logoHeight = 120;
 			const logoX = (612 - logoWidth) / 2;
 			const logoY = (headerHeight - logoHeight) / 2;
 
