@@ -256,6 +256,8 @@ export const actions = {
 		// Log the result from purchase_tickets function
 		console.log('Purchase tickets result:', JSON.stringify(result));
 		console.log('Ticket ID for QR code:', result.ticket_id);
+		console.log('Ticket ID exists?', !!result.ticket_id);
+		console.log('Ticket ID type:', typeof result.ticket_id);
 
 		// Send confirmation emails
 		const emailResult = await sendTicketConfirmation({
@@ -267,7 +269,7 @@ export const actions = {
 			startTime: dateInfo.start_time,
 			endTime: dateInfo.end_time,
 			tickets,
-			ticketRequestId: result.ticket_id  // Pass ticket ID for QR code generation
+			ticketRequestId: result.ticket_id || undefined  // Ensure it's undefined if not present
 		});
 
 		if (!emailResult.success) {
