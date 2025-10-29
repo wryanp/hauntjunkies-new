@@ -75,8 +75,8 @@ export async function generateTicketPDF(ticketData: TicketPDFData): Promise<Buff
 			// Convert base64 to buffer
 			const qrImageBuffer = Buffer.from(qrCodeDataUrl.split(',')[1], 'base64');
 
-			// Fetch the McCloud Manor logo
-			const logoUrl = 'https://hauntjunkies.com/mccloudmanor-logo.jpg';
+			// Fetch the McCloud Manor logo (PNG)
+			const logoUrl = 'https://hauntjunkies.com/mccloudmanor-logo.png';
 			const logoResponse = await fetch(logoUrl);
 			const logoBuffer = Buffer.from(await logoResponse.arrayBuffer());
 
@@ -100,14 +100,16 @@ export async function generateTicketPDF(ticketData: TicketPDFData): Promise<Buff
 			const headerHeight = 140;
 			doc.rect(0, 0, 612, headerHeight).fill('#000000');
 
-			// McCloud Manor Logo - centered and MUCH larger
-			const logoWidth = 500;
+			// McCloud Manor Logo - as large as possible, centered
+			const logoWidth = 600;
+			const logoHeight = 130;
 			const logoX = (612 - logoWidth) / 2;
-			const logoY = 10;
+			const logoY = (headerHeight - logoHeight) / 2;
 
 			doc.image(logoBuffer, logoX, logoY, {
-				width: logoWidth,
-				align: 'center'
+				fit: [logoWidth, logoHeight],
+				align: 'center',
+				valign: 'center'
 			});
 
 			// Main content area with better spacing
