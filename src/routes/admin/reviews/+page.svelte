@@ -1108,6 +1108,7 @@
 {#if managingAwards}
 	<AwardsManager
 		review={managingAwards}
+		logoUrl={data.logos[managingAwards.id]}
 		onClose={() => {
 			managingAwards = null;
 			invalidateAll();

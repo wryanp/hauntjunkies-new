@@ -4,13 +4,15 @@
 	import type { Review } from '$lib/types';
 	import { AWARD_CATEGORIES } from '$lib/types';
 	import { getAwards } from '$lib/utils/awards';
+	import { isValidImageUrl, getFallbackReviewImage } from '$lib/imageUtils';
 
 	interface Props {
 		review: Review;
+		logoUrl?: string;
 		onClose: () => void;
 	}
 
-	let { review, onClose }: Props = $props();
+	let { review, logoUrl, onClose }: Props = $props();
 
 	// Initialize award values from the review
 	let awardYears = $state({
@@ -27,6 +29,12 @@
 	let errorMessage = $state('');
 
 	const currentAwards = $derived(getAwards(review));
+
+	// Determine image to display
+	const displayImage = $derived(
+		logoUrl ||
+		(isValidImageUrl(review.cover_image_url) ? review.cover_image_url : getFallbackReviewImage())
+	);
 
 	// Generate year options (last 10 years + next year)
 	const currentYear = new Date().getFullYear();
@@ -75,7 +83,13 @@
 		<!-- Header -->
 		<div class="sticky top-0 bg-gradient-to-r from-gray-900 via-black to-gray-900 border-b-2 border-yellow-500/30 p-6 flex items-center justify-between">
 			<div class="flex items-center gap-4">
-				<img src="/golden-ghost-award.png" alt="Golden Ghost Award" class="w-12 h-12 drop-shadow-xl" />
+				<div class="w-16 h-16 bg-black rounded-lg border-2 border-yellow-500/50 overflow-hidden flex items-center justify-center p-2">
+					<img
+						src={displayImage}
+						alt={review.name}
+						class="w-full h-full object-contain"
+					/>
+				</div>
 				<div>
 					<h2 id="awards-modal-title" class="text-2xl md:text-3xl font-bold text-yellow-400">
 						Manage Golden Ghost Awards
