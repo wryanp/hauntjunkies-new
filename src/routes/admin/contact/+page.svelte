@@ -189,8 +189,12 @@
 								</button>
 								<form method="POST" action="?/toggleRead" use:enhance={() => {
 									return async ({ result }) => {
+										console.log('Toggle read result:', result);
 										if (result.type === 'success') {
+											console.log('Success! Invalidating all data...');
 											await invalidateAll();
+										} else {
+											console.error('Failed to toggle read status:', result);
 										}
 									};
 								}}>
