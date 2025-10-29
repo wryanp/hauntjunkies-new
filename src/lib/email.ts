@@ -80,6 +80,7 @@ function generateCalendarInvite(ticketData: TicketData): string {
 }
 
 async function createCustomerEmailHTML(ticketData: TicketData): Promise<string> {
+	// v2 - Simplified email template without event details table
 	const dateFormatted = formatDate(ticketData.date);
 	const timeStr = ticketData.startTime && ticketData.endTime
 		? `${formatTime(ticketData.startTime)} - ${formatTime(ticketData.endTime)}`
