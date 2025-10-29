@@ -510,13 +510,16 @@
 		{#if data.review.review_text}
 			<div class="bg-gray-800/50 rounded-lg px-4 py-3 md:p-6 mb-6 border border-gray-700">
 				<h2 class="text-2xl font-bold text-haunt-orange uppercase leading-none mb-4">{data.review.name} Review</h2>
-				<div class="prose prose-invert max-w-none text-gray-300 leading-relaxed" style="white-space: pre-line;">
+				<div class="prose prose-invert max-w-none text-gray-300 leading-relaxed">
 					<style>
 						.prose p {
 							margin-top: 0 !important;
-							margin-bottom: 0 !important;
+							margin-bottom: 1em !important;
 							padding-top: 0 !important;
 							padding-bottom: 0 !important;
+						}
+						.prose p:last-child {
+							margin-bottom: 0 !important;
 						}
 						.prose div {
 							margin-top: 0 !important;
@@ -527,6 +530,9 @@
 						@media (max-width: 767px) {
 							.prose p {
 								margin-top: 0 !important;
+								margin-bottom: 1em !important;
+							}
+							.prose p:last-child {
 								margin-bottom: 0 !important;
 							}
 							.prose div {
