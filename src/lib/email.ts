@@ -4,7 +4,7 @@ import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 import ical from 'ical-generator';
 import { createHmac, randomBytes } from 'crypto';
 import { logEmailError, logError } from './logger';
-import QRCode from 'qrcode';
+import * as QRCode from 'qrcode';
 import { createClient } from '@supabase/supabase-js';
 
 // Validate API key before initializing Resend client
