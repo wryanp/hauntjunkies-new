@@ -203,21 +203,18 @@ export async function generateTicketPDF(ticketData: TicketPDFData): Promise<Buff
 
 			// Helper function for modern detail rows
 			let detailY = cardY;
-			const drawDetail = (label: string, value: string, icon: string) => {
-				// Icon/emoji
-				doc.fontSize(12).fillColor('#000000').font('Helvetica').text(icon, detailsLeft, detailY - 1);
-
+			const drawDetail = (label: string, value: string) => {
 				// Label (small, gray)
-				doc.fontSize(8).fillColor(textGray).font('Helvetica').text(label, detailsLeft + 28, detailY);
+				doc.fontSize(8).fillColor(textGray).font('Helvetica').text(label, detailsLeft, detailY);
 
 				// Value (larger, bold, black)
-				doc.fontSize(10).fillColor('#000000').font('Helvetica-Bold').text(value, detailsLeft + 28, detailY + 11, { width: detailsWidth - 28 });
+				doc.fontSize(10).fillColor('#000000').font('Helvetica-Bold').text(value, detailsLeft, detailY + 11, { width: detailsWidth });
 
 				detailY += 32;
 			};
 
 			// Guest Name
-			drawDetail('Guest Name', `${ticketData.firstName} ${ticketData.lastName}`, '●');
+			drawDetail('Guest Name', `${ticketData.firstName} ${ticketData.lastName}`);
 
 			// Date
 			const dateObj = new Date(ticketData.date + 'T00:00:00');
@@ -227,7 +224,7 @@ export async function generateTicketPDF(ticketData: TicketPDFData): Promise<Buff
 				day: 'numeric',
 				year: 'numeric'
 			});
-			drawDetail('Date', formattedDate, '●');
+			drawDetail('Date', formattedDate);
 
 			// Time
 			const formatTime = (time: string) => {
@@ -238,11 +235,11 @@ export async function generateTicketPDF(ticketData: TicketPDFData): Promise<Buff
 				return `${displayHour}:${minutes} ${ampm}`;
 			};
 			const timeStr = `${formatTime(ticketData.startTime)} - ${formatTime(ticketData.endTime)}`;
-			drawDetail('Time', timeStr, '●');
+			drawDetail('Time', timeStr);
 
 			// Tickets
 			const ticketStr = `${ticketData.tickets} Ticket${ticketData.tickets > 1 ? 's' : ''}`;
-			drawDetail('Tickets', ticketStr, '●');
+			drawDetail('Tickets', ticketStr);
 
 			// Move current Y to below card
 			currentY = cardStartY + cardHeight + 25;
@@ -266,12 +263,25 @@ export async function generateTicketPDF(ticketData: TicketPDFData): Promise<Buff
 			doc.fontSize(9).fillColor('#000000').font('Helvetica').text('Lawrenceville, GA 30044', addressCardLeft + 12, addressY, { width: infoCardWidth - 24 });
 			addressY += 18;
 
-			// Get Directions link
-			doc.fontSize(8).fillColor(hauntRed).font('Helvetica-Bold').text('Get Directions →', addressCardLeft + 12, addressY, {
-				width: infoCardWidth - 24,
-				link: 'https://maps.google.com/?q=2100+Carlysle+Park+Lane,+Lawrenceville,+GA+30044',
-				underline: false
-			});
+			// Get Directions button
+			const buttonWidth = 100;
+			const buttonHeight = 20;
+			const buttonX = addressCardLeft + (infoCardWidth - buttonWidth) / 2;
+			const buttonY = addressY;
+
+			// Button background
+			doc.roundedRect(buttonX, buttonY, buttonWidth, buttonHeight, 4)
+				.fillAndStroke(hauntRed, hauntRed);
+
+			// Button text
+			doc.fontSize(8)
+				.fillColor('#ffffff')
+				.font('Helvetica-Bold')
+				.text('Get Directions', buttonX, buttonY + 6, {
+					width: buttonWidth,
+					align: 'center',
+					link: 'https://maps.google.com/?q=2100+Carlysle+Park+Lane,+Lawrenceville,+GA+30044'
+				});
 
 			// Parking Card
 			const parkingCardLeft = addressCardLeft + infoCardWidth + infoCardGap;
@@ -281,7 +291,7 @@ export async function generateTicketPDF(ticketData: TicketPDFData): Promise<Buff
 			let parkingY = currentY + 12;
 			doc.fontSize(9).fillColor(textGray).font('Helvetica-Bold').text('PARKING', parkingCardLeft + 12, parkingY);
 			parkingY += 16;
-			doc.fontSize(8).fillColor('#000000').font('Helvetica').text('Free but limited. Please carpool or use rideshare. Do not block driveways.', parkingCardLeft + 12, parkingY, {
+			doc.fontSize(8).fillColor('#000000').font('Helvetica').text('Free but limited. Please carpool or Uber/Lyft. Do not block driveways.', parkingCardLeft + 12, parkingY, {
 				width: infoCardWidth - 24,
 				lineGap: 1.5
 			});
@@ -290,11 +300,14 @@ export async function generateTicketPDF(ticketData: TicketPDFData): Promise<Buff
 
 			// Modern footer
 			doc.fontSize(8)
-				.fillColor(textGray)
-				.font('Helvetica')
-				.text('Questions? ', 0, currentY, { align: 'center', width: 612, continued: true })
 				.fillColor(hauntRed)
-				.text('hauntjunkies@gmail.com', { link: 'mailto:hauntjunkies@gmail.com', underline: false });
+				.font('Helvetica')
+				.text('hauntjunkies@gmail.com', 0, currentY, {
+					align: 'center',
+					width: 612,
+					link: 'mailto:hauntjunkies@gmail.com',
+					underline: true
+				});
 
 			currentY += 12;
 			doc.fontSize(8)
