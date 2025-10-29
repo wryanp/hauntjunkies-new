@@ -178,14 +178,8 @@ async function createCustomerEmailHTML(ticketData: TicketData): Promise<string> 
 					<tr>
 						<td class="mobile-padding" style="padding: 40px 40px 30px 40px; text-align: center;">
 							<h2 class="mobile-font-large" style="margin: 0 0 12px 0; font-size: 28px; font-weight: 700; color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important;">Your Tickets Are Confirmed</h2>
-							<p style="margin: 0 0 8px 0; font-size: 16px; color: #666666; line-height: 1.6;">
-								We're excited to terrify you at McCloud Manor.
-							</p>
-							<p style="margin: 0 0 8px 0; font-size: 16px; color: #666666; line-height: 1.6;">
-								Please review your event details below.
-							</p>
 							<p style="margin: 0 0 20px 0; font-size: 14px; font-weight: 600; color: #a41214;">
-								Your ticket PDF with QR code is attached to this email.
+								Please save this email and see the attached PDF for tickets.
 							</p>
 						</td>
 					</tr>
@@ -194,16 +188,6 @@ async function createCustomerEmailHTML(ticketData: TicketData): Promise<string> 
 					<tr>
 						<td class="mobile-padding" style="padding: 0 40px 30px 40px;">
 							<table width="100%" cellpadding="0" cellspacing="0" class="detail-bg" style="background-color: #f9f9f9 !important; background-image: linear-gradient(#f9f9f9, #f9f9f9) !important; border-radius: 6px; overflow: hidden;">
-								<tr>
-									<td style="padding: 20px 24px; border-bottom: 1px solid #e5e5e5;">
-										<table width="100%" cellpadding="0" cellspacing="0">
-											<tr>
-												<td width="40%" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; -apple-color-filter: none !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Guest Name</td>
-												<td style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; -apple-color-filter: none !important; font-size: 16px; font-weight: 600; text-align: right;">${ticketData.firstName} ${ticketData.lastName}</td>
-											</tr>
-										</table>
-									</td>
-								</tr>
 								<tr>
 									<td style="padding: 20px 24px; border-bottom: 1px solid #e5e5e5;">
 										<table width="100%" cellpadding="0" cellspacing="0">
@@ -240,7 +224,7 @@ async function createCustomerEmailHTML(ticketData: TicketData): Promise<string> 
 
 					<!-- Action Buttons -->
 					<tr>
-						<td class="mobile-padding" style="padding: 0 40px 30px 40px;">
+						<td class="mobile-padding" style="padding: 0 40px 40px 40px;">
 							<table width="100%" cellpadding="0" cellspacing="0">
 								<tr>
 									<td class="button-column" width="48%" style="padding-right: 2%;">
@@ -255,31 +239,6 @@ async function createCustomerEmailHTML(ticketData: TicketData): Promise<string> 
 									</td>
 								</tr>
 							</table>
-						</td>
-					</tr>
-
-					<!-- Important Info -->
-					<tr>
-						<td class="mobile-padding" style="padding: 0 40px 40px 40px;">
-							<div style="background-color: #f9f9f9 !important; background-image: linear-gradient(#f9f9f9, #f9f9f9) !important; border-radius: 6px; padding: 28px 24px;">
-								<h3 class="mobile-font-medium" style="margin: 0 0 16px 0; font-size: 18px; font-weight: 700; color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important;">Important Information</h3>
-								<table width="100%" cellpadding="0" cellspacing="0">
-									<tr>
-										<td style="padding-bottom: 12px;">
-											<p style="margin: 0; color: #666666 !important; -webkit-text-fill-color: #666666 !important; font-size: 14px; line-height: 1.6;">
-												<strong style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important;">Parking:</strong> Parking is free but EXTREMELY limited! Please carpool or even Uber/Lyft if possible. Do not park in or block any of our neighbors driveways.
-											</p>
-										</td>
-									</tr>
-									<tr>
-										<td>
-											<p style="margin: 0; color: #666666 !important; -webkit-text-fill-color: #666666 !important; font-size: 14px; line-height: 1.6;">
-												<strong style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important;">Weather:</strong> Open rain or shine (line is not covered)
-											</p>
-										</td>
-									</tr>
-								</table>
-							</div>
 						</td>
 					</tr>
 
