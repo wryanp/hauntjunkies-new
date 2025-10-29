@@ -104,8 +104,7 @@
 					</p>
 
 					<p>
-						We don't rate based on budgets or big names. We care about one thing: <strong>"Was it scary or not?"</strong><br>
-						The most terrifying attractions earn our coveted <strong>Golden Ghost Award</strong>
+						We don't rate based on budgets or big names. We care about one thing: <strong>"Was it scary or not?"</strong> The most terrifying attractions earn our coveted <strong>Golden Ghost Award!</strong>
 					</p>
 				</div>
 
@@ -129,10 +128,10 @@
 					<div class="w-24 h-1 bg-haunt-orange mb-4"></div>
 
 					<p class="mb-2">
-						Got a haunt that'll make us scream? We're always hunting for our next fear fix.
+						Got a haunt that'll make us scream? We're always hunting for our next fear fix!
 					</p>
 					<p class="font-bold text-xl text-haunt-orange">
-						Invite us out — if you dare.
+						Invite us out — if you dare!
 					</p>
 				</div>
 
