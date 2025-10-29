@@ -5,14 +5,11 @@
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
-	let messages = $state(data.submissions);
 	let filterStatus = $state<'all' | 'unread' | 'read'>('all');
 	let selectedMessage = $state<string | null>(null);
 
-	// Update messages when data changes
-	$effect(() => {
-		messages = data.submissions;
-	});
+	// Derive messages directly from data - no need for separate state
+	const messages = $derived(data.submissions);
 
 	const filteredMessages = $derived(() => {
 		if (filterStatus === 'unread') {
