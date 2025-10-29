@@ -192,8 +192,8 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 									<td style="padding: 20px 24px; border-bottom: 1px solid #e5e5e5;">
 										<table width="100%" cellpadding="0" cellspacing="0">
 											<tr>
-												<td width="40%" style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Guest Name</td>
-												<td style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-size: 16px; font-weight: 600; text-align: right;">${ticketData.firstName} ${ticketData.lastName}</td>
+												<td width="40%" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Guest Name</td>
+												<td style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; font-size: 16px; font-weight: 600; text-align: right;">${ticketData.firstName} ${ticketData.lastName}</td>
 											</tr>
 										</table>
 									</td>
@@ -202,8 +202,8 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 									<td style="padding: 20px 24px; border-bottom: 1px solid #e5e5e5;">
 										<table width="100%" cellpadding="0" cellspacing="0">
 											<tr>
-												<td width="40%" style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Date</td>
-												<td style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-size: 16px; font-weight: 600; text-align: right;">${dateFormatted}</td>
+												<td width="40%" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Date</td>
+												<td style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; font-size: 16px; font-weight: 600; text-align: right;">${dateFormatted}</td>
 											</tr>
 										</table>
 									</td>
@@ -212,8 +212,8 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 									<td style="padding: 20px 24px; border-bottom: 1px solid #e5e5e5;">
 										<table width="100%" cellpadding="0" cellspacing="0">
 											<tr>
-												<td width="40%" style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Time</td>
-												<td style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-size: 16px; font-weight: 600; text-align: right;">${timeStr}</td>
+												<td width="40%" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Time</td>
+												<td style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; font-size: 16px; font-weight: 600; text-align: right;">${timeStr}</td>
 											</tr>
 										</table>
 									</td>
@@ -222,8 +222,8 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 									<td style="padding: 20px 24px;">
 										<table width="100%" cellpadding="0" cellspacing="0">
 											<tr>
-												<td width="40%" style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Tickets</td>
-												<td class="ticket-count" style="color: #1a1a1a !important; -webkit-text-fill-color: #1a1a1a !important; font-size: 18px; font-weight: 700; text-align: right;">${ticketData.tickets} ${ticketData.tickets === 1 ? 'Ticket' : 'Tickets'}</td>
+												<td width="40%" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding-bottom: 4px;">Tickets</td>
+												<td class="ticket-count" style="color: #000000 !important; -webkit-text-fill-color: #000000 !important; font-size: 18px; font-weight: 700; text-align: right;">${ticketData.tickets} ${ticketData.tickets === 1 ? 'Ticket' : 'Tickets'}</td>
 											</tr>
 										</table>
 									</td>
@@ -243,7 +243,7 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 										</a>
 									</td>
 									<td class="button-column" width="48%" style="padding-left: 2%;">
-										<a href="https://hauntjunkies.com/mccloudmanor#faq" class="button-link" style="display: block; background-color: #a41214 !important; background-image: linear-gradient(#a41214, #a41214) !important; color: #fffffe !important; -webkit-text-fill-color: #fffffe !important; text-decoration: none; padding: 14px 24px; border-radius: 4px; text-align: center; font-weight: 600; font-size: 14px;">
+										<a href="https://hauntjunkies.com/mccloudmanor#faq-section" class="button-link" style="display: block; background-color: #a41214 !important; background-image: linear-gradient(#a41214, #a41214) !important; color: #fffffe !important; -webkit-text-fill-color: #fffffe !important; text-decoration: none; padding: 14px 24px; border-radius: 4px; text-align: center; font-weight: 600; font-size: 14px;">
 											View FAQ
 										</a>
 									</td>
