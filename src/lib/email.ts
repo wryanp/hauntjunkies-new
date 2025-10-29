@@ -243,7 +243,7 @@ function createCustomerEmailHTML(ticketData: TicketData): string {
 										</a>
 									</td>
 									<td class="button-column" width="48%" style="padding-left: 2%;">
-										<a href="https://hauntjunkies.com/mccloudmanor#faq" class="button-link" style="display: block; background-color: #a41214 !important; background-image: linear-gradient(#a41214, #a41214) !important; color: #fffffe !important; -webkit-text-fill-color: #fffffe !important; text-decoration: none; padding: 14px 24px; border-radius: 4px; text-align: center; font-weight: 600; font-size: 14px;">
+										<a href="https://hauntjunkies.com/mccloudmanor#faq-section" class="button-link" style="display: block; background-color: #a41214 !important; background-image: linear-gradient(#a41214, #a41214) !important; color: #fffffe !important; -webkit-text-fill-color: #fffffe !important; text-decoration: none; padding: 14px 24px; border-radius: 4px; text-align: center; font-weight: 600; font-size: 14px;">
 											View FAQ
 										</a>
 									</td>
