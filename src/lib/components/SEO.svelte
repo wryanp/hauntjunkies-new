@@ -18,7 +18,7 @@
 	let {
 		title,
 		description,
-		image = 'https://hauntjunkies.com/hauntjunkies-only.jpg',
+		image,
 		url,
 		type = 'website',
 		article,
@@ -37,7 +37,7 @@
 	const fullUrl = url ? (url.startsWith('http') ? url : `${baseUrl}${url}`) : baseUrl;
 
 	// Construct full image URL if relative path provided - always use production for OG tags
-	const fullImageUrl = image.startsWith('http') ? image : `${productionUrl}${image}`;
+	const fullImageUrl = image ? (image.startsWith('http') ? image : `${productionUrl}${image}`) : undefined;
 
 	// Social sharing URLs should always use production domain
 	const socialUrl = url ? (url.startsWith('http') ? url : `${productionUrl}${url}`) : productionUrl;
@@ -64,11 +64,16 @@
 	<meta property="og:url" content={socialUrl} />
 	<meta property="og:title" content={metaTitle} />
 	<meta property="og:description" content={description} />
-	<meta property="og:image" content={fullImageUrl} />
-	<meta property="og:image:width" content="1200" />
-	<meta property="og:image:height" content="630" />
-	<meta property="og:image:alt" content="Haunt Junkies - Home Haunt & Haunted House Reviews" />
 	<meta property="og:site_name" content="Haunt Junkies" />
+
+	{#if fullImageUrl}
+		<meta property="og:image" content={fullImageUrl} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta property="og:image:alt" content="Haunt Junkies - Home Haunt & Haunted House Reviews" />
+		<meta property="og:image:secure_url" content={fullImageUrl} />
+		<meta property="og:image:type" content="image/jpeg" />
+	{/if}
 
 	{#if article}
 		{#if article.publishedTime}
@@ -95,13 +100,12 @@
 	<meta name="twitter:url" content={socialUrl} />
 	<meta name="twitter:title" content={metaTitle} />
 	<meta name="twitter:description" content={description} />
-	<meta name="twitter:image" content={fullImageUrl} />
-	<meta name="twitter:image:alt" content="Haunt Junkies - Home Haunt & Haunted House Reviews" />
 
-	<!-- WhatsApp / iMessage / Link Previews -->
-	<meta property="og:image:secure_url" content={fullImageUrl} />
-	<meta property="og:image:type" content="image/jpeg" />
-	<link rel="image_src" href={fullImageUrl} />
+	{#if fullImageUrl}
+		<meta name="twitter:image" content={fullImageUrl} />
+		<meta name="twitter:image:alt" content="Haunt Junkies - Home Haunt & Haunted House Reviews" />
+		<link rel="image_src" href={fullImageUrl} />
+	{/if}
 
 	<!-- Additional Meta -->
 	<meta name="theme-color" content="#FC7403" />
