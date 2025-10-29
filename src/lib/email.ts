@@ -1,11 +1,9 @@
 import { Resend } from 'resend';
-import { RESEND_API_KEY, RESEND_FROM_EMAIL, SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
-import { PUBLIC_SUPABASE_URL } from '$env/static/public';
+import { RESEND_API_KEY, RESEND_FROM_EMAIL } from '$env/static/private';
 import ical from 'ical-generator';
-import { createHmac, randomBytes } from 'crypto';
+import { createHmac } from 'crypto';
 import { logEmailError, logError } from './logger';
-import * as QRCode from 'qrcode';
-import { createClient } from '@supabase/supabase-js';
+import { generateTicketPDF } from './pdfTicket';
 
 // Validate API key before initializing Resend client
 if (!RESEND_API_KEY || RESEND_API_KEY === 'your_resend_api_key') {
@@ -18,14 +16,6 @@ if (!RESEND_FROM_EMAIL) {
 }
 
 const resend = new Resend(RESEND_API_KEY);
-
-// Initialize Supabase client with service role key
-const supabase = createClient(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-	auth: {
-		autoRefreshToken: false,
-		persistSession: false
-	}
-});
 
 interface TicketData {
 	confirmationNumber: string;
@@ -66,71 +56,6 @@ function formatTime(timeString: string): string {
 	});
 }
 
-/**
- * Generate a unique secure token for QR code
- */
-function generateQRToken(): string {
-	return randomBytes(32).toString('hex'); // 64-character hex string
-}
-
-/**
- * Store QR token in database and link to ticket request
- */
-async function storeQRToken(ticketRequestId: string, qrToken: string): Promise<boolean> {
-	try {
-		console.log('[QR] Storing QR token for ticket:', ticketRequestId);
-		console.log('[QR] Token (first 20 chars):', qrToken.substring(0, 20));
-
-		// Set expiration to event date + 30 days (for grace period)
-		const { error } = await supabase
-			.from('ticket_qr_codes')
-			.insert({
-				ticket_request_id: ticketRequestId,
-				qr_token: qrToken,
-				expires_at: null  // No expiration for now, can be added later
-			});
-
-		if (error) {
-			console.error('[QR] Error storing QR token in database:', error);
-			return false;
-		}
-
-		console.log('[QR] Successfully stored QR token in database');
-		return true;
-	} catch (error) {
-		console.error('[QR] Exception storing QR token:', error);
-		return false;
-	}
-}
-
-/**
- * Generate QR code image from URL
- */
-async function generateQRCode(url: string): Promise<string> {
-	try {
-		console.log('[QR] Attempting to generate QR code for URL:', url);
-		console.log('[QR] QRCode module type:', typeof QRCode);
-		console.log('[QR] QRCode.toDataURL type:', typeof QRCode.toDataURL);
-
-		// Generate QR code as data URL (base64 encoded PNG)
-		const qrCodeDataUrl = await QRCode.toDataURL(url, {
-			width: 200,
-			margin: 2,
-			color: {
-				dark: '#000000',
-				light: '#FFFFFF'
-			}
-		});
-
-		console.log('[QR] Successfully generated QR code, length:', qrCodeDataUrl.length);
-		return qrCodeDataUrl;
-	} catch (error) {
-		console.error('[QR] Error generating QR code:', error);
-		console.error('[QR] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
-		// Return empty string if QR code generation fails
-		return '';
-	}
-}
 
 function generateCalendarInvite(ticketData: TicketData): string {
 	const calendar = ical({ name: 'McCloud Manor Ticket' });
@@ -159,36 +84,6 @@ async function createCustomerEmailHTML(ticketData: TicketData): Promise<string> 
 	const timeStr = ticketData.startTime && ticketData.endTime
 		? `${formatTime(ticketData.startTime)} - ${formatTime(ticketData.endTime)}`
 		: 'See details below';
-
-	// Generate unique QR token and store in database (if ticketRequestId is provided)
-	let qrCodeImage = '';
-	console.log('[EMAIL] Starting QR code generation process');
-	console.log('[EMAIL] ticketRequestId:', ticketData.ticketRequestId);
-	console.log('[EMAIL] ticketRequestId type:', typeof ticketData.ticketRequestId);
-	console.log('[EMAIL] Full ticketData:', JSON.stringify(ticketData, null, 2));
-
-	if (ticketData.ticketRequestId) {
-		console.log('[EMAIL] ✓ ticketRequestId provided, generating QR code');
-		const qrToken = generateQRToken();
-		console.log('[EMAIL] Generated token (first 20):', qrToken.substring(0, 20));
-
-		const stored = await storeQRToken(ticketData.ticketRequestId, qrToken);
-		console.log('[EMAIL] Token storage result:', stored);
-
-		if (stored) {
-			// Generate QR code with validation URL
-			const qrValidationUrl = `https://hauntjunkies.com/api/validate-qr?token=${qrToken}`;
-			console.log('[EMAIL] QR validation URL:', qrValidationUrl);
-			qrCodeImage = await generateQRCode(qrValidationUrl);
-			console.log('[EMAIL] QR code generated, length:', qrCodeImage.length);
-			console.log('[EMAIL] QR code prefix:', qrCodeImage.substring(0, 50));
-		} else {
-			console.error('[EMAIL] ✗ Failed to store QR token in database');
-		}
-	} else {
-		console.warn('[EMAIL] ✗ No ticketRequestId provided, skipping QR code generation');
-		console.warn('[EMAIL] This means the QR code will NOT appear in the email');
-	}
 
 	return `
 <!DOCTYPE html>
@@ -286,16 +181,12 @@ async function createCustomerEmailHTML(ticketData: TicketData): Promise<string> 
 							<p style="margin: 0 0 8px 0; font-size: 16px; color: #666666; line-height: 1.6;">
 								We're excited to terrify you at McCloud Manor.
 							</p>
-							<p style="margin: 0 0 20px 0; font-size: 16px; color: #666666; line-height: 1.6;">
+							<p style="margin: 0 0 8px 0; font-size: 16px; color: #666666; line-height: 1.6;">
 								Please review your event details below.
 							</p>
-							${qrCodeImage ? `
-							<!-- QR Code -->
-							<div style="margin: 20px auto; padding: 20px; background-color: #ffffff; border-radius: 8px; display: inline-block; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-								<img src="${qrCodeImage}" alt="Ticket QR Code" style="display: block; width: 200px; height: 200px; margin: 0 auto;" />
-								<p style="margin: 12px 0 0 0; font-size: 12px; color: #999999; text-align: center;">Scan at entry</p>
-							</div>
-							` : ''}
+							<p style="margin: 0 0 20px 0; font-size: 14px; font-weight: 600; color: #a41214;">
+								Your ticket PDF with QR code is attached to this email.
+							</p>
 						</td>
 					</tr>
 
@@ -567,18 +458,54 @@ export async function sendTicketConfirmation(ticketData: TicketData) {
 
 		console.log(`Sending ticket confirmation email to: ${ticketData.email} from: ${fromEmail}`);
 
-		// Send customer email with calendar attachment
+		// Generate PDF ticket with QR code if ticketRequestId is provided
+		let pdfBuffer: Buffer | null = null;
+		if (ticketData.ticketRequestId) {
+			console.log('[EMAIL] Generating PDF ticket with QR code for:', ticketData.ticketRequestId);
+			try {
+				pdfBuffer = await generateTicketPDF({
+					confirmationNumber: ticketData.confirmationNumber,
+					firstName: ticketData.firstName,
+					lastName: ticketData.lastName,
+					email: ticketData.email,
+					date: ticketData.date,
+					startTime: ticketData.startTime || '19:00:00',
+					endTime: ticketData.endTime || '22:00:00',
+					tickets: ticketData.tickets,
+					ticketRequestId: ticketData.ticketRequestId
+				});
+				console.log('[EMAIL] PDF generated successfully, size:', pdfBuffer.length, 'bytes');
+			} catch (pdfError) {
+				console.error('[EMAIL] Failed to generate PDF:', pdfError);
+				// Continue without PDF attachment
+			}
+		} else {
+			console.warn('[EMAIL] No ticketRequestId provided, skipping PDF generation');
+		}
+
+		// Prepare attachments array
+		const attachments: Array<{ filename: string; content: string | Buffer }> = [
+			{
+				filename: 'mccloud-manor-ticket.ics',
+				content: calendarInvite
+			}
+		];
+
+		// Add PDF if generated successfully
+		if (pdfBuffer) {
+			attachments.push({
+				filename: 'McCloud-Manor-Ticket.pdf',
+				content: pdfBuffer
+			});
+		}
+
+		// Send customer email with calendar and PDF attachments
 		const customerEmailResult = await resend.emails.send({
 			from: fromEmail,
 			to: ticketData.email,
 			subject: 'Your McCloud Manor Tickets',
 			html: await createCustomerEmailHTML(ticketData),
-			attachments: [
-				{
-					filename: 'mccloud-manor-ticket.ics',
-					content: calendarInvite
-				}
-			]
+			attachments
 		});
 
 		console.log('Customer email sent successfully:', {
