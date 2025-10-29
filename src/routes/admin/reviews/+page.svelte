@@ -973,7 +973,7 @@
 	{#if !showForm && data.reviews && data.reviews.length > 0}
 		<div class="mt-12">
 			<h2 class="text-2xl font-bold text-white mb-6">Existing Reviews ({data.reviews.length})</h2>
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-haunt-orange scrollbar-track-gray-800" style="scrollbar-width: thin; scrollbar-color: #FC7403 #1f2937;">
 				{#each data.reviews as review}
 					<div class="bg-gray-800/50 rounded-lg border border-gray-700 p-4">
 						<div class="flex items-start justify-between mb-2">
@@ -1115,3 +1115,24 @@
 		}}
 	/>
 {/if}
+
+<style>
+	/* Custom scrollbar for WebKit browsers (Chrome, Safari, Edge) */
+	:global(.scrollbar-thin::-webkit-scrollbar) {
+		width: 8px;
+	}
+
+	:global(.scrollbar-thin::-webkit-scrollbar-track) {
+		background: #1f2937;
+		border-radius: 4px;
+	}
+
+	:global(.scrollbar-thin::-webkit-scrollbar-thumb) {
+		background: #FC7403;
+		border-radius: 4px;
+	}
+
+	:global(.scrollbar-thin::-webkit-scrollbar-thumb:hover) {
+		background: #ff8520;
+	}
+</style>
