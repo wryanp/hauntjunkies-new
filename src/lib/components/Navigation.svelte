@@ -27,6 +27,7 @@
 		{ href: '/', label: 'Home' },
 		{ href: '/reviews', label: 'Reviews' },
 		{ href: (isHauntPage || isMcCloudContact) ? '/contact?theme=mccloud' : '/contact', label: 'Contact' },
+		{ href: '/about', label: 'About Us' },
 		// Show opposite logo in nav: Haunt Junkies logo when on haunt/mccloud pages, McCloud logo when not
 		{
 			href: (isHauntPage || isMcCloudContact) ? '/' : '/mccloudmanor',
