@@ -100,16 +100,14 @@ export async function generateTicketPDF(ticketData: TicketPDFData): Promise<Buff
 			const headerHeight = 140;
 			doc.rect(0, 0, 612, headerHeight).fill('#000000');
 
-			// McCloud Manor Logo - centered and much larger
-			const logoFitWidth = 550;
-			const logoFitHeight = 130;
-			const logoX = (612 - logoFitWidth) / 2;
-			const logoY = (headerHeight - logoFitHeight) / 2;
+			// McCloud Manor Logo - centered and MUCH larger
+			const logoWidth = 500;
+			const logoX = (612 - logoWidth) / 2;
+			const logoY = 10;
 
 			doc.image(logoBuffer, logoX, logoY, {
-				fit: [logoFitWidth, logoFitHeight],
-				align: 'center',
-				valign: 'center'
+				width: logoWidth,
+				align: 'center'
 			});
 
 			// Main content area with better spacing
