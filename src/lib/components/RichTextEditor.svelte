@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { Editor } from 'svelte-tiptap';
 	import StarterKit from '@tiptap/starter-kit';
 	import Link from '@tiptap/extension-link';
@@ -8,43 +8,46 @@
 	let { value = $bindable(''), placeholder = '' } = $props();
 
 	let editor: any;
+	let editorElement: HTMLDivElement;
 
 	onMount(() => {
-		editor = new Editor({
-			element: document.querySelector('.editor-content'),
-			extensions: [
-				StarterKit.configure({
-					heading: {
-						levels: [1, 2, 3, 4, 5, 6]
+		if (editorElement) {
+			editor = new Editor({
+				element: editorElement,
+				extensions: [
+					StarterKit.configure({
+						heading: {
+							levels: [1, 2, 3, 4, 5, 6]
+						}
+					}),
+					Link.configure({
+						openOnClick: false,
+						HTMLAttributes: {
+							class: 'text-haunt-orange hover:underline'
+						}
+					}),
+					Image.configure({
+						inline: true,
+						HTMLAttributes: {
+							class: 'max-w-full h-auto rounded-lg'
+						}
+					})
+				],
+				content: value,
+				editorProps: {
+					attributes: {
+						class: 'prose prose-invert max-w-none focus:outline-none min-h-[400px] p-4'
 					}
-				}),
-				Link.configure({
-					openOnClick: false,
-					HTMLAttributes: {
-						class: 'text-haunt-orange hover:underline'
-					}
-				}),
-				Image.configure({
-					inline: true,
-					HTMLAttributes: {
-						class: 'max-w-full h-auto rounded-lg'
-					}
-				})
-			],
-			content: value,
-			editorProps: {
-				attributes: {
-					class: 'prose prose-invert max-w-none focus:outline-none min-h-[400px] p-4'
+				},
+				onUpdate: ({ editor }) => {
+					value = editor.getHTML();
 				}
-			},
-			onUpdate: ({ editor }) => {
-				value = editor.getHTML();
-			}
-		});
+			});
+		}
+	});
 
-		return () => {
-			editor?.destroy();
-		};
+	onDestroy(() => {
+		editor?.destroy();
 	});
 
 	// Toolbar action functions
@@ -188,7 +191,7 @@
 	</div>
 
 	<!-- Editor Content -->
-	<div class="editor-content" data-placeholder={placeholder}></div>
+	<div bind:this={editorElement} class="editor-content" data-placeholder={placeholder}></div>
 </div>
 
 <style>
