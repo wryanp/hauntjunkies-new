@@ -300,14 +300,9 @@ export async function generateTicketPDF(ticketData: TicketPDFData): Promise<Buff
 
 			// Modern footer
 			doc.fontSize(8)
-				.fillColor('#000000')
+				.fillColor(textGray)
 				.font('Helvetica')
-				.text('Questions? ', 0, currentY, { align: 'center', width: 612, continued: true })
-				.fillColor(hauntRed)
-				.text('Contact us', {
-					link: 'https://hauntjunkies.com/mccloudmanor#contact',
-					underline: true
-				});
+				.text('Questions? Email hauntjunkies@gmail.com or visit', 0, currentY, { align: 'center', width: 612 });
 
 			currentY += 12;
 			doc.fontSize(8)
