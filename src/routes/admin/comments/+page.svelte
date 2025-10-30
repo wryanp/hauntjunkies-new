@@ -204,27 +204,27 @@
 					</div>
 
 					<!-- Actions -->
-					<div class="flex gap-3">
+					<div class="flex flex-wrap gap-3">
 						<!-- Toggle Approval Form -->
 						<form method="POST" action="?/toggleApproval" use:enhance>
 							<input type="hidden" name="id" value={comment.id} />
 							<input type="hidden" name="approved" value={comment.approved} />
 							<button
 								type="submit"
-								class="flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all {comment.approved
+								class="flex items-center gap-2 px-3 py-2 rounded-lg font-semibold transition-all text-sm {comment.approved
 									? 'bg-yellow-900/20 hover:bg-yellow-900/30 text-yellow-400 border border-yellow-500/50'
 									: 'bg-green-900/20 hover:bg-green-900/30 text-green-400 border border-green-500/50'}"
 							>
 								{#if comment.approved}
-									<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
 									</svg>
-									Unapprove
+									<span class="hidden sm:inline">Unapprove</span>
 								{:else}
-									<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+									<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
 									</svg>
-									Approve
+									<span class="hidden sm:inline">Approve</span>
 								{/if}
 							</button>
 						</form>
@@ -246,24 +246,24 @@
 							<input type="hidden" name="id" value={comment.id} />
 							<button
 								type="submit"
-								class="flex items-center gap-2 px-4 py-2 bg-red-900/20 hover:bg-red-900/30 text-red-400 rounded-lg border border-red-500/50 font-semibold transition-all"
+								class="flex items-center gap-2 px-3 py-2 bg-red-900/20 hover:bg-red-900/30 text-red-400 rounded-lg border border-red-500/50 font-semibold transition-all text-sm"
 							>
-								<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
 								</svg>
-								Delete
+								<span class="hidden sm:inline">Delete</span>
 							</button>
 						</form>
 
 						<a
 							href="/reviews/{comment.reviewSlug}"
-							class="flex items-center gap-2 px-4 py-2 bg-haunt-orange/20 hover:bg-haunt-orange/30 text-haunt-orange rounded-lg border border-haunt-orange/50 font-semibold transition-all ml-auto"
+							class="flex items-center gap-2 px-3 py-2 bg-haunt-orange/20 hover:bg-haunt-orange/30 text-haunt-orange rounded-lg border border-haunt-orange/50 font-semibold transition-all text-sm"
 						>
-							<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+							<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
 							</svg>
-							View Review
+							<span class="hidden sm:inline">View Review</span>
 						</a>
 					</div>
 				</div>
