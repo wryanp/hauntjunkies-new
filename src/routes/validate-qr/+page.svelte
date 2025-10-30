@@ -155,17 +155,27 @@
 					</div>
 				</div>
 
-				<h1 class="text-3xl font-bold text-red-600 mb-2">INVALID TICKET</h1>
+				<h1 class="text-3xl font-bold text-red-600 mb-4">INVALID TICKET</h1>
+
+				{#if data.message?.includes('already been used')}
+					<!-- Large "ALREADY USED" badge for duplicate scans -->
+					<div class="mb-4">
+						<div class="inline-block bg-red-100 border-2 border-red-500 rounded-lg px-8 py-4">
+							<div class="text-4xl font-bold text-red-700 uppercase">Already Used</div>
+						</div>
+					</div>
+				{/if}
+
 				<p class="text-xl text-gray-700 mb-6">Entry Denied</p>
 
-				<div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
-					<p class="text-red-800 font-semibold mb-2">{data.message}</p>
+				<div class="bg-red-50 border-2 border-red-200 rounded-lg p-6 mb-6">
+					<p class="text-red-900 font-bold text-lg mb-3">{data.message}</p>
 					{#if data.message?.includes('already been used')}
-						<p class="text-sm text-red-700">This QR code was already scanned. Each ticket can only be used once.</p>
+						<p class="text-base text-red-800 font-semibold">This QR code was already scanned. Each ticket can only be used once.</p>
 					{:else if data.message?.includes('not found')}
-						<p class="text-sm text-red-700">This QR code is not in our system. It may be fake or expired.</p>
+						<p class="text-base text-red-800 font-semibold">This QR code is not in our system. It may be fake or expired.</p>
 					{:else}
-						<p class="text-sm text-red-700">Please verify the ticket with a manager.</p>
+						<p class="text-base text-red-800 font-semibold">Please verify the ticket with a manager.</p>
 					{/if}
 				</div>
 			</div>
