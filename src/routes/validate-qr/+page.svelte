@@ -13,35 +13,11 @@
 			<!-- QR Scanner Ready State -->
 			<div class="bg-white rounded-lg shadow-xl p-8 text-center border-4 border-gray-300">
 				<div class="mb-6">
-					<button
-						onclick={() => {
-							// Force camera reset by removing any existing inputs first
-							const existingInputs = document.querySelectorAll('input[type="file"][accept="image/*"]');
-							existingInputs.forEach(input => input.remove());
-
-							// Small delay to ensure cleanup, then open fresh camera
-							setTimeout(() => {
-								const input = document.createElement('input');
-								input.type = 'file';
-								input.accept = 'image/*';
-								input.capture = 'environment';
-
-								// Clean up after use
-								input.onchange = () => {
-									setTimeout(() => input.remove(), 100);
-								};
-
-								input.click();
-							}, 100);
-						}}
-						class="w-24 h-24 bg-gray-700 hover:bg-gray-800 active:bg-gray-900 rounded-full mx-auto flex items-center justify-center transition-colors cursor-pointer"
-						aria-label="Open Camera"
-					>
+					<div class="w-24 h-24 bg-gray-700 rounded-full mx-auto flex items-center justify-center">
 						<svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
 						</svg>
-					</button>
-					<p class="text-base font-bold text-gray-700 mt-3">Tap to open camera</p>
+					</div>
 				</div>
 
 				<h1 class="text-3xl font-bold text-gray-800 mb-2">QR Scanner Ready</h1>
