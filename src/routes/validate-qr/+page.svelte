@@ -1,19 +1,22 @@
 <script lang="ts">
 	let { data } = $props();
 
-	// Auto-reload after 5 seconds to allow scanning next ticket
+	// Auto-reload after 5 seconds ONLY after a scan (when showScanner is false)
 	import { onMount } from 'svelte';
 	let countdown = $state(5);
 
 	onMount(() => {
-		const interval = setInterval(() => {
-			countdown--;
-			if (countdown <= 0) {
-				window.location.href = '/validate-qr';
-			}
-		}, 1000);
+		// Only start countdown if we just scanned (not showing scanner page)
+		if (!data.showScanner) {
+			const interval = setInterval(() => {
+				countdown--;
+				if (countdown <= 0) {
+					window.location.href = '/validate-qr';
+				}
+			}, 1000);
 
-		return () => clearInterval(interval);
+			return () => clearInterval(interval);
+		}
 	});
 </script>
 
@@ -24,7 +27,44 @@
 
 <div class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
 	<div class="max-w-md w-full">
-		{#if data.valid}
+		{#if data.showScanner}
+			<!-- QR Scanner Ready State -->
+			<div class="bg-white rounded-lg shadow-xl p-8 text-center border-4 border-gray-300">
+				<div class="mb-6">
+					<div class="w-24 h-24 bg-gray-700 rounded-full mx-auto flex items-center justify-center">
+						<svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
+						</svg>
+					</div>
+				</div>
+
+				<h1 class="text-3xl font-bold text-gray-800 mb-2">QR Scanner Ready</h1>
+				<p class="text-xl text-gray-600 mb-6">Scan ticket QR code to validate entry</p>
+
+				<div class="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6 text-left">
+					<h2 class="text-sm font-bold text-gray-600 uppercase mb-3">Instructions</h2>
+					<ol class="space-y-2 text-gray-700">
+						<li class="flex items-start">
+							<span class="font-bold mr-2">1.</span>
+							<span>Open your phone's camera app</span>
+						</li>
+						<li class="flex items-start">
+							<span class="font-bold mr-2">2.</span>
+							<span>Point camera at the QR code on guest's ticket</span>
+						</li>
+						<li class="flex items-start">
+							<span class="font-bold mr-2">3.</span>
+							<span>Tap the notification to validate</span>
+						</li>
+					</ol>
+				</div>
+
+				<div class="bg-blue-50 border border-blue-200 rounded p-4 text-sm text-blue-800">
+					<p class="font-semibold mb-1">Tip:</p>
+					<p>Each QR code can only be scanned once. Previously scanned codes will be rejected.</p>
+				</div>
+			</div>
+		{:else if data.valid}
 			<!-- Valid Ticket -->
 			<div class="bg-white rounded-lg shadow-xl p-8 text-center border-4 border-green-500">
 				<div class="mb-6">
@@ -97,19 +137,21 @@
 			</div>
 		{/if}
 
-		<!-- Action Buttons -->
-		<div class="mt-6 space-y-3">
-			<a
-				href="/validate-qr"
-				class="block w-full bg-haunt-red hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg text-center transition-colors"
-			>
-				Scan Next Ticket
-			</a>
+		<!-- Action Buttons (only show after scan) -->
+		{#if !data.showScanner}
+			<div class="mt-6 space-y-3">
+				<a
+					href="/validate-qr"
+					class="block w-full bg-haunt-red hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg text-center transition-colors"
+				>
+					Scan Next Ticket
+				</a>
 
-			<div class="text-center text-sm text-gray-500">
-				Auto-refreshing in {countdown} second{countdown !== 1 ? 's' : ''}...
+				<div class="text-center text-sm text-gray-500">
+					Auto-refreshing in {countdown} second{countdown !== 1 ? 's' : ''}...
+				</div>
 			</div>
-		</div>
+		{/if}
 	</div>
 </div>
 

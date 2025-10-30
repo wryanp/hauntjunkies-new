@@ -15,9 +15,7 @@ export const load: PageServerLoad = async ({ url }) => {
 
 	if (!token) {
 		return {
-			valid: false,
-			error: 'Missing QR token',
-			message: 'No QR code token provided'
+			showScanner: true
 		};
 	}
 
