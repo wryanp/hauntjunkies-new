@@ -14,8 +14,12 @@ export const load: PageServerLoad = async ({ url }) => {
 	const token = url.searchParams.get('token');
 
 	if (!token) {
+		// Fetch today's capacity stats for scanner page
+		const { data: capacityStats, error: capacityError } = await supabase.rpc('get_todays_capacity_stats');
+
 		return {
-			showScanner: true
+			showScanner: true,
+			capacityStats: capacityError ? null : capacityStats
 		};
 	}
 

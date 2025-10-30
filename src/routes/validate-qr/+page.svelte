@@ -23,6 +23,62 @@
 				<h1 class="text-3xl font-bold text-gray-800 mb-2">QR Scanner Ready</h1>
 				<p class="text-xl text-gray-600 mb-6">Scan ticket QR code to validate entry</p>
 
+				<!-- Capacity Status Indicator -->
+				{#if data.capacityStats && data.capacityStats.has_event_today}
+					{@const stats = data.capacityStats}
+					{@const colorClasses = {
+						green: { bg: 'bg-green-50', border: 'border-green-500', text: 'text-green-700', bar: 'bg-green-500', dot: 'bg-green-500' },
+						yellow: { bg: 'bg-yellow-50', border: 'border-yellow-500', text: 'text-yellow-700', bar: 'bg-yellow-500', dot: 'bg-yellow-500' },
+						red: { bg: 'bg-red-50', border: 'border-red-500', text: 'text-red-700', bar: 'bg-red-500', dot: 'bg-red-500' },
+						gray: { bg: 'bg-gray-50', border: 'border-gray-500', text: 'text-gray-700', bar: 'bg-gray-500', dot: 'bg-gray-500' }
+					}}
+					{@const colors = colorClasses[stats.color]}
+					<div class="mb-6 {colors.bg} border-2 {colors.border} rounded-lg p-4">
+						<div class="flex items-center justify-between mb-3">
+							<div class="flex items-center gap-2">
+								<div class="w-3 h-3 {colors.dot} rounded-full animate-pulse"></div>
+								<h3 class="text-sm font-bold {colors.text} uppercase">Today's Event Status</h3>
+							</div>
+							<span class="text-xs font-semibold {colors.text} px-2 py-1 bg-white/50 rounded">{stats.status}</span>
+						</div>
+
+						<div class="mb-3">
+							<div class="flex justify-between items-baseline mb-2">
+								<span class="text-2xl font-bold {colors.text}">{stats.tickets_scanned}</span>
+								<span class="text-sm font-semibold text-gray-600">of {stats.tickets_sold} admitted</span>
+							</div>
+
+							<!-- Progress Bar -->
+							<div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+								<div
+									class="{colors.bar} h-3 rounded-full transition-all duration-500"
+									style="width: {Math.min(stats.percentage_scanned, 100)}%"
+								></div>
+							</div>
+							<div class="text-right mt-1">
+								<span class="text-xs font-semibold {colors.text}">{stats.percentage_scanned}%</span>
+							</div>
+						</div>
+
+						<div class="grid grid-cols-2 gap-2 text-xs">
+							<div class="bg-white/50 rounded px-2 py-1">
+								<span class="text-gray-600">Remaining:</span>
+								<span class="font-bold {colors.text} ml-1">{stats.tickets_remaining}</span>
+							</div>
+							<div class="bg-white/50 rounded px-2 py-1">
+								<span class="text-gray-600">Capacity:</span>
+								<span class="font-bold {colors.text} ml-1">{stats.total_capacity}</span>
+							</div>
+						</div>
+
+						{#if stats.is_sold_out}
+							<div class="mt-3 bg-red-100 border border-red-300 rounded px-3 py-2 text-center">
+								<span class="text-xs font-bold text-red-700">🎫 SOLD OUT - All tickets claimed</span>
+							</div>
+						{/if}
+					</div>
+				{/if}
+
 				<div class="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6 text-left">
 					<h2 class="text-sm font-bold text-gray-600 uppercase mb-3">Instructions</h2>
 					<ol class="space-y-2 text-gray-700">
