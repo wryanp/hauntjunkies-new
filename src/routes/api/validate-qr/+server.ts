@@ -8,3 +8,4 @@ export const GET: RequestHandler = async ({ url }) => {
 
 	// Redirect to the visual confirmation page with the token
 	throw redirect(302, `/validate-qr?token=${token || ''}`);
+};
