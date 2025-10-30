@@ -56,7 +56,7 @@ BEGIN
   IF NOT FOUND THEN
     RETURN json_build_object(
       'valid', false,
-      'error', 'Invalid QR code'
+      'message', 'QR code not found'
     );
   END IF;
 
@@ -64,7 +64,7 @@ BEGIN
   IF v_qr_record.used_at IS NOT NULL THEN
     RETURN json_build_object(
       'valid', false,
-      'error', 'QR code has already been used',
+      'message', 'QR code has already been used',
       'used_at', v_qr_record.used_at
     );
   END IF;
@@ -73,7 +73,7 @@ BEGIN
   IF v_qr_record.expires_at IS NOT NULL AND v_qr_record.expires_at < NOW() THEN
     RETURN json_build_object(
       'valid', false,
-      'error', 'QR code has expired',
+      'message', 'QR code has expired',
       'expired_at', v_qr_record.expires_at
     );
   END IF;
@@ -101,18 +101,19 @@ BEGIN
   -- Return success with ticket details
   RETURN json_build_object(
     'valid', true,
+    'message', 'Ticket validated successfully',
     'used_at', NOW(),
-    'ticket', json_build_object(
+    'ticket_info', json_build_object(
       'confirmation_number', v_ticket_record.confirmation_number,
-      'name', v_ticket_record.first_name || ' ' || v_ticket_record.last_name,
+      'guest_name', v_ticket_record.first_name || ' ' || v_ticket_record.last_name,
       'email', v_ticket_record.email,
-      'date', v_ticket_record.date,
+      'event_date', v_ticket_record.date::TEXT,
       'time', CASE
         WHEN v_ticket_record.start_time IS NOT NULL
         THEN v_ticket_record.start_time::TEXT || ' - ' || v_ticket_record.end_time::TEXT
         ELSE NULL
       END,
-      'tickets', v_ticket_record.tickets
+      'ticket_count', v_ticket_record.tickets
     )
   );
 END;

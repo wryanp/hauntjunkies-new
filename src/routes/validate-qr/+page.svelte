@@ -33,12 +33,24 @@
 				<div class="mb-6">
 					<button
 						onclick={() => {
-							// Try to open camera - works on most mobile devices
-							const input = document.createElement('input');
-							input.type = 'file';
-							input.accept = 'image/*';
-							input.capture = 'environment';
-							input.click();
+							// Force camera reset by removing any existing inputs first
+							const existingInputs = document.querySelectorAll('input[type="file"][accept="image/*"]');
+							existingInputs.forEach(input => input.remove());
+
+							// Small delay to ensure cleanup, then open fresh camera
+							setTimeout(() => {
+								const input = document.createElement('input');
+								input.type = 'file';
+								input.accept = 'image/*';
+								input.capture = 'environment';
+
+								// Clean up after use
+								input.onchange = () => {
+									setTimeout(() => input.remove(), 100);
+								};
+
+								input.click();
+							}, 100);
 						}}
 						class="w-24 h-24 bg-gray-700 hover:bg-gray-800 active:bg-gray-900 rounded-full mx-auto flex items-center justify-center transition-colors cursor-pointer"
 						aria-label="Open Camera"
