@@ -31,11 +31,23 @@
 			<!-- QR Scanner Ready State -->
 			<div class="bg-white rounded-lg shadow-xl p-8 text-center border-4 border-gray-300">
 				<div class="mb-6">
-					<div class="w-24 h-24 bg-gray-700 rounded-full mx-auto flex items-center justify-center">
+					<button
+						onclick={() => {
+							// Try to open camera - works on most mobile devices
+							const input = document.createElement('input');
+							input.type = 'file';
+							input.accept = 'image/*';
+							input.capture = 'environment';
+							input.click();
+						}}
+						class="w-24 h-24 bg-gray-700 hover:bg-gray-800 active:bg-gray-900 rounded-full mx-auto flex items-center justify-center transition-colors cursor-pointer"
+						aria-label="Open Camera"
+					>
 						<svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path>
 						</svg>
-					</div>
+					</button>
+					<p class="text-xs text-gray-500 mt-2">Tap to open camera</p>
 				</div>
 
 				<h1 class="text-3xl font-bold text-gray-800 mb-2">QR Scanner Ready</h1>
@@ -75,7 +87,17 @@
 					</div>
 				</div>
 
-				<h1 class="text-3xl font-bold text-green-600 mb-2">VALID TICKET</h1>
+				<h1 class="text-3xl font-bold text-green-600 mb-4">VALID TICKET</h1>
+
+				{#if data.ticketInfo?.ticket_count}
+					<div class="mb-4">
+						<div class="inline-block bg-green-100 border-2 border-green-500 rounded-lg px-8 py-4">
+							<div class="text-5xl font-bold text-green-700">{data.ticketInfo.ticket_count}</div>
+							<div class="text-base font-bold text-green-600 uppercase mt-1">Ticket{data.ticketInfo.ticket_count !== 1 ? 's' : ''}</div>
+						</div>
+					</div>
+				{/if}
+
 				<p class="text-xl text-gray-700 mb-6">Entry Approved</p>
 
 				{#if data.ticketInfo}
