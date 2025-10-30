@@ -1,23 +1,5 @@
 <script lang="ts">
 	let { data } = $props();
-
-	// Auto-reload after 5 seconds ONLY after a scan (when showScanner is false)
-	import { onMount } from 'svelte';
-	let countdown = $state(5);
-
-	onMount(() => {
-		// Only start countdown if we just scanned (not showing scanner page)
-		if (!data.showScanner) {
-			const interval = setInterval(() => {
-				countdown--;
-				if (countdown <= 0) {
-					window.location.href = '/validate-qr';
-				}
-			}, 1000);
-
-			return () => clearInterval(interval);
-		}
-	});
 </script>
 
 <svelte:head>
@@ -183,17 +165,13 @@
 
 		<!-- Action Buttons (only show after scan) -->
 		{#if !data.showScanner}
-			<div class="mt-6 space-y-3">
+			<div class="mt-6">
 				<a
 					href="/validate-qr"
 					class="block w-full bg-haunt-red hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-lg text-center transition-colors"
 				>
 					Scan Next Ticket
 				</a>
-
-				<div class="text-center text-sm text-gray-500">
-					Auto-refreshing in {countdown} second{countdown !== 1 ? 's' : ''}...
-				</div>
 			</div>
 		{/if}
 	</div>
