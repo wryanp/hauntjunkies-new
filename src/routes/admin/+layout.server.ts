@@ -2,6 +2,11 @@ import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
 import { createServerClient } from '@supabase/ssr';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
+import { createClient } from '@supabase/supabase-js';
+
+// Create service role client for counting notifications
+const supabaseAdmin = createClient(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 export const load: LayoutServerLoad = async ({ url, cookies }) => {
 	// Allow access to login page without authentication
@@ -29,9 +34,25 @@ export const load: LayoutServerLoad = async ({ url, cookies }) => {
 	if (session) {
 		// Clear old admin_session cookie if it exists
 		cookies.delete('admin_session', { path: '/' });
+
+		// Get notification counts
+		const { count: commentsCount } = await supabaseAdmin
+			.from('review_comments')
+			.select('*', { count: 'exact', head: true })
+			.eq('approved', false);
+
+		const { count: messagesCount } = await supabaseAdmin
+			.from('contact_submissions')
+			.select('*', { count: 'exact', head: true })
+			.eq('read', false);
+
 		return {
 			session,
-			user: session.user
+			user: session.user,
+			notifications: {
+				unreadComments: commentsCount || 0,
+				unreadMessages: messagesCount || 0
+			}
 		};
 	}
 
@@ -74,9 +95,24 @@ export const load: LayoutServerLoad = async ({ url, cookies }) => {
 					maxAge: 60 * 60 * 24 * 7 // 7 days
 				});
 
+				// Get notification counts
+				const { count: commentsCount } = await supabaseAdmin
+					.from('review_comments')
+					.select('*', { count: 'exact', head: true })
+					.eq('approved', false);
+
+				const { count: messagesCount } = await supabaseAdmin
+					.from('contact_submissions')
+					.select('*', { count: 'exact', head: true })
+					.eq('read', false);
+
 				return {
 					session: { user: { email: sessionData.email || 'admin@hauntjunkies.com' } },
-					user: { email: sessionData.email || 'admin@hauntjunkies.com' }
+					user: { email: sessionData.email || 'admin@hauntjunkies.com' },
+					notifications: {
+						unreadComments: commentsCount || 0,
+						unreadMessages: messagesCount || 0
+					}
 				};
 			}
 		} catch (e) {
@@ -90,9 +126,24 @@ export const load: LayoutServerLoad = async ({ url, cookies }) => {
 					maxAge: 60 * 60 * 24 * 7
 				});
 
+				// Get notification counts
+				const { count: commentsCount } = await supabaseAdmin
+					.from('review_comments')
+					.select('*', { count: 'exact', head: true })
+					.eq('approved', false);
+
+				const { count: messagesCount } = await supabaseAdmin
+					.from('contact_submissions')
+					.select('*', { count: 'exact', head: true })
+					.eq('read', false);
+
 				return {
 					session: { user: { email: 'admin@hauntjunkies.com' } },
-					user: { email: 'admin@hauntjunkies.com' }
+					user: { email: 'admin@hauntjunkies.com' },
+					notifications: {
+						unreadComments: commentsCount || 0,
+						unreadMessages: messagesCount || 0
+					}
 				};
 			}
 		}

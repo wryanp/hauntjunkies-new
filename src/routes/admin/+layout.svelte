@@ -11,6 +11,11 @@
 	// Don't show admin layout on login page
 	const isLoginPage = $derived($page.url.pathname === '/admin/login');
 
+	// Debug: Log notification data
+	$effect(() => {
+		console.log('Notification data:', data.notifications);
+	});
+
 	// Navigation links
 	const navLinks = [
 		{ href: '/admin/dashboard', label: 'Dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
@@ -143,6 +148,16 @@
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={link.icon} />
 							</svg>
 							<span class="font-medium">{link.label}</span>
+							{#if link.label === 'Comments' && data.notifications?.unreadComments > 0}
+								<span class="ml-auto bg-haunt-orange text-white text-xs font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center">
+									{data.notifications.unreadComments}
+								</span>
+							{/if}
+							{#if link.label === 'Messages' && data.notifications?.unreadMessages > 0}
+								<span class="ml-auto bg-haunt-orange text-white text-xs font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center">
+									{data.notifications.unreadMessages}
+								</span>
+							{/if}
 						</a>
 					{/each}
 				</nav>
@@ -154,15 +169,25 @@
 					{#each navLinks.slice(0, 5) as link}
 						<a
 							href={link.href}
-							class="flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg transition-all min-w-[60px]
+							class="flex flex-col items-center justify-center gap-0.5 px-2 py-1.5 rounded-lg transition-all min-w-[60px] relative
 							       {$page.url.pathname === link.href
 							         ? 'text-haunt-orange'
 							         : 'text-gray-400'}"
 						>
-							<div class="flex items-center justify-center h-5 w-5 shrink-0">
+							<div class="flex items-center justify-center h-5 w-5 shrink-0 relative">
 								<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={link.icon} />
 								</svg>
+								{#if link.label === 'Comments' && data.notifications?.unreadComments > 0}
+									<span class="absolute -top-1 -right-1 bg-haunt-orange text-white text-[8px] font-bold px-1 rounded-full min-w-[14px] text-center leading-tight">
+										{data.notifications.unreadComments}
+									</span>
+								{/if}
+								{#if link.label === 'Messages' && data.notifications?.unreadMessages > 0}
+									<span class="absolute -top-1 -right-1 bg-haunt-orange text-white text-[8px] font-bold px-1 rounded-full min-w-[14px] text-center leading-tight">
+										{data.notifications.unreadMessages}
+									</span>
+								{/if}
 							</div>
 							<span class="text-[10px] leading-tight text-center whitespace-nowrap">{link.label}</span>
 						</a>
