@@ -625,7 +625,7 @@
 <!-- Instagram Feed Section -->
 <section class="py-16 mobile-landscape:py-10 relative overflow-hidden">
 	<!-- Background Image -->
-	<div class="absolute inset-0 bg-cover bg-center" style="background-image: url('/hauntedgraveyard-bg.webp');"></div>
+	<div class="absolute inset-0 bg-cover" style="background-image: url('/hauntedgraveyard-bg.webp'); background-position: center bottom;"></div>
 
 	<!-- Dark overlay -->
 	<div class="absolute inset-0 bg-black/70 md:bg-black/60"></div>
